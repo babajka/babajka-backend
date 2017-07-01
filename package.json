@@ -1,0 +1,39 @@
+{
+  "name": "babajka-backend",
+  "version": "0.0.1",
+  "description": "Express & Node.js app",
+  "scripts": {
+    "start": "nodemon -w index.js -w . --exec babel-node index.js",
+    "lint": "eslint index.js src/"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.3",
+    "express": "^4.15.3",
+    "morgan": "^1.8.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/babajka/babajka-backend.git"
+  },
+  "author": "babajka team <github.com/babajka>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/babajka/babajka-backend/issues"
+  },
+  "homepage": "https://github.com/babajka/babajka-backend#readme",
+  "main": "index.js",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "eslint": "^4.1.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.6.1",
+    "eslint-plugin-node": "^5.1.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "nodemon": "^1.11.0"
+  }
+}
