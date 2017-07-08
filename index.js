@@ -8,6 +8,9 @@ import { createServer } from 'http';
 
 import api from './src/api';
 import config from './src/config';
+import {connectDb} from './src/db';
+
+connectDb();
 
 const publicPath = path.join(__dirname, config.publicPath);
 const app = express();
