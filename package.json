@@ -4,7 +4,7 @@
   "description": "Express & Node.js app",
   "scripts": {
     "start": "nodemon -w index.js -w . --exec babel-node index.js",
-    "lint": "eslint index.js src/"
+    "lint": "eslint index.js init-db.js src/"
   },
   "dependencies": {
     "body-parser": "^1.17.2",
@@ -31,7 +31,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "eslint": "^4.1.1",
     "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.6.1",
+    "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",

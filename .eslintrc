@@ -1,6 +1,10 @@
 {
   "extends": "standard",
   "rules": {
-  	"semi": [2, "always"]
+    "arrow-parens": ["error", "as-needed", { "requireForBlockBody": true }],
+    "arrow-body-style": ["error", "as-needed"],
+    "indent": ["error", 2],
+    "object-curly-spacing": ["error", "always"],
+    "semi": ["error", "always"]
   }
 }
