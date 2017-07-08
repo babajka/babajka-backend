@@ -1,0 +1,22 @@
+{
+  "id": "a7af2ec8-b8d4-b355-00b9-2f6cb42d60c9",
+  "name": "babajka",
+  "values": [
+    {
+      "enabled": true,
+      "key": "DOMAIN",
+      "value": "http://localhost:3000",
+      "type": "text"
+    },
+    {
+      "enabled": true,
+      "key": "API_URL",
+      "value": "/api",
+      "type": "text"
+    }
+  ],
+  "timestamp": 1499503465480,
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2017-07-08T08:48:39.584Z",
+  "_postman_exported_using": "Postman/5.0.2"
+}
