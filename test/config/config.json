@@ -3,8 +3,6 @@
   "publicPath": "public",
   "mongodb": {
     "url": "mongodb://localhost/babajka-test",
-    "options": {
-      "promiseLibrary": "global.Promise"
-    }
+    "options": {}
   }
 }
