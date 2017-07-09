@@ -1,0 +1,28 @@
+{
+	"variables": [],
+	"info": {
+		"name": "babajka",
+		"_postman_id": "d59e3bbd-e039-db88-8097-8aca23f6d7c0",
+		"description": "babajka api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"description": "",
+			"item": [
+				{
+					"name": "Usets: get all",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/users",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
