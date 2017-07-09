@@ -1,13 +1,13 @@
 import connectDb from './db-connection';
 
-const dropCollections = (mongoose) => {
-  const collections = Object.keys(mongoose.connection.collections);
+const dropCollections = (db) => {
+  const collections = Object.keys(db.collections);
 
   return Promise.all(
     collections.map(
       name =>
         new Promise((resolve, reject) => {
-          const collection = mongoose.connection.collections[name];
+          const collection = db.collections[name];
 
           collection.drop((err) => {
             if (err && err.message !== 'ns not found') {

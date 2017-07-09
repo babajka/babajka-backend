@@ -2,8 +2,10 @@
 
 import * as db from './src/db';
 
-Promise.resolve(db.connectDb())
-  .then(mongoose => db.dropCollections(mongoose))
+const connector = db.connectDb();
+
+connector.promise
+  .then(() => db.dropCollections(connector.mongoose.connection))
   .then((collections) => {
     console.log(`Mongoose: drop ${collections.length} collections: ${collections}`);
   })
