@@ -30,7 +30,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   res.send(err.message);
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || config.port;
 createServer(app).listen(PORT, () => {
   console.log('Server running at http://localhost:' + PORT); // eslint-disable-line no-console
 });

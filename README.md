@@ -7,6 +7,16 @@ Express &amp; Node.js app
 
 ## scripts
 
-* `npm start` for running dev server with watcher and reloading
+* `npm run start-dev` runs dev server with watcher and reloading.
 
-* `npm run lint` for checking codestyle
+* `npm run start` or `npm start` are for running on Google Cloud only. You won't success running it locally.
+
+* `npm run start-prod` runs prod server locally. The same with `npm start` with the difference of building and running on the same machine.
+
+* `npm run build` builds prod server into `build/` without running it.
+
+* `npm run lint` checks the codestyle.
+
+## deployment
+
+Run `bash google-cloud-deploy.sh` to deploy the server to Google Cloud. May require additional permissions.
