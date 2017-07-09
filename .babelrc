@@ -2,5 +2,10 @@
   "presets": [
     "es2015",
     "stage-2"
+  ],
+  "plugins": [
+    ["global-require", {
+      "root": "src"
+    }]
   ]
 }

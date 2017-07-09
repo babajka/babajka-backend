@@ -1,4 +1,4 @@
-import connectDb from './db';
+import connectDb from './db-connection';
 
 const dropCollections = (mongoose) => {
   const collections = Object.keys(mongoose.connection.collections);
@@ -19,4 +19,4 @@ const dropCollections = (mongoose) => {
         })));
 };
 
-export {connectDb, dropCollections};
+export { connectDb, dropCollections };

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import * as db from 'src/db';
+import * as db from './src/db';
 
 Promise.resolve(db.connectDb())
   .then(mongoose => db.dropCollections(mongoose))
