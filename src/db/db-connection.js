@@ -2,15 +2,13 @@
 
 import mongoose from 'mongoose';
 
-import config from '../config';
-
-export default function () {
+export default function (url, options) {
   mongoose.Promise = global.Promise;
-  const promise = mongoose.connect(config.mongodb.url, config.mongodb.options);
+  const promise = mongoose.connect(url, options);
 
   mongoose.connection.on('error', err => console.log(`Mongoose: connection error: ${err}`));
   mongoose.connection.on('disconnected', () => console.log('Mongoose: connectDb disconnected'));
-  mongoose.connection.on('connected', () => console.log(`Mongoose: connected to ${config.mongodb.url}`));
+  mongoose.connection.on('connected', () => console.log(`Mongoose: connected to ${url}`));
 
   return {
     promise,
