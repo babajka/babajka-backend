@@ -30,7 +30,6 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   res.send(err.message);
 });
 
-const PORT = process.env.PORT || config.port;
-createServer(app).listen(PORT, () => {
-  console.log('Server running at http://localhost:' + PORT); // eslint-disable-line no-console
+createServer(app).listen(config.port, () => {
+  console.log('Server running at http://localhost:' + config.port); // eslint-disable-line no-console
 });
