@@ -10,10 +10,9 @@ import api from './src/api';
 import config from './src/config';
 import { connectDb } from './src/db';
 
-connectDb(config.mongodb.url, config.mongodb.options);
-
 const publicPath = path.join(__dirname, config.publicPath);
 const app = express();
+connectDb();
 
 app.use(cors());
 app.use(logger('dev')); // todo add switch to production mode

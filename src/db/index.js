@@ -1,22 +1,13 @@
-import connectDb from './db-connection';
+/* eslint-disable no-console */
 
-const dropCollections = (db) => {
-  const collections = Object.keys(db.collections);
+import mongoose from 'mongoose';
+import config from '../config';
 
-  return Promise.all(
-    collections.map(
-      name =>
-        new Promise((resolve, reject) => {
-          const collection = db.collections[name];
-
-          collection.drop((err) => {
-            if (err && err.message !== 'ns not found') {
-              reject(err);
-            }
-
-            resolve(name);
-          });
-        })));
+export default () => {
+  const { mongodb: { url, options } } = config;
+  mongoose.Promise = global.Promise;
+  mongoose.connection.on('connected', () => console.log(`Mongoose: connected to ${url}`));
+  mongoose.connection.on('error', err => console.error(`Mongoose: connection error: ${err}`));
+  mongoose.connection.on('disconnected', () => console.log('Mongoose: disconnected'));
+  return mongoose.connect(url, options);
 };
-
-export { connectDb, dropCollections };

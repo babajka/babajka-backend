@@ -1,15 +1,11 @@
 /* eslint-disable no-console */
 
-import * as db from './src/db';
-import config from './src/config';
+import mongoose from 'mongoose';
+import connectDb from './src/db';
 
-const connector = db.connectDb(config.mongodb.url, config.mongodb.options);
-
-connector.promise
-  .then(() => db.dropCollections(connector.mongoose.connection))
-  .then((collections) => {
-    console.log(`Mongoose: drop ${collections.length} collections: ${collections}`);
-  })
+connectDb()
+  .then(() => mongoose.connection.db.dropDatabase())
+  .then(() => console.log('Mongoose: drop database'))
   .then(() => process.exit())
   .catch((err) => {
     console.log('Mongoose: error during database init');

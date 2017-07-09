@@ -4,8 +4,9 @@
   "description": "Express & Node.js app",
   "scripts": {
     "start": "nodemon -w index.js -w . --exec babel-node index.js",
-    "lint": "eslint index.js init-db.js src/ test/",
-    "test": "node_modules/.bin/mocha --require babel-register"
+    "init-db": "babel-node init-db.js",
+    "lint": "eslint index.js init-db.js src/",
+    "test": "mocha --reporter spec src/**/*.test.js --require babel-register"
   },
   "dependencies": {
     "body-parser": "^1.17.2",
@@ -13,7 +14,7 @@
     "cors": "^2.8.3",
     "express": "^4.15.3",
     "mocha": "^3.4.2",
-    "mongoose": "^4.11.1",
+    "mongoose": "^4.10.8",
     "morgan": "^1.8.2"
   },
   "repository": {

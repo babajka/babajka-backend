@@ -11,3 +11,7 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 * `npm start` for running dev server with watcher and reloading
 
 * `npm run lint` for checking codestyle
+
+* `npm run init-db` for create database and insert initial test data
+
+* `npm run test` for testing
