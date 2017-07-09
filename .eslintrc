@@ -1,10 +1,3 @@
 {
-  "extends": "standard",
-  "rules": {
-    "arrow-parens": ["error", "as-needed", { "requireForBlockBody": true }],
-    "arrow-body-style": ["error", "as-needed"],
-    "indent": ["error", 2],
-    "object-curly-spacing": ["error", "always"],
-    "semi": ["error", "always"]
-  }
+  "extends": "airbnb/base"
 }
