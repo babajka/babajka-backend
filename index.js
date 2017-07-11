@@ -33,5 +33,5 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 });
 
 createServer(app).listen(config.port, () => {
-  console.log('Server running at http://localhost:3000'); // eslint-disable-line no-console
+  console.log(`Server running at http://localhost:${config.port}`); // eslint-disable-line no-console
 });

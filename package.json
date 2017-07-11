@@ -4,9 +4,14 @@
   "description": "Express & Node.js app",
   "scripts": {
     "start": "nodemon -w index.js -w . --exec babel-node index.js",
+    "start-prod": "npm run build && node build/index.js",
+    "build": "babel index.js -d build && babel src -d build/src --copy-files && babel public -d build/public --copy-files",
     "init-db": "babel-node src/db/init.js",
     "lint": "eslint index.js src/",
     "test": "mocha --reporter spec src/**/*.test.js --require babel-register"
+  },
+  "engines": {
+    "node": ">=4.3.2"
   },
   "dependencies": {
     "body-parser": "^1.17.2",

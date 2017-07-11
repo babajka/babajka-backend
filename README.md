@@ -8,13 +8,21 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 ## scripts
 
-* `npm start` for running dev server with watcher and reloading
+* `npm start` runs dev server with watcher and reloading.
 
-* `npm run lint` for checking codestyle
+* `npm run start-prod` runs prod server locally. The same with `npm start` with the difference of building and running on the same machine.
+
+* `npm run build` builds prod server into `build/` without running it.
 
 * `npm run init-db` for create database and insert initial test data
 
+* `npm run lint` checks the codestyle.
+
 * `npm run test` for testing
+
+## deployment
+
+Run `bash google-cloud-deploy.sh` to deploy the server to Google Cloud. May require additional permissions.
 
 ## api
 
