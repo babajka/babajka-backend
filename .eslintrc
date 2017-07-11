@@ -1,6 +1,8 @@
 {
-  "extends": "standard",
-  "rules": {
-  	"semi": [2, "always"]
+  "extends": "airbnb/base",
+  "globals": {
+    "it": true,
+    "describe": true,
+    "expect": true
   }
 }

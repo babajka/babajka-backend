@@ -8,9 +8,11 @@ import { createServer } from 'http';
 
 import api from './src/api';
 import config from './src/config';
+import connectDb from './src/db';
 
 const publicPath = path.join(__dirname, config.publicPath);
 const app = express();
+connectDb();
 
 app.use(cors());
 app.use(logger('dev')); // todo add switch to production mode
@@ -31,5 +33,5 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 });
 
 createServer(app).listen(config.port, () => {
-  console.log('Server running at http://localhost:' + config.port); // eslint-disable-line no-console
+  console.log(`Server running at http://localhost:${config.port}`); // eslint-disable-line no-console
 });
