@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import mongoose from 'mongoose';
-import connectDb from './src/db';
+import connectDb from './index';
 
 connectDb()
   .then(() => mongoose.connection.db.dropDatabase())

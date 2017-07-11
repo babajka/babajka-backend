@@ -4,8 +4,8 @@
   "description": "Express & Node.js app",
   "scripts": {
     "start": "nodemon -w index.js -w . --exec babel-node index.js",
-    "init-db": "babel-node init-db.js",
-    "lint": "eslint index.js init-db.js src/",
+    "init-db": "babel-node src/db/init.js",
+    "lint": "eslint index.js src/",
     "test": "mocha --reporter spec src/**/*.test.js --require babel-register"
   },
   "dependencies": {
