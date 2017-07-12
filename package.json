@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon -w index.js -w . --exec babel-node index.js",
     "start-prod": "npm run build && node build/index.js",
-    "build": "babel index.js -d build && babel src -d build/src --copy-files && babel public -d build/public --copy-files",
+    "build": "babel . -d build --copy-files --ignore node_modules,postman,build",
     "init-db": "babel-node src/db/init.js",
     "lint": "eslint index.js src/",
     "test": "mocha --reporter spec src/**/*.test.js --require babel-register"

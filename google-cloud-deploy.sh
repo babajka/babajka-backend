@@ -7,10 +7,6 @@
 # Compiling JS-code using babel.
 npm run build
 
-# Adding configutation files to the build.
-cp app.yaml build/
-cp package.json build/
-
 # Deploying the app to Google Cloud.
 cd build
 gcloud app deploy
