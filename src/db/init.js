@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import mongoose from 'mongoose';
-import connectDb from './index';
+import connectDb from 'db';
 
 (async () => {
   try {

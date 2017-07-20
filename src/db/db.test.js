@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { expect } from 'chai';
 
-import connectDb from './index';
+import connectDb from 'db';
 
 describe('Mongoose', () => {
   try {
