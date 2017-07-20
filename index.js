@@ -6,9 +6,9 @@ import cors from 'cors';
 import path from 'path';
 import { createServer } from 'http';
 
-import api from './src/api';
-import config from './src/config';
-import connectDb from './src/db';
+import api from 'api';
+import config from 'config';
+import connectDb from 'db';
 
 const publicPath = path.join(__dirname, config.publicPath);
 const app = express();
