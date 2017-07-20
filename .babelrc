@@ -4,6 +4,14 @@
     "stage-2"
   ],
   "plugins": [
+    "transform-async-to-generator",
+    "transform-regenerator",
+    ["transform-runtime", {
+      "helpers": false,
+      "polyfill": false,
+      "regenerator": true,
+      "moduleName": "babel-runtime"
+    }],
     ["module-resolver", {
       "root": ["./src"]
     }]
