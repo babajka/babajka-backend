@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "email": "admin@babajka.io",
+    "firstName": "Fox",
+    "lastName": "Muller",
+    "password": "password",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "email": "creator@babajka.io",
+    "firstName": "Dana",
+    "lastName": "Scally",
+    "password": "password1",
+    "role": "creator"
+  },
+  {
+    "id": 3,
+    "email": "user@babajka.io",
+    "firstName": "John",
+    "lastName": "Smith",
+    "password": "password2",
+    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+  }
+]

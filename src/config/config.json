@@ -4,5 +4,8 @@
   "mongodb": {
     "url": "mongodb://localhost/babajka",
     "options": {}
+  },
+  "auth": {
+    "saltRounds": 8
   }
 }
