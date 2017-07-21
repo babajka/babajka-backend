@@ -8,7 +8,7 @@
     "build": "babel . -d build --copy-files --ignore node_modules,postman,build",
     "init-db": "babel-node src/db/init.js",
     "lint": "eslint index.js src/",
-    "test": "mocha --reporter spec src/**/*.test.js --require babel-register"
+    "test": "find ./src -name '*tests.js' | xargs mocha --require babel-register"
   },
   "engines": {
     "node": ">=4.3.2"
