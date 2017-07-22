@@ -7,5 +7,18 @@
   },
   "auth": {
     "saltRounds": 8
+  },
+  "trustProxy": 0,
+  "session": {
+    "secret": "todo: replace on production",
+    "resave": false,
+    "saveUninitialized": false,
+    "cookie": {
+    }
+  },
+  "logger": {
+    "mode": "dev",
+    "writeToFile": false,
+    "fileName": "babajka.log"
   }
 }
