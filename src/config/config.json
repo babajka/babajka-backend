@@ -10,11 +10,10 @@
   },
   "trustProxy": 0,
   "session": {
-    "secret": "todo: replace on production",
+    "secret": "MUST BE SET IN $BABAJKA_SECRET",
     "resave": false,
     "saveUninitialized": false,
-    "cookie": {
-    }
+    "cookie": {}
   },
   "logger": {
     "mode": "dev",
