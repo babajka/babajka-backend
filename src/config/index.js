@@ -5,11 +5,11 @@ import { genSaltSync } from 'bcrypt';
 
 const config = require('./config.json');
 
-const secret = require(process.env.BABAJKA_SECRET || './secret.json' || './config.json');
+// const secret = require(process.env.BABAJKA_SECRET || './secret.json' || './config.json');
 
 // Replacing config.json defaults with secret values, if possible.
 // Note that secret.json file must repeat config.json file structure.
-Object.assign(config, secret);
+// Object.assign(config, secret);
 
 const MongoStore = connectMongo(session);
 

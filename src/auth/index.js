@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
+import { requireFields, ErrorHandler, ValidationException } from 'utils/validation';
 import passport, { authenticate } from './passport';
-import { requireAuth, requireFields, ErrorHandler, AuthException } from './utils';
 
 const router = Router();
 
@@ -20,11 +20,11 @@ router.post('/register', requireFields('email', 'password'),
     const { password, confirmPassword } = req.body;
 
     if (password.length < 6) {
-      return handleError(new AuthException({ password: 'Password must contain at least 6 characters' }));
+      return handleError(new ValidationException({ password: 'Password must contain at least 6 characters' }));
     }
 
     if (password !== confirmPassword) {
-      return handleError(new AuthException({ password: 'Passwords didn\'t match' }));
+      return handleError(new ValidationException({ password: 'Passwords didn\'t match' }));
     }
 
     return authenticate('local-register', req, res, next)
@@ -37,5 +37,14 @@ router.get('/logout', (req, res, next) => { // eslint-disable-line no-unused-var
   res.sendStatus(200);
 });
 
-export { requireAuth, passport };
+const requireAuth = (req, res, next) => {
+  if (!req.user) {
+    return res.sendStatus(401);
+  }
+
+  return next();
+};
+
+
+export { passport, requireAuth };
 export default router;

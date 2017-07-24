@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 import { User } from 'api/user';
-import { AuthException } from './utils';
+import { ValidationException } from 'utils/validation';
 
 
 passport.serializeUser((user, done) => done(null, user.id));
@@ -18,7 +18,7 @@ passport.use('local-login', new LocalStrategy({
   User.findOne({ email })
     .then((result) => {
       if (!result) {
-        throw new AuthException({ email: 'Incorrect email.' });
+        throw new ValidationException({ email: 'Incorrect email.' });
       }
 
       user = result;
@@ -26,7 +26,7 @@ passport.use('local-login', new LocalStrategy({
     })
     .then((isAuthenticated) => {
       if (!isAuthenticated) {
-        throw new AuthException({ password: 'Incorrect password.' });
+        throw new ValidationException({ password: 'Incorrect password.' });
       }
 
       return done(null, user);
@@ -42,7 +42,7 @@ passport.use('local-register', new LocalStrategy({
   User.findOne({ email })
     .then((result) => {
       if (result) {
-        throw new AuthException({ email: 'That email is already taken.' });
+        throw new ValidationException({ email: 'That email is already taken.' });
       }
 
       user = new User({ email });
@@ -63,5 +63,5 @@ const authenticate = (strategy, req, res, next) => new Promise((resolve, reject)
   })(req, res, next);
 });
 
-export { AuthException, authenticate };
+export { authenticate };
 export default passport;
