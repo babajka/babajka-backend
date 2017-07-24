@@ -3,9 +3,9 @@ import session from 'express-session';
 import connectMongo from 'connect-mongo';
 import { genSaltSync } from 'bcrypt';
 
-// import config from './config.json';
-var config = require('./config.json')
-var secret = require(process.env.BABAJKA_SECRET || './secret.json' || './config.json');
+const config = require('./config.json');
+
+const secret = require(process.env.BABAJKA_SECRET || './secret.json' || './config.json');
 
 // Replacing config.json defaults with secret values, if possible.
 // Note that secret.json file must repeat config.json file structure.
