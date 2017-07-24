@@ -10,6 +10,7 @@ import api from 'api';
 import config from 'config';
 import getLogger from 'config/logger';
 import connectDb from 'db';
+import auth, { passport, requireAuth } from 'auth';
 
 const publicPath = path.join(__dirname, config.publicPath);
 const app = express();
@@ -23,8 +24,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session(config.session));
 app.use(express.static(publicPath));
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use('/api', api);
+app.use('/auth', auth);
+app.use('/api', requireAuth, api);
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });

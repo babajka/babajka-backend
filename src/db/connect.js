@@ -1,3 +1,3 @@
 import connectDb from 'db';
 
-connectDb();
+connectDb(true);

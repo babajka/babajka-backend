@@ -13,5 +13,5 @@ export default () => {
     console.log(`Morgan: log to ${logPath}`); // eslint-disable-line no-console
     options.stream = fs.createWriteStream(logPath, { flags: 'a' });
   }
-  return morgan(logger.mode, options); // todo add switch to production mode
+  return morgan(logger.mode, options);
 };

@@ -5,22 +5,19 @@ import User from './model';
 
 describe('User', () => {
   try {
-    const userData = { id: 100000000000000, email: 'test@test.test', password: 'secret' };
-    const { id, email, password } = userData;
+    const userData = { email: 'test@test.test', password: 'secret' };
+    const { email, password } = userData;
     const user = new User(userData);
 
     it('should save user with password', async () => {
-      // await connectDb();
       await user.setPassword(password);
       const result = await user.save();
-      expect(result.id).to.equal(id);
       expect(result.email).to.equal(email);
       expect(result.password).to.not.equal(undefined);
     });
 
-    it('should select user byId', async () => {
-      const result = await User.findOne({ id });
-      expect(result.id).to.equal(id);
+    it('should select user by email', async () => {
+      const result = await User.findOne({ email });
       expect(result.email).to.equal(email);
       expect(result.password).to.equal(user.password);
     });
@@ -36,8 +33,8 @@ describe('User', () => {
     );
 
     it('should remove user', async () => {
-      await User.remove({ id });
-      const result = await User.findOne({ id });
+      await User.remove({ email });
+      const result = await User.findOne({ email });
       expect(result).to.be.null; // eslint-disable-line no-unused-expressions
     });
   } catch (err) {

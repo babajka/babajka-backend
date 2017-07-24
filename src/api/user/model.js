@@ -4,11 +4,6 @@ import { genSalt, hash, compare } from 'bcrypt';
 import config from 'config';
 
 const UserSchema = new Schema({
-  id: {
-    type: Number,
-    unique: true,
-    required: true,
-  },
   firstName: String,
   lastName: String,
   email: {
@@ -23,7 +18,7 @@ const UserSchema = new Schema({
     enum: ['admin', 'user', 'creator'],
     default: 'user',
   },
-  createdAt: { type: Date, default: new Date() },
+  createdAt: { type: Date, default: Date.now },
   active: {
     type: Boolean,
     default: true,
