@@ -2,10 +2,8 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 import { User } from 'api/user';
+import { AuthException } from './utils';
 
-function AuthException(message) {
-  this.message = message;
-}
 
 passport.serializeUser((user, done) => done(null, user.id));
 
@@ -36,6 +34,24 @@ passport.use('local-login', new LocalStrategy({
     .catch(done);
 }));
 
+passport.use('local-register', new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+}, (email, password, done) => {
+  let user;
+  User.findOne({ email })
+    .then((result) => {
+      if (result) {
+        throw new AuthException({ email: 'That email is already taken.' });
+      }
+
+      user = new User({ email });
+      return user.setPassword(password);
+    })
+    .then(() => user.save())
+    .then(result => done(null, result))
+    .catch(done);
+}));
 
 const authenticate = (strategy, req, res, next) => new Promise((resolve, reject) => {
   passport.authenticate(strategy, { failureMessage: true }, (err, user) => {
