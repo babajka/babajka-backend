@@ -20,7 +20,6 @@ try {
 const config = secret ? merge(defaultConfig, secret) : defaultConfig;
 config.port = process.env.PORT || config.port;
 config.session.store = new MongoStore({ mongooseConnection: mongoose.connection });
-config.session.cookie.domain = `http://localhost:${config.port}`;
 
 if (process.env.NODE_ENV === 'production') {
   // TODO(uladbohdan): to move the values into a secret-prod.json file.

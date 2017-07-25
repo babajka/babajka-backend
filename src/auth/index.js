@@ -29,7 +29,7 @@ router.post('/register', requireFields('email', 'password'),
   });
 
 router.get('/logout', (req, res, next) => { // eslint-disable-line no-unused-vars
-  req.logout();
+  req.logOut();
   res.sendStatus(200);
 });
 

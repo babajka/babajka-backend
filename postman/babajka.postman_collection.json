@@ -70,15 +70,20 @@
 									"value": "123456",
 									"description": "",
 									"type": "text"
-								},
-								{
-									"key": "confirmPassword",
-									"value": "123",
-									"description": "",
-									"type": "text"
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"url": "{{DOMAIN}}/auth/logout",
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []

@@ -13,7 +13,9 @@
     "secret": "MUST BE SET IN $BABAJKA_SECRET",
     "resave": false,
     "saveUninitialized": false,
-    "cookie": {}
+    "cookie": {
+      "domain": "localhost"
+    }
   },
   "logger": {
     "mode": "dev",
