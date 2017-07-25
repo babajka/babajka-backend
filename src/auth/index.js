@@ -17,14 +17,10 @@ router.post('/login', requireFields('email', 'password'),
 router.post('/register', requireFields('email', 'password'),
   (req, res, next) => {
     const handleError = ErrorHandler(res, next);
-    const { password, confirmPassword } = req.body;
+    const { password } = req.body;
 
     if (password.length < 6) {
       return handleError(new ValidationException({ password: 'Password must contain at least 6 characters' }));
-    }
-
-    if (password !== confirmPassword) {
-      return handleError(new ValidationException({ password: 'Passwords didn\'t match' }));
     }
 
     return authenticate('local-register', req, res, next)

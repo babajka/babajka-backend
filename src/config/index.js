@@ -1,20 +1,24 @@
 import mongoose from 'mongoose';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
-import { genSaltSync } from 'bcrypt';
+import merge from 'lodash/merge';
+import fs from 'fs';
+import path from 'path';
 
-const config = require('./config.json');
-
-// const secret = require(process.env.BABAJKA_SECRET || './secret.json' || './config.json');
-
-// Replacing config.json defaults with secret values, if possible.
-// Note that secret.json file must repeat config.json file structure.
-// Object.assign(config, secret);
+import defaultConfig from './config.json';
 
 const MongoStore = connectMongo(session);
+const secretPath = process.env.BABAJKA_SECRET || path.join(__dirname, 'secret.json');
+let secret = null;
 
+try {
+  secret = JSON.parse(fs.readFileSync(secretPath, 'utf8'));
+} catch (err) {
+  console.error(`Error: ${err.message}. Used default configs as secret`); // eslint-disable-line no-console
+}
+
+const config = secret ? merge(defaultConfig, secret) : defaultConfig;
 config.port = process.env.PORT || config.port;
-config.session.secret = genSaltSync(config.auth.saltRounds); // is't ok?
 config.session.store = new MongoStore({ mongooseConnection: mongoose.connection });
 config.session.cookie.domain = `http://localhost:${config.port}`;
 
