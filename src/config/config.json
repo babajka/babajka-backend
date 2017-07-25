@@ -4,5 +4,22 @@
   "mongodb": {
     "url": "mongodb://localhost/babajka",
     "options": {}
+  },
+  "auth": {
+    "saltRounds": 8
+  },
+  "trustProxy": 0,
+  "session": {
+    "secret": "MUST BE SET IN $BABAJKA_SECRET",
+    "resave": false,
+    "saveUninitialized": false,
+    "cookie": {
+      "domain": "localhost"
+    }
+  },
+  "logger": {
+    "mode": "dev",
+    "writeToFile": false,
+    "fileName": "babajka.log"
   }
 }

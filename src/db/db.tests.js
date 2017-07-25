@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { expect } from 'chai';
 
-import connectDb from 'db';
+import 'db/connect';
 
 describe('Mongoose', () => {
   try {
@@ -9,8 +9,6 @@ describe('Mongoose', () => {
     const Cat = mongoose.model('Cat', catSchema);
     const catRawData = { name: 'Jerry' };
     const jerry = new Cat(catRawData);
-
-    it('should connected', async () => connectDb());
 
     it('should save data', async () => {
       const data = await jerry.save();

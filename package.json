@@ -8,21 +8,27 @@
     "build": "babel . -d build --copy-files --ignore node_modules,postman,build",
     "init-db": "babel-node src/db/init.js",
     "lint": "eslint index.js src/",
-    "test": "mocha --reporter spec src/**/*.test.js --require babel-register"
+    "test": "find ./src -name '*tests.js' | xargs mocha --require babel-register"
   },
   "engines": {
     "node": ">=4.3.2"
   },
   "dependencies": {
     "babel-runtime": "^6.23.0",
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
     "chai": "^4.1.0",
+    "connect-mongo": "^1.3.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.3",
     "express": "^4.15.3",
+    "express-session": "^1.15.4",
+    "lodash": "^4.17.4",
     "mocha": "^3.4.2",
     "mongoose": "^4.10.8",
-    "morgan": "^1.8.2"
+    "morgan": "^1.8.2",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
   },
   "repository": {
     "type": "git",
@@ -47,6 +53,7 @@
     "eslint": "^4.1.1",
     "eslint-config-airbnb": "^15.0.2",
     "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.7.0",
     "nodemon": "^1.11.0"
   }
 }
