@@ -28,11 +28,11 @@ describe('Auth', () => {
         .send({ email: 'admin@babajka.io', password: 'password' })
         .expect(200)
         .then((res) => {
-          expect(res.headers['set-cookie']).not.empty;  // eslint-disable-line no-unused-expressions
+          // eslint-disable-next-line no-unused-expressions
+          expect(res.headers['set-cookie']).not.empty;
           cookie = res.headers['set-cookie'][0];
           expect(cookie).contains('connect.sid');
           expect(res.body.email).equal('admin@babajka.io');
-          console.log(res.headers['set-cookie']);
         })
     ));
 
