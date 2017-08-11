@@ -7,3 +7,6 @@ before_script: npm run init-db
 script:
   - npm run lint
   - npm run build
+  - npm test
+notifications:
+  slack: babajka:Taq9qEu87dDfrZv6D7SP360J
