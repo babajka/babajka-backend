@@ -8,7 +8,7 @@ import path from 'path';
 import api from 'api';
 import config from 'config';
 import getLogger from 'config/logger';
-import auth, { passport, requireAuth } from 'auth';
+import auth, { passport } from 'auth';
 
 const publicPath = path.resolve(`${__dirname}/../`, config.publicPath);
 const app = express();
@@ -25,7 +25,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', auth);
-app.use('/api', requireAuth, api);
+app.use('/api', api);
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
