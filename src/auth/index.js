@@ -5,6 +5,14 @@ import passport, { authenticate } from './passport';
 
 const router = Router();
 
+const requireAuth = (req, res, next) => {
+  if (!req.user) {
+    return res.sendStatus(401);
+  }
+
+  return next();
+};
+
 router.post('/login', requireFields('email', 'password'),
   (req, res, next) => {
     const handleError = ErrorHandler(res, next);
@@ -28,19 +36,10 @@ router.post('/register', requireFields('email', 'password'),
       .catch(handleError);
   });
 
-router.get('/logout', (req, res, next) => { // eslint-disable-line no-unused-vars
+router.get('/logout', requireAuth, (req, res, next) => { // eslint-disable-line no-unused-vars
   req.logOut();
   res.sendStatus(200);
 });
-
-const requireAuth = (req, res, next) => {
-  if (!req.user) {
-    return res.sendStatus(401);
-  }
-
-  return next();
-};
-
 
 export { passport, requireAuth };
 export default router;

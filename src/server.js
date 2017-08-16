@@ -10,7 +10,7 @@ import config from 'config';
 import getLogger from 'config/logger';
 import auth, { passport } from 'auth';
 
-const publicPath = path.resolve(`${__dirname}/../`, config.publicPath);
+export const publicPath = path.resolve(`${__dirname}/../`, config.publicPath);
 const app = express();
 
 app.set('trust proxy', config.trustProxy);
@@ -26,9 +26,6 @@ app.use(passport.session());
 
 app.use('/auth', auth);
 app.use('/api', api);
-app.get('*', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
-});
 
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   console.error(err.message); // eslint-disable-line no-console

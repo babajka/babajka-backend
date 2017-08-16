@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import 'db/connect';
 import User from './model';
 
-describe('User', () => {
+describe('User model', () => {
   try {
     const userData = { email: 'test@test.test', password: 'secret' };
     const { email, password } = userData;
