@@ -4,12 +4,35 @@ import mongoose from 'mongoose';
 
 import connectDb from 'db';
 import { User } from 'api/user';
+import { Article, ArticleType } from 'api/article';
 import usersData from './users.json';
+import articleTypesData from './articletypes.json';
+import articlesData from './articles.json';
 
 const initUsers = () => Promise.all(usersData.map(async (userData) => {
   const user = new User(userData);
   await user.setPassword(userData.password);
   return user.save();
+}));
+
+const initArticleTypes = () => Promise.all(articleTypesData.map(async (articleTypeData) => {
+  const articleType = new ArticleType(articleTypeData);
+  return articleType.save();
+}));
+
+const getArticleTypesDict = async () => {
+  const articleTypesDict = {};
+  const articleTypes = await ArticleType.find().exec();
+  await articleTypes.forEach((item) => {
+    articleTypesDict[item.name] = item._id; // eslint-disable-line no-underscore-dangle
+  });
+  return articleTypesDict;
+};
+
+const initArticles = articleTypesDict => Promise.all(articlesData.map(async (articleData) => {
+  articleData.type = articleTypesDict[articleData.type]; // eslint-disable-line no-param-reassign
+  const article = new Article(articleData);
+  return article.save();
 }));
 
 (async () => {
@@ -21,6 +44,15 @@ const initUsers = () => Promise.all(usersData.map(async (userData) => {
     await initUsers();
     const users = await User.find({});
     console.log(`Mongoose: insert ${users.length} users`);
+
+    await initArticleTypes();
+    const articleTypes = await ArticleType.find();
+    console.log(`Mongoose: insert ${articleTypes.length} article type(s)`);
+    const articleTypesDict = await getArticleTypesDict();
+
+    await initArticles(articleTypesDict);
+    const articles = await Article.find();
+    console.log(`Mongoose: insert ${articles.length} articles`);
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);

@@ -95,13 +95,29 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Usets: get all",
+					"name": "Users: get all",
 					"request": {
 						"url": "{{DOMAIN}}{{API_URL}}/users",
 						"method": "GET",
 						"header": [],
 						"body": {},
 						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Articles",
+			"description": "",
+			"item": [
+				{
+					"name": "Articles: get all",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/articles",
+						"method": "GET",
+						"header": [],
+						"body": {}
 					},
 					"response": []
 				}

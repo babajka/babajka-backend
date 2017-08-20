@@ -1,20 +1,25 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-unused-vars */
 
-import { Article, ArticleType } from './models';
+import Article, { ArticleType } from './models';
 
 export const getAll = async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 0;
   const pageSize = parseInt(req.query.pageSize, 10) || 10;
   try {
-    const query = Article.find({}).skip(page * pageSize).limit(pageSize);
+    const query = Article.find({}).populate('type').skip(page * pageSize).limit(pageSize);
     const articles = await query.exec();
-    res.status(200).send({
-      result: articles,
-      next: {
+    const count = await Article.count().exec();
+    let responseNext = null;
+    if (count > (page * pageSize) + pageSize) {
+      responseNext = {
         page: page + 1,
         pageSize,
-      },
+      };
+    }
+    res.status(200).send({
+      result: articles,
+      next: responseNext,
     });
   } catch (error) {
     res.status(500).send(error);
@@ -50,7 +55,7 @@ export const create = async (req, res, next) => {
       return;
     }
     await article.save();
-    res.status(201);
+    res.sendStatus(201);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -60,6 +65,7 @@ export const update = async (req, res, next) => {
   const id = req.params.id;
   try {
     const updated = await Article.findByIdAndUpdate(id, req.body, { new: true }).exec();
+    res.sendStatus(202);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -69,6 +75,7 @@ export const remove = async (req, res, next) => {
   const id = req.params.id;
   try {
     await Article.findByIdAndRemove(id).exec();
+    res.sendStatus(202);
   } catch (error) {
     res.status(500).send(error);
   }

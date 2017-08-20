@@ -1,8 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
-import User from 'api/user';
 
 const ArticleTypeSchema = new Schema({
-  type: {
+  name: {
     type: String,
     required: true,
     unique: true,
@@ -25,7 +24,7 @@ const ArticleSchema = new Schema({
   text: Schema.Types.Mixed,
   author: {
     type: Schema.Types.ObjectId,
-    ref: User,
+    ref: 'User',
   },
   tags: [String],
   collectionId: {
@@ -35,7 +34,7 @@ const ArticleSchema = new Schema({
   type: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: ArticleType,
+    ref: 'ArticleType',
   },
   slug: {
     type: String,
@@ -44,7 +43,7 @@ const ArticleSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 

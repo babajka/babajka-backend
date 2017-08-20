@@ -13,6 +13,16 @@ const requireAuth = (req, res, next) => {
   return next();
 };
 
+function allowRoles(roles) {
+  return (req, res, next) => {
+    if (roles.indexOf(req.user.role) === -1) {
+      return res.sendStatus(403);
+    }
+
+    return next();
+  };
+}
+
 router.post('/login', requireFields('email', 'password'),
   (req, res, next) => {
     const handleError = ErrorHandler(res, next);
@@ -41,5 +51,5 @@ router.get('/logout', requireAuth, (req, res, next) => { // eslint-disable-line 
   res.sendStatus(200);
 });
 
-export { passport, requireAuth };
+export { passport, requireAuth, allowRoles };
 export default router;
