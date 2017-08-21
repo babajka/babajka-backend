@@ -22,7 +22,10 @@ describe('Auth api', () => {
       request.post('/auth/login')
         .send({ email: 'admin@babajka.io', password: '1' })
         .expect(400)
-        .then(res => expect(res.body).to.have.property('password'))
+        .then((res) => {
+          expect(res.body).to.have.property('error');
+          expect(res.body.error).to.have.property('password');
+        })
     ));
 
   describe('# logout without authorization', () =>
