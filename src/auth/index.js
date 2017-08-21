@@ -2,26 +2,9 @@ import { Router } from 'express';
 
 import { requireFields, ErrorHandler, ValidationException } from 'utils/validation';
 import passport, { authenticate } from './passport';
+import { requireAuth, allowRoles } from './middlewares';
 
 const router = Router();
-
-const requireAuth = (req, res, next) => {
-  if (!req.user) {
-    return res.sendStatus(401);
-  }
-
-  return next();
-};
-
-function allowRoles(roles) {
-  return (req, res, next) => {
-    if (roles.indexOf(req.user.role) === -1) {
-      return res.sendStatus(403);
-    }
-
-    return next();
-  };
-}
 
 router.post('/login', requireFields('email', 'password'),
   (req, res, next) => {

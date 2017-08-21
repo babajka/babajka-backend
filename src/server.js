@@ -9,6 +9,7 @@ import api from 'api';
 import config from 'config';
 import getLogger from 'config/logger';
 import auth, { passport } from 'auth';
+import { sendJson } from 'utils/api';
 
 export const publicPath = path.resolve(`${__dirname}/../`, config.publicPath);
 const app = express();
@@ -29,8 +30,7 @@ app.use('/api', api);
 
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   console.error(err.message); // eslint-disable-line no-console
-  res.status(err.status || 500);
-  res.send(err.message);
+  sendJson(res, err.status || 500)({ error: err.message });
 });
 
 export default app;

@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 
 import 'db/connect';
-import Article, { ArticleType } from './models';
+import Article from './article.model';
+import ArticleType from './type.model';
 
 describe('Article and Article Type model', async () => {
   try {

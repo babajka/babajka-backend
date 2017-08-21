@@ -1,3 +1,4 @@
+import HttpError from 'node-http-error';
 import isEmpty from 'lodash/isEmpty';
 
 export function ValidationException(message) {
@@ -22,4 +23,12 @@ export const requireFields = (...fields) => (req, res, next) => {
     return handleError(new ValidationException(errors));
   }
   return next();
+};
+
+export const checkIsFound = (object) => {
+  if (!object) {
+    throw (new HttpError(404));
+  }
+
+  return object;
 };

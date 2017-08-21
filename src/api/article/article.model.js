@@ -1,14 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-
-const ArticleTypeSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-});
-
-export const ArticleType = mongoose.model('ArticleType', ArticleTypeSchema);
+import omit from 'lodash/omit';
 
 const ArticleSchema = new Schema({
   title: {
@@ -48,5 +39,9 @@ const ArticleSchema = new Schema({
 });
 
 const Article = mongoose.model('Article', ArticleSchema);
+
+export const serializeArticle = article => (
+  { ...omit(article.toObject(), ['_id', '__v']), type: article.type.name }
+);
 
 export default Article;
