@@ -3,10 +3,10 @@ import { sendJson } from 'utils/api';
 import Article, { serializeArticle } from './article.model';
 
 export const getAll = (req, res, next) => {
-  const page = parseInt(req.query.page, 10) || 0;
-  const pageSize = parseInt(req.query.pageSize, 10) || 10;
+  const page = parseInt(req.query.page) || 0; // eslint-disable-line radix
+  const pageSize = parseInt(req.query.pageSize) || 10; // eslint-disable-line radix
   const skip = page * pageSize;
-  let result;
+  let data;
 
   return Article
     .find({})
@@ -15,11 +15,11 @@ export const getAll = (req, res, next) => {
     .limit(pageSize)
     .then(articles => articles.map(serializeArticle))
     .then((articles) => {
-      result = articles;
+      data = articles;
       return Article.count();
     })
     .then(count => ({
-      result,
+      data,
       next: (count > skip + pageSize) && {
         page: page + 1,
         pageSize,

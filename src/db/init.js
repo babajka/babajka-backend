@@ -42,17 +42,17 @@ const initArticles = articleTypesDict => Promise.all(articlesData.map(async (art
     console.log('Mongoose: drop database');
 
     await initUsers();
-    const users = await User.find({});
-    console.log(`Mongoose: insert ${users.length} users`);
+    const users = await User.count();
+    console.log(`Mongoose: insert ${users} users`);
 
     await initArticleTypes();
-    const articleTypes = await ArticleType.find();
-    console.log(`Mongoose: insert ${articleTypes.length} article type(s)`);
+    const articleTypes = await ArticleType.count();
+    console.log(`Mongoose: insert ${articleTypes} article type(s)`);
     const articleTypesDict = await getArticleTypesDict();
 
     await initArticles(articleTypesDict);
-    const articles = await Article.find();
-    console.log(`Mongoose: insert ${articles.length} articles`);
+    const articles = await Article.count();
+    console.log(`Mongoose: insert ${articles} articles`);
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);
