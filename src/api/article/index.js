@@ -7,6 +7,7 @@ import ArticleType from './type.model';
 
 const router = Router();
 router.get('/', controller.getAll);
+router.get('/types', controller.getAllTypes);
 router.post('/', requireAuth, allowRoles(['admin', 'creator']), controller.create);
 router.get('/:slug', controller.getOne);
 router.put('/:slug', requireAuth, allowRoles(['admin', 'creator']), controller.update);

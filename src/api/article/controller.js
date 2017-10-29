@@ -1,6 +1,7 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import Article, { serializeArticle } from './article.model';
+import ArticleType from "./type.model";
 
 export const getAll = (req, res, next) => {
   const page = parseInt(req.query.page) || 0; // eslint-disable-line radix
@@ -36,13 +37,28 @@ export const getOne = ({ params: { slug } }, res, next) => Article
   .then(sendJson(res))
   .catch(next);
 
-export const create = ({ body }, res, next) => Promise.resolve(new Article(body))
-  .then(article => article.save())
-  .then(
-    article => ({ data: serializeArticle(article) }),
-    err => ({ code: 400, data: err }))
-  .then(({ data, code }) => sendJson(res, code)(data))
-  .catch(next);
+export const create = async ({ body }, res, next) => {
+  try {
+    const articleTypeQuery = ArticleType.findOne({ name: body.type });
+    const articleType = await articleTypeQuery.exec() || new ArticleType({ name: body.type });
+    await articleType.save();
+    const articleBody = body;
+    articleBody.type = articleType._id;
+    let data;
+    let code;
+    try {
+      const article = Article(articleBody);
+      await article.save();
+      data = serializeArticle(await article.populate('type').execPopulate());
+    } catch (err) {
+      code = 400;
+      data = err;
+    }
+    sendJson(res, code)(data);
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const update = ({ params: { slug }, body }, res, next) => Article
   .findOneAndUpdate({ slug }, body, { new: true })
@@ -55,3 +71,10 @@ export const remove = async ({ params: { slug } }, res, next) => Article
   .then(checkIsFound)
   .then(() => res.sendStatus(200))
   .catch(next);
+
+export const getAllTypes = async (req, res, next) => ArticleType
+  .find()
+  .select('-_id -__v')
+  .then(sendJson(res))
+  .catch(next);
+
