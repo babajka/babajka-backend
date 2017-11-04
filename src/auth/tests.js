@@ -1,4 +1,3 @@
-/* eslint-disable comma-dangle */
 import supertest from 'supertest';
 import { expect } from 'chai';
 

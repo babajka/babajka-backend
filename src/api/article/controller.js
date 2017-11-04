@@ -1,7 +1,7 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import Article, { serializeArticle } from './article.model';
-import ArticleType from "./type.model";
+import ArticleType from './type.model';
 
 export const getAll = (req, res, next) => {
   const page = parseInt(req.query.page) || 0; // eslint-disable-line radix
@@ -43,7 +43,7 @@ export const create = async ({ body }, res, next) => {
     const articleType = await articleTypeQuery.exec() || new ArticleType({ name: body.type });
     await articleType.save();
     const articleBody = body;
-    articleBody.type = articleType._id;
+    articleBody.type = articleType._id; // eslint-disable-line no-underscore-dangle
     let data;
     let code;
     try {
