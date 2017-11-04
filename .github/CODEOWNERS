@@ -1,0 +1,11 @@
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @drapegnik will be requested for
+# review when someone opens a pull request.
+*       @drapegnik
+
+# @UladBohdan responsible for the deploy and configs
+src/config/ @UladBohdan
+*.yml @UladBohdan
+*.yaml @UladBohdan
+*.sh @UladBohdan
