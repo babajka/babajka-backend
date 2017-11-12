@@ -4,7 +4,7 @@ FROM node:boron
 WORKDIR /usr/src/app
 
 # Install app dependencies
-# TODO(uladbohdan): to copy package.json file to ./
+# TODO(uladbohdan): to copy package-lock.json file to ./
 COPY package.json secret-dev.json ./
 
 ENV BABAJKA_SECRET="secret-dev.json"
