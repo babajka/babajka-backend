@@ -16,17 +16,13 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 * `npm run build` builds prod server into `build/` without running it.
 
-* `npm run init-db` for create database and insert initial test data
+* `npm run init-db` to create database and insert initial test data
 
-* `npm run lint` checks the codestyle.
+* `npm run lint` checks the code style.
 
-* `npm run test` for testing and check coverage
+* `npm run test` to test and check coverage
 
-* `npm run mocha` for testing without coverals
-
-## deployment
-
-Run `bash google-cloud-deploy.sh` to deploy the server to Google Cloud. May require additional permissions.
+* `npm run mocha` to test without coveralls.
 
 ## api
 
