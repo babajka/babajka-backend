@@ -1,15 +1,9 @@
+import HttpError from 'node-http-error';
 import isEmpty from 'lodash/isEmpty';
 
-export function ValidationException(message) {
-  this.message = message;
-}
-
-export const ErrorHandler = (res, next) => err => (
-  err instanceof ValidationException ? res.status(400).send(err.message) : next(err)
-);
+export const ValidationError = message => HttpError(400, message);
 
 export const requireFields = (...fields) => (req, res, next) => {
-  const handleError = ErrorHandler(res, next);
   const errors = {};
 
   fields.forEach((field) => {
@@ -19,7 +13,15 @@ export const requireFields = (...fields) => (req, res, next) => {
   });
 
   if (!isEmpty(errors)) {
-    return handleError(new ValidationException(errors));
+    return next(new ValidationError(errors));
   }
   return next();
+};
+
+export const checkIsFound = (object) => {
+  if (!object) {
+    throw (new HttpError(404));
+  }
+
+  return object;
 };

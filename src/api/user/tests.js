@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import 'db/connect';
 import User from './model';
 
-describe('User', () => {
+describe('User model', () => {
   try {
     const userData = { email: 'test@test.test', password: 'secret' };
     const { email, password } = userData;
@@ -25,11 +25,11 @@ describe('User', () => {
     it('should crypt password', () => expect(user.password).to.not.equal(password));
 
     it('should authenticate with correct password',
-      async () => expect(await user.authenticate(password)).to.be.true,
+      async () => expect(await user.authenticate(password)).to.be.true
     );
 
     it('should not authenticate with wrong password',
-      async () => expect(await user.authenticate('not secret')).to.be.false,
+      async () => expect(await user.authenticate('not secret')).to.be.false
     );
 
     it('should remove user', async () => {

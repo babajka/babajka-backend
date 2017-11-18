@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "babajka",
-		"_postman_id": "d59e3bbd-e039-db88-8097-8aca23f6d7c0",
+		"_postman_id": "b29e205c-1fb7-ffa5-5cd5-daff0644fc3c",
 		"description": "babajka api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -28,13 +28,13 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "user@babajka.io",
+									"value": "admin@babajka.io",
 									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "password2",
+									"value": "password",
 									"description": "",
 									"type": "text"
 								}
@@ -83,7 +83,10 @@
 						"url": "{{DOMAIN}}/auth/logout",
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -95,9 +98,212 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Usets: get all",
+					"name": "Users: get all",
 					"request": {
 						"url": "{{DOMAIN}}{{API_URL}}/users",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Articles",
+			"description": "",
+			"item": [
+				{
+					"name": "Articles: get all",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/articles",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: create",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/articles",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "kek",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub.",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "599ac11c20cd399a9e211f7d",
+									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: update",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "kek23",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub2.3",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit2",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "599ac11c20cd399a9e211f7d",
+									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: update copy",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/articles/slug0",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "kek23",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub2.3",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit2",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "599ac11c20cd399a9e211f7d",
+									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: get one",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: get all with pagination",
+					"request": {
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles?page=2&pageSize=1",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"equals": true,
+									"description": ""
+								},
+								{
+									"key": "pageSize",
+									"value": "1",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
 						"method": "GET",
 						"header": [],
 						"body": {},

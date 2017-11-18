@@ -1,17 +1,19 @@
-/* eslint-disable comma-dangle */
 import supertest from 'supertest';
 import { expect } from 'chai';
 
 import app from 'server';
 import 'db/connect';
+import { requireAuth } from 'auth';
 
 const request = supertest.agent(app.listen());
 let cookie;
 
-describe('Auth', () => {
-  describe('# api require Auth', () =>
+app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
+
+describe('Auth api', () => {
+  describe('# request on protected url without authorization', () =>
     it('should respond with 401 Unauthorized', () =>
-      request.get('/api/users').expect(401)
+      request.get('/protected').expect(401)
     ));
 
   describe('# login with incorrect password', () =>
@@ -19,7 +21,15 @@ describe('Auth', () => {
       request.post('/auth/login')
         .send({ email: 'admin@babajka.io', password: '1' })
         .expect(400)
-        .then(res => expect(res.body).to.have.property('password'))
+        .then((res) => {
+          expect(res.body).to.have.property('error');
+          expect(res.body.error).to.have.property('password');
+        })
+    ));
+
+  describe('# logout without authorization', () =>
+    it('should respond with 401 Unauthorized', () =>
+      request.get('/auth/logout').expect(401)
     ));
 
   describe('# login with correct credentials', () =>
@@ -36,22 +46,22 @@ describe('Auth', () => {
         })
     ));
 
-  describe('# api with cookies', () =>
+  describe('# request on protected url with auth cookie', () =>
     it('should respond with 200, with cookies token', () =>
-      request.get('/api/users')
+      request.get('/protected')
         .set('Cookie', cookie)
         .expect(200)
     ));
 
-  describe('# logout', () =>
+  describe('# logout after authorization', () =>
     it('should respond with 200', () =>
-      request.get('/api/logout')
+      request.get('/auth/logout')
         .set('Cookie', cookie)
         .expect(200)
     ));
 
-  describe('# api after logout', () =>
+  describe('# request on protected url after logout', () =>
     it('should respond with 401 Unauthorized', () =>
-      request.get('/api/users').expect(401)
+      request.get('/protected').expect(401)
     ));
 });

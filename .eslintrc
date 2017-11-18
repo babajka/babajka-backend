@@ -3,11 +3,20 @@
   "globals": {
     "it": true,
     "describe": true,
-    "expect": true
+    "expect": true,
+    "before": true,
+    "after": true
   },
   "rules": {
     "import/extensions": 0,
     "import/no-unresolved": 0,
-    "import/no-extraneous-dependencies": 0
+    "import/no-extraneous-dependencies": 0,
+    "import/no-named-as-default": 0,
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "functions": "never"
+    }],
+    "no-plusplus": 0
   }
 }

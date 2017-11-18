@@ -1,0 +1,52 @@
+[
+  {
+    "title" : "Test0",
+    "subtitle" : "Subtest.",
+    "text" : {
+      "eng" : "Hi!:)",
+      "bel" : "Здароў!:)"
+    },
+    "type" : "Wir",
+    "slug" : "slug0"
+  },
+  {
+    "title": "Test1",
+    "subtitle": "Subtest.",
+    "text": {
+      "eng": "Hi!:)",
+      "bel": "Здароў!:)"
+    },
+    "type": "Wir",
+    "slug" : "slug1"
+  },
+  {
+    "title": "Test2",
+    "subtitle": "Subtest.",
+    "text": {
+      "eng": "Hi!:)",
+      "bel": "Здароў!:)"
+    },
+    "type": "Kurilka",
+    "slug" : "slug2"
+  },
+  {
+    "title": "Test3",
+    "subtitle": "Subtest.",
+    "text": {
+      "eng": "Hi!:)",
+      "bel": "Здароў!:)"
+    },
+    "type": "Wir",
+    "slug" : "slug3"
+  },
+  {
+    "title": "Test4",
+    "subtitle": "Subtest.",
+    "text": {
+      "eng": "Hi!:)",
+      "bel": "Здароў!:)"
+    },
+    "type": "15x4",
+    "slug" : "slug4"
+  }
+]
