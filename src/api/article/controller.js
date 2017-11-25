@@ -10,7 +10,11 @@ export const getAll = (req, res, next) => {
   let data;
 
   return Article
-    .find({})
+    .find((req.user && ['admin', 'creator'].includes(req.user.role)) ? {} : {
+      publishAt: {
+        $lt: Date.now()
+      }
+    })
     .populate('type')
     .skip(skip)
     .limit(pageSize)
@@ -77,4 +81,3 @@ export const getAllTypes = async (req, res, next) => ArticleType
   .select('-_id -__v')
   .then(sendJson(res))
   .catch(next);
-

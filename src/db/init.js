@@ -31,6 +31,9 @@ const getArticleTypesDict = async () => {
 
 const initArticles = articleTypesDict => Promise.all(articlesData.map(async (articleData) => {
   articleData.type = articleTypesDict[articleData.type]; // eslint-disable-line no-param-reassign
+  if (articleData.publishAt) {
+    articleData.publishAt = new Date(articleData.publishAt);
+  }
   const article = new Article(articleData);
   return article.save();
 }));

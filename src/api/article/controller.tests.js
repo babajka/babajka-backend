@@ -38,4 +38,41 @@ describe('Articles api', () => {
         })
     );
   });
+
+  describe('# filter articles with publishAt attribute', () => {
+    before(async () => {
+      const promises = [];
+      promises.push((new Article({
+        title: `test title 0`,
+        subtitle: `test subtitle 0`,
+        slug: `article-0`,
+        publishAt: new Date(`2015-01-01T18:25:43.511Z`),
+      })).save());
+      promises.push((new Article({
+        title: `test title 1`,
+        subtitle: `test subtitle 1`,
+        slug: `article-1`,
+        publishAt: new Date(`2025-01-01T18:25:43.511Z`),
+      })).save());
+      await Promise.all(promises);
+      console.log("before completed.")
+    });
+
+    after(async () => {
+      console.log("after started.")
+      const promises = [];
+      for (let i = 0; i < 2; i++) {
+        promises.push(Article.remove({ slug: `article-${i}` }));
+      }
+      await Promise.all(promises);
+    });
+
+    it('should return the first article', () =>
+      request.get('/api/articles/')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.data).has.length(1);
+        })
+    );
+  });
 });

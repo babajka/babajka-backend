@@ -36,6 +36,10 @@ const ArticleSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  publishAt: {
+    type: Date,
+    default: Date.now,
+  }
 });
 
 const Article = mongoose.model('Article', ArticleSchema);
