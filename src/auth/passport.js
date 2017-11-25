@@ -17,7 +17,7 @@ passport.use('local-login', new LocalStrategy({
   User.findOne({ email })
     .then((result) => {
       if (!result) {
-        throw new ValidationError({ email: 'Incorrect email.' });
+        throw new ValidationError({ email: 'Няправільны емэйл' });
       }
 
       user = result;
@@ -25,7 +25,7 @@ passport.use('local-login', new LocalStrategy({
     })
     .then((isAuthenticated) => {
       if (!isAuthenticated) {
-        throw new ValidationError({ password: 'Incorrect password.' });
+        throw new ValidationError({ password: 'Няправільны пароль' });
       }
 
       return done(null, user);
@@ -41,7 +41,7 @@ passport.use('local-register', new LocalStrategy({
   User.findOne({ email })
     .then((result) => {
       if (result) {
-        throw new ValidationError({ email: 'That email is already taken.' });
+        throw new ValidationError({ email: 'Гэты емэйл ужо выкарыстаны' });
       }
 
       user = new User({ email });

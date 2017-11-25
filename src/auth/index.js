@@ -18,7 +18,7 @@ router.post('/register', requireFields('email', 'password'),
     const { password } = req.body;
 
     if (password.length < 6) {
-      return next(new ValidationError({ password: 'Password must contain at least 6 characters' }));
+      return next(new ValidationError({ password: 'Пароль павінен змяшчаць хаця б 6 сімвалаў' }));
     }
 
     return authenticate('local-register', req, res, next)
