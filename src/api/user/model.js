@@ -26,15 +26,13 @@ const UserSchema = new Schema({
   bio: String,
 });
 
-UserSchema.virtual('name')
-  .get(function get() {
-    return `${this.firstName} ${this.lastName}`;
-  });
+UserSchema.virtual('name').get(function get() {
+  return `${this.firstName} ${this.lastName}`;
+});
 
-UserSchema.virtual('password')
-  .get(function get() {
-    return this.passwordHash;
-  });
+UserSchema.virtual('password').get(function get() {
+  return this.passwordHash;
+});
 
 UserSchema.methods.setPassword = async function set(password) {
   this.passwordHash = await this.generateHash(password);
@@ -50,4 +48,14 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 };
 
 const User = mongoose.model('User', UserSchema);
+
+export const serializeUser = ({ firstName, lastName, email, role }) => ({
+  firstName,
+  lastName,
+  email,
+  role,
+});
+
+export const checkRoles = (user, roles) => user && roles.includes(user.role);
+
 export default User;

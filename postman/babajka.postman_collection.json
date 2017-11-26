@@ -1,26 +1,22 @@
 {
-	"variables": [],
 	"info": {
 		"name": "babajka",
-		"_postman_id": "b29e205c-1fb7-ffa5-5cd5-daff0644fc3c",
+		"_postman_id": "0ce403d4-ae51-b920-3021-c641a8d1c288",
 		"description": "babajka api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Auth",
-			"description": "",
 			"item": [
 				{
 					"name": "Login local",
 					"request": {
-						"url": "{{DOMAIN}}/auth/login",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
@@ -29,31 +25,36 @@
 								{
 									"key": "email",
 									"value": "admin@babajka.io",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "password",
 									"value": "password",
-									"description": "",
 									"type": "text"
 								}
 							]
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}/auth/login",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Register local",
 					"request": {
-						"url": "{{DOMAIN}}/auth/register",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
@@ -62,32 +63,47 @@
 								{
 									"key": "email",
 									"value": "admin@babajka.io",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "password",
 									"value": "123456",
-									"description": "",
 									"type": "text"
 								}
 							]
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}/auth/register",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Logout",
 					"request": {
-						"url": "{{DOMAIN}}/auth/logout",
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": ""
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
 					},
 					"response": []
 				}
@@ -95,17 +111,44 @@
 		},
 		{
 			"name": "Users",
-			"description": "",
 			"item": [
 				{
-					"name": "Users: get all",
+					"name": "Users: get current",
 					"request": {
-						"url": "{{DOMAIN}}{{API_URL}}/users",
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/users/current",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"users",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/users/",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
 						},
 						"description": ""
 					},
@@ -115,32 +158,36 @@
 		},
 		{
 			"name": "Articles",
-			"description": "",
 			"item": [
 				{
 					"name": "Articles: get all",
 					"request": {
-						"url": "{{DOMAIN}}{{API_URL}}/articles",
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": ""
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Articles: create",
 					"request": {
-						"url": "{{DOMAIN}}{{API_URL}}/articles",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
@@ -149,19 +196,16 @@
 								{
 									"key": "slug",
 									"value": "kek",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "subtitle",
 									"value": "sub.",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "title",
 									"value": "tit",
-									"description": "",
 									"type": "text"
 								},
 								{
@@ -172,20 +216,26 @@
 								}
 							]
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Articles: create with deferred publish",
 					"request": {
-						"url": "{{DOMAIN}}{{API_URL}}/articles",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
@@ -194,19 +244,16 @@
 								{
 									"key": "slug",
 									"value": "slug-postpub",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "subtitle",
 									"value": "sub.",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "title",
 									"value": "tit",
-									"description": "",
 									"type": "text"
 								},
 								{
@@ -223,20 +270,26 @@
 								}
 							]
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Articles: update",
 					"request": {
-						"url": "{{DOMAIN}}{{API_URL}}/articles/slug4",
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
@@ -245,19 +298,16 @@
 								{
 									"key": "slug",
 									"value": "kek23",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "subtitle",
 									"value": "sub2.3",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "title",
 									"value": "tit2",
-									"description": "",
 									"type": "text"
 								},
 								{
@@ -268,20 +318,27 @@
 								}
 							]
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug4"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Articles: update copy",
 					"request": {
-						"url": "{{DOMAIN}}{{API_URL}}/articles/slug0",
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
@@ -290,19 +347,16 @@
 								{
 									"key": "slug",
 									"value": "kek23",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "subtitle",
 									"value": "sub2.3",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "title",
 									"value": "tit2",
-									"description": "",
 									"type": "text"
 								},
 								{
@@ -313,24 +367,50 @@
 								}
 							]
 						},
-						"description": ""
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug0",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug0"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Articles: get one",
 					"request": {
-						"url": "{{DOMAIN}}{{API_URL}}/articles/slug4",
 						"method": "GET",
 						"header": [],
-						"body": {},
-						"description": ""
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug4"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Articles: get all with pagination",
 					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles?page=2&pageSize=1",
 							"host": [
@@ -343,22 +423,15 @@
 								{
 									"key": "page",
 									"value": "2",
-									"equals": true,
-									"description": ""
+									"equals": true
 								},
 								{
 									"key": "pageSize",
 									"value": "1",
-									"equals": true,
-									"description": ""
+									"equals": true
 								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
+							]
+						}
 					},
 					"response": []
 				}
