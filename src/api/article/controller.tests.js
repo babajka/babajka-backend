@@ -43,16 +43,16 @@ describe('Articles api', () => {
     before(async () => {
       const promises = [];
       promises.push((new Article({
-        title: `test title 0`,
-        subtitle: `test subtitle 0`,
-        slug: `article-0`,
-        publishAt: new Date(`2015-01-01T18:25:43.511Z`),
+        title: 'test title 0',
+        subtitle: 'test subtitle 0',
+        slug: 'article-0',
+        publishAt: new Date('2015-01-01T18:25:43.511Z'),
       })).save());
       promises.push((new Article({
-        title: `test title 1`,
-        subtitle: `test subtitle 1`,
-        slug: `article-1`,
-        publishAt: new Date(`2025-01-01T18:25:43.511Z`),
+        title: 'test title 1',
+        subtitle: 'test subtitle 1',
+        slug: 'article-1',
+        publishAt: new Date('2025-01-01T18:25:43.511Z'),
       })).save());
       await Promise.all(promises);
     });
@@ -70,14 +70,14 @@ describe('Articles api', () => {
         .expect(200)
         .then((res) => {
           expect(res.body.data).has.length(1);
-          expect(function(res) {
+          expect(res => {
             if (!res.body.data[0].publishAt) {
               throw new Error('missing publishAt attribute');
             }
             if (res.body.data[0].publishAt > Date.now()) {
               throw new Error('bad publishAt filtering');
             }
-          })
+          });
         })
     );
   });

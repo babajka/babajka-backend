@@ -1,3 +1,4 @@
+import HttpError from 'node-http-error';
 import mongoose, { Schema } from 'mongoose';
 import omit from 'lodash/omit';
 
@@ -39,7 +40,7 @@ const ArticleSchema = new Schema({
   publishAt: {
     type: Date,
     default: Date.now,
-  }
+  },
 });
 
 const Article = mongoose.model('Article', ArticleSchema);

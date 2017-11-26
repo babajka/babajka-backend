@@ -12,8 +12,8 @@ export const getAll = (req, res, next) => {
   return Article
     .find((req.user && ['admin', 'creator'].includes(req.user.role)) ? {} : {
       publishAt: {
-        $lt: Date.now()
-      }
+        $lt: Date.now(),
+      },
     })
     .populate('type')
     .skip(skip)
@@ -35,7 +35,7 @@ export const getAll = (req, res, next) => {
 };
 
 export const getOne = ({ params: { slug }, user }, res, next) => Article
-  .findOne({slug})
+  .findOne({ slug })
   .then(checkIsFound)
   .then(article => checkIsPublished(article, user))
   .then(serializeArticle)
