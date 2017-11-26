@@ -70,7 +70,7 @@ describe('Articles api', () => {
         .expect(200)
         .then((res) => {
           expect(res.body.data).has.length(1);
-          expect(res => {
+          expect(() => {
             if (!res.body.data[0].publishAt) {
               throw new Error('missing publishAt attribute');
             }
