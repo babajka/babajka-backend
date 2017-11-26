@@ -8,7 +8,7 @@ export const requireFields = (...fields) => (req, res, next) => {
 
   fields.forEach((field) => {
     if (!req.body[field]) {
-      errors[field] = `${field} is required.`;
+      errors[field] = `поле ${field} абавязковае`;
     }
   });
 

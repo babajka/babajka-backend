@@ -1,3 +1,5 @@
+import { checkRoles } from 'api/user/model';
+
 export const requireAuth = (req, res, next) => {
   if (!req.user) {
     return res.sendStatus(401);
@@ -7,7 +9,7 @@ export const requireAuth = (req, res, next) => {
 };
 
 export const allowRoles = roles => (req, res, next) => {
-  if (roles.indexOf(req.user.role) === -1) {
+  if (!checkRoles(req.user, roles)) {
     return res.sendStatus(403);
   }
 

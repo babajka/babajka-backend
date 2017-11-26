@@ -9,31 +9,45 @@ import usersData from './users.json';
 import articleTypesData from './articletypes.json';
 import articlesData from './articles.json';
 
-const initUsers = () => Promise.all(usersData.map(async (userData) => {
-  const user = new User(userData);
-  await user.setPassword(userData.password);
-  return user.save();
-}));
+const initUsers = () =>
+  Promise.all(
+    usersData.map(async (userData) => {
+      const user = new User(userData);
+      await user.setPassword(userData.password);
+      return user.save();
+    })
+  );
 
-const initArticleTypes = () => Promise.all(articleTypesData.map(async (articleTypeData) => {
-  const articleType = new ArticleType(articleTypeData);
-  return articleType.save();
-}));
+const initArticleTypes = () =>
+  Promise.all(
+    articleTypesData.map(async (articleTypeData) => {
+      const articleType = new ArticleType(articleTypeData);
+      return articleType.save();
+    })
+  );
 
 const getArticleTypesDict = async () => {
   const articleTypesDict = {};
   const articleTypes = await ArticleType.find().exec();
   await articleTypes.forEach((item) => {
-    articleTypesDict[item.name] = item._id; // eslint-disable-line no-underscore-dangle
+    // eslint-disable-next-line no-underscore-dangle
+    articleTypesDict[item.name] = item._id;
   });
   return articleTypesDict;
 };
 
-const initArticles = articleTypesDict => Promise.all(articlesData.map(async (articleData) => {
-  articleData.type = articleTypesDict[articleData.type]; // eslint-disable-line no-param-reassign
-  const article = new Article(articleData);
-  return article.save();
-}));
+const initArticles = articleTypesDict =>
+  Promise.all(
+    articlesData.map(async (rawArticleData) => {
+      const articleData = { ...rawArticleData };
+      articleData.type = articleTypesDict[articleData.type];
+      if (articleData.publishAt) {
+        articleData.publishAt = new Date(articleData.publishAt);
+      }
+      const article = new Article(articleData);
+      return article.save();
+    })
+  );
 
 (async () => {
   try {

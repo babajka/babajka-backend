@@ -48,5 +48,16 @@
     },
     "type": "15x4",
     "slug" : "slug4"
+  },
+  {
+    "title": "Test5-postpublish",
+    "subtitle": "Subtext.",
+    "text": {
+      "eng": "Hi!:)",
+      "bel": "Здароў!:)"
+    },
+    "slug" : "slug5",
+    "type": "Wir",
+    "publishAt": "2020-01-01T18:25:43.511Z"
   }
 ]
