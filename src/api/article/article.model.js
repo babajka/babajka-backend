@@ -48,4 +48,16 @@ export const serializeArticle = article => (
   { ...omit(article.toObject(), ['_id', '__v']), type: article.type.name }
 );
 
+export const checkIsPublished = (object, user) => {
+  if (user && ['admin', 'creator'].includes(user.role)) {
+    return object;
+  }
+
+  if (object.publishAt && (new Date(object.publishAt) > Date.now())) {
+    throw (new HttpError(404));
+  }
+
+  return object;
+};
+
 export default Article;

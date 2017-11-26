@@ -1,6 +1,6 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
-import Article, { serializeArticle } from './article.model';
+import Article, { serializeArticle, checkIsPublished } from './article.model';
 import ArticleType from './type.model';
 
 export const getAll = (req, res, next) => {
@@ -34,9 +34,10 @@ export const getAll = (req, res, next) => {
     .catch(next);
 };
 
-export const getOne = ({ params: { slug } }, res, next) => Article
-  .findOne({ slug })
+export const getOne = ({ params: { slug }, user }, res, next) => Article
+  .findOne({slug})
   .then(checkIsFound)
+  .then(article => checkIsPublished(article, user))
   .then(serializeArticle)
   .then(sendJson(res))
   .catch(next);
