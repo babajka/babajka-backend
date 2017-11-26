@@ -66,10 +66,18 @@ describe('Articles api', () => {
     });
 
     it('should return the first article', () =>
-      request.get('/api/articles/')
+      request.get('/api/articles?pageSize=1')
         .expect(200)
         .then((res) => {
           expect(res.body.data).has.length(1);
+          expect(function(res) {
+            if (!res.body.data[0].publishAt) {
+              throw new Error('missing publishAt attribute');
+            }
+            if (res.body.data[0].publishAt > Date.now()) {
+              throw new Error('bad publishAt filtering');
+            }
+          })
         })
     );
   });
