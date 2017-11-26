@@ -55,11 +55,9 @@ describe('Articles api', () => {
         publishAt: new Date(`2025-01-01T18:25:43.511Z`),
       })).save());
       await Promise.all(promises);
-      console.log("before completed.")
     });
 
     after(async () => {
-      console.log("after started.")
       const promises = [];
       for (let i = 0; i < 2; i++) {
         promises.push(Article.remove({ slug: `article-${i}` }));
