@@ -22,6 +22,8 @@ export const getAll = ({ query, user }, res, next) => {
     .populate('type')
     .skip(skip)
     .limit(pageSize)
+    .sort({ createdAt: 'desc' }) // FIXME(@uladbohdan): maybe change sort field on publishAt
+    .then(atricles => atricles)
     .then(articles => articles.map(serializeArticle))
     .then((articles) => {
       data = articles;

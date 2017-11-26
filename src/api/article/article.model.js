@@ -27,7 +27,7 @@ const ArticleSchema = new Schema({
   },
   type: {
     type: Schema.Types.ObjectId,
-    // required: true,     // FIXME(@anstr)
+    required: true,
     ref: 'ArticleType',
   },
   slug: {
