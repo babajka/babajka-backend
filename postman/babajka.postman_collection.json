@@ -177,6 +177,57 @@
 					"response": []
 				},
 				{
+					"name": "Articles: create with deferred publish",
+					"request": {
+						"url": "{{DOMAIN}}{{API_URL}}/articles",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "slug-postpub",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub.",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "599ac11c20cd399a9e211f7d",
+									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"type": "text"
+								},
+								{
+									"key": "publishAt",
+									"value": "2025-01-01T18:25:43.511Z",
+									"description": "a date from far future",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Articles: update",
 					"request": {
 						"url": "{{DOMAIN}}{{API_URL}}/articles/slug4",
