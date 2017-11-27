@@ -12,9 +12,8 @@ let cookie;
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth api', () => {
-
   before(async () => {
-    let usersData = [
+    const usersData = [
       {
         email: 'admin@babajka.io',
         password: 'password',
@@ -31,7 +30,7 @@ describe('Auth api', () => {
 
   after(async () => {
     await Promise.all([
-      User.remove({ email: 'admin@babajka.io' })
+      User.remove({ email: 'admin@babajka.io' }),
     ]);
   });
 

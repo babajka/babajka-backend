@@ -9,10 +9,10 @@ export default (silent = false) => {
   mongoose.connection.on('connected', () => (silent ? null : console.log(`Mongoose: connected to ${url}`)));
   mongoose.connection.on('error', err => console.error(`Mongoose: connection error: ${err}`));
   mongoose.connection.on('disconnected', () => (silent ? null : console.log('Mongoose: disconnected')));
-  return mongoose.connect(url, options, function() {
+  return mongoose.connect(url, options, () => {
     if (process.env.NODE_ENV === 'testing') {
       mongoose.connection.db.dropDatabase();
-      console.log("mongoose: database was dropped (testing mode is set)");
+      console.log('mongoose: database was dropped (testing mode is set)');
     }
   });
 };

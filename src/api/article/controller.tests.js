@@ -9,21 +9,18 @@ import ArticleType from './type.model';
 const request = supertest.agent(app.listen());
 
 describe('Articles api', () => {
-
   before(async () => {
     // Population DB with article types.
-    let articleTypes = [ { name: 'Wir' } ];
+    const articleTypes = [{ name: 'Wir' }];
     await Promise.all(
-      articleTypes.map(async (articleType) => {
-        return new ArticleType(articleType).save();
-      })
+      articleTypes.map(async articleType => new ArticleType(articleType).save())
     );
 
     // Populating DB with articles.
     const articleType = await ArticleType.findOne({ name: 'Wir' });
     const promises = [];
     for (let i = 1; i < 9; i++) {
-      let date = new Date(`2017-11-0${i}T18:25:43.511Z`);
+      const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
       promises.push(
         new Article({
           title: `Api testing ${i} tit.`,
@@ -41,7 +38,7 @@ describe('Articles api', () => {
 
   after(async () => {
     await Promise.all([
-      ArticleType.remove({ name: 'Wir' })
+      ArticleType.remove({ name: 'Wir' }),
     ]);
 
     const promises = [];
