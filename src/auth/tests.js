@@ -1,5 +1,6 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
+import { User } from 'api/user';
 
 import app from 'server';
 import 'db/connect';
@@ -11,6 +12,29 @@ let cookie;
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth api', () => {
+
+  before(async () => {
+    let usersData = [
+      {
+        email: 'admin@babajka.io',
+        password: 'password',
+      },
+    ];
+    await Promise.all(
+      usersData.map(async (userData) => {
+        const user = new User(userData);
+        await user.setPassword(userData.password);
+        return user.save();
+      })
+    );
+  });
+
+  after(async () => {
+    await Promise.all([
+      User.remove({ email: 'admin@babajka.io' })
+    ]);
+  });
+
   describe('# request on protected url without authorization', () =>
     it('should respond with 401 Unauthorized', () => request.get('/protected').expect(401)));
 

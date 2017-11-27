@@ -3,7 +3,6 @@ node_js:
 - '7'
 services:
 - mongodb
-before_script: npm run init-db
 script:
 - npm run lint
 - npm run build

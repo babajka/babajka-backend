@@ -31,4 +31,8 @@ if (process.env.NODE_ENV === 'production') {
   config.logger.mode = 'combined';
 }
 
+if (process.env.NODE_ENV === 'testing') {
+  config.mongodb.url = 'mongodb://localhost/babajka-test';
+}
+
 export default config;
