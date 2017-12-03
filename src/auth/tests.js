@@ -12,13 +12,14 @@ let cookie;
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth api', () => {
+  const usersData = [
+    {
+      email: 'test1@babajka.io',
+      password: 'password',
+    },
+  ];
+
   before(async () => {
-    const usersData = [
-      {
-        email: 'test1@babajka.io',
-        password: 'password',
-      },
-    ];
     await Promise.all(
       usersData.map(async (userData) => {
         const user = new User(userData);
@@ -29,7 +30,9 @@ describe('Auth api', () => {
   });
 
   after(async () => {
-    await User.remove({ email: 'test1@babajka.io' });
+    await Promise.all(
+      usersData.map(async userData => User.remove(userData))
+    );
   });
 
   describe('# request on protected url without authorization', () =>

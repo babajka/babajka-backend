@@ -40,7 +40,7 @@ describe('User model', () => {
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error(err);
-    it('should works without error', () => {
+    it('should work without any errors', () => {
       expect(err).to.be.a(undefined);
     });
   }
