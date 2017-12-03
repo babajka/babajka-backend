@@ -10,14 +10,8 @@ const request = supertest.agent(app.listen());
 
 describe('Articles api', () => {
   before(async () => {
-    // Population DB with article types.
-    const articleTypes = [{ name: 'Wir' }];
-    await Promise.all(
-      articleTypes.map(async articleType => new ArticleType(articleType).save())
-    );
-
     // Populating DB with articles.
-    const articleType = await ArticleType.findOne({ name: 'Wir' });
+    const articleType = await (new ArticleType({ name: 'Wir' })).save();
     const promises = [];
     for (let i = 1; i < 9; i++) {
       const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
@@ -37,9 +31,7 @@ describe('Articles api', () => {
   });
 
   after(async () => {
-    await Promise.all([
-      ArticleType.remove({ name: 'Wir' }),
-    ]);
+    await ArticleType.remove({ name: 'Wir' });
 
     const promises = [];
     for (let i = 1; i < 9; i++) {
@@ -48,8 +40,8 @@ describe('Articles api', () => {
     await Promise.all(promises);
   });
 
-  describe('# get all articles with pagination', () => {
-    it('should return 4 articles from the second page', () =>
+  describe('# get newest articles with pagination', () => {
+    it('should return 4 articles from the first page', () =>
       request
         .get('/api/articles?page=0&pageSize=4')
         .expect(200)
@@ -77,7 +69,7 @@ describe('Articles api', () => {
       await Article.remove({ slug: 'publishAt-article-1' });
     });
 
-    it('should return only 5 initial published articles', () =>
+    it('should return 8 published articles and skip 1 unpublished', () =>
       request
         .get('/api/articles')
         .expect(200)

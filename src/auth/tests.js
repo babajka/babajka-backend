@@ -15,7 +15,7 @@ describe('Auth api', () => {
   before(async () => {
     const usersData = [
       {
-        email: 'admin@babajka.io',
+        email: 'test1@babajka.io',
         password: 'password',
       },
     ];
@@ -29,9 +29,7 @@ describe('Auth api', () => {
   });
 
   after(async () => {
-    await Promise.all([
-      User.remove({ email: 'admin@babajka.io' }),
-    ]);
+    await User.remove({ email: 'test1@babajka.io' });
   });
 
   describe('# request on protected url without authorization', () =>
@@ -41,7 +39,7 @@ describe('Auth api', () => {
     it('should respond with 400 and error message', () =>
       request
         .post('/auth/login')
-        .send({ email: 'admin@babajka.io', password: '1' })
+        .send({ email: 'test1@babajka.io', password: '1' })
         .expect(400)
         .then((res) => {
           expect(res.body.error).to.have.property('password');
@@ -54,14 +52,14 @@ describe('Auth api', () => {
     it('should respond with 200, user object and set-cookie header', () =>
       request
         .post('/auth/login')
-        .send({ email: 'admin@babajka.io', password: 'password' })
+        .send({ email: 'test1@babajka.io', password: 'password' })
         .expect(200)
         .then((res) => {
           // eslint-disable-next-line no-unused-expressions
           expect(res.headers['set-cookie']).not.empty;
           cookie = res.headers['set-cookie'][0];
           expect(cookie).contains('connect.sid');
-          expect(res.body.email).equal('admin@babajka.io');
+          expect(res.body.email).equal('test1@babajka.io');
         })));
 
   describe('# request on protected url with auth cookie', () =>
