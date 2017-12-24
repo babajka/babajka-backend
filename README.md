@@ -1,5 +1,6 @@
 # babajka-backend
 
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Build Status](https://travis-ci.org/babajka/babajka-backend.svg?branch=master)](https://travis-ci.org/babajka/babajka-backend)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/27a0eb2d7da645b983b464238ca7248e)](https://www.codacy.com/app/babajka/babajka-backend?utm_source=github.com&utm_medium=referral&utm_content=babajka/babajka-backend&utm_campaign=Badge_Grade)
 [![Dependency Status](https://www.versioneye.com/user/projects/5958fad5368b0800734a43f0/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5958fad5368b0800734a43f0)
