@@ -9,41 +9,46 @@ import ArticleType from './type.model';
 const request = supertest.agent(app.listen());
 
 describe('Articles api', () => {
-  describe('# get all articles with pagination', () => {
-    before(async () => {
-      const articleType = await ArticleType.findOne({ name: 'Wir' });
-      const promises = [];
-      for (let i = 1; i < 9; i++) {
-        promises.push(
-          new Article({
-            title: `Api testing ${i} tit.`,
-            subtitle: `Api testing ${i} sub.`,
-            // eslint-disable-next-line no-underscore-dangle
-            type: articleType._id,
-            slug: `article-${i}`,
-            createdAt: new Date(`2015-01-0${i}T18:25:43.511Z`),
-          }).save()
-        );
-      }
-      await Promise.all(promises);
-    });
+  before(async () => {
+    // Populating DB with articles.
+    const articleType = await new ArticleType({ name: 'Wir' }).save();
+    const promises = [];
+    for (let i = 1; i < 9; i++) {
+      const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
+      promises.push(
+        new Article({
+          title: `Api testing ${i} tit.`,
+          subtitle: `Api testing ${i} sub.`,
+          // eslint-disable-next-line no-underscore-dangle
+          type: articleType._id,
+          slug: `article-${i}`,
+          createdAt: date,
+          publishAt: date,
+        }).save()
+      );
+    }
+    await Promise.all(promises);
+  });
 
-    after(async () => {
-      const promises = [];
-      for (let i = 1; i < 9; i++) {
-        promises.push(Article.remove({ slug: `article-${i}` }));
-      }
-      await Promise.all(promises);
-    });
+  after(async () => {
+    await ArticleType.remove({ name: 'Wir' });
 
-    it('should return 5 articles from third page', () =>
+    const promises = [];
+    for (let i = 1; i < 9; i++) {
+      promises.push(Article.remove({ slug: `article-${i}` }));
+    }
+    await Promise.all(promises);
+  });
+
+  describe('# get newest articles with pagination', () => {
+    it('should return 4 articles from the first page', () =>
       request
-        .get('/api/articles?page=2&pageSize=4')
+        .get('/api/articles?page=0&pageSize=4')
         .expect(200)
         .then(({ body: { data } }) => {
           expect(data).has.length(4);
-          expect(data[0].slug).to.equal('article-5');
-          expect(data[3].slug).to.equal('article-2');
+          expect(data[0].slug).to.equal('article-8');
+          expect(data[3].slug).to.equal('article-5');
         }));
   });
 
@@ -64,12 +69,12 @@ describe('Articles api', () => {
       await Article.remove({ slug: 'publishAt-article-1' });
     });
 
-    it('should return only 5 initial published articles', () =>
+    it('should return 8 published articles and skip 1 unpublished', () =>
       request
         .get('/api/articles')
         .expect(200)
         .then(({ body: { data } }) => {
-          expect(data).has.length(5);
+          expect(data).has.length(8);
           expect(data.map(({ slug }) => slug)).not.includes('publishAt-article-1');
         }));
   });

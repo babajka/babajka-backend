@@ -20,9 +20,9 @@ export const getAll = ({ query, user }, res, next) => {
 
   return Article.find(articlesQuery)
     .populate('type')
+    .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
-    .sort({ createdAt: 'desc' }) // FIXME(@uladbohdan): maybe change sort field on publishAt
     .then(atricles => atricles)
     .then(articles => articles.map(serializeArticle))
     .then(articles => {

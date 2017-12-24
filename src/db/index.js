@@ -15,5 +15,10 @@ export default (silent = false) => {
     'disconnected',
     () => (silent ? null : console.log('Mongoose: disconnected'))
   );
-  return mongoose.connect(url, options);
+  return mongoose.connect(url, options, () => {
+    if (process.env.NODE_ENV === 'testing') {
+      mongoose.connection.db.dropDatabase();
+      console.log('mongoose: database was dropped (testing mode is set)');
+    }
+  });
 };
