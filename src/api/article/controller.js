@@ -25,7 +25,7 @@ export const getAll = ({ query, user }, res, next) => {
     .sort({ createdAt: 'desc' }) // FIXME(@uladbohdan): maybe change sort field on publishAt
     .then(atricles => atricles)
     .then(articles => articles.map(serializeArticle))
-    .then((articles) => {
+    .then(articles => {
       data = articles;
       return Article.count();
     })

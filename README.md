@@ -20,7 +20,13 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 * `npm run init-db` to create database and insert initial test data
 
-* `npm run lint` checks the code style.
+* `npm run lint` to check code style with [`eslint`](http://eslint.org/),
+  [`airbnb`](https://github.com/airbnb/javascript/tree/master/react) react style guide and
+  [`prettier`](https://prettier.io)
+
+* `npm run lint` to just fix style with `prettier`
+
+* `npm run watch` to watch & fix changed files style
 
 * `npm run test` to test and check coverage
 

@@ -19,7 +19,7 @@ passport.use(
     (req, email, password, done) => {
       let user;
       User.findOne({ email })
-        .then((result) => {
+        .then(result => {
           if (!result) {
             throw new ValidationError({ password: 'Няправільны емэйл ці пароль' });
           }
@@ -27,7 +27,7 @@ passport.use(
           user = result;
           return user.authenticate(password);
         })
-        .then((isAuthenticated) => {
+        .then(isAuthenticated => {
           if (!isAuthenticated) {
             throw new ValidationError({ password: 'Няправільны емэйл ці пароль' });
           }
@@ -49,7 +49,7 @@ passport.use(
     (email, password, done) => {
       let user;
       User.findOne({ email })
-        .then((result) => {
+        .then(result => {
           if (result) {
             throw new ValidationError({ email: 'Гэты емэйл ужо выкарыстаны' });
           }

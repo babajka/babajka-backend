@@ -24,13 +24,11 @@ describe('User model', () => {
 
     it('should crypt password', () => expect(user.password).to.not.equal(password));
 
-    it('should authenticate with correct password',
-      async () => expect(await user.authenticate(password)).to.be.true
-    );
+    it('should authenticate with correct password', async () =>
+      expect(await user.authenticate(password)).to.be.true);
 
-    it('should not authenticate with wrong password',
-      async () => expect(await user.authenticate('not secret')).to.be.false
-    );
+    it('should not authenticate with wrong password', async () =>
+      expect(await user.authenticate('not secret')).to.be.false);
 
     it('should remove user', async () => {
       await User.remove({ email });

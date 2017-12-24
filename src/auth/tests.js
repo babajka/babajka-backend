@@ -20,7 +20,7 @@ describe('Auth api', () => {
         .post('/auth/login')
         .send({ email: 'admin@babajka.io', password: '1' })
         .expect(400)
-        .then((res) => {
+        .then(res => {
           expect(res.body.error).to.have.property('password');
         })));
 
@@ -33,10 +33,10 @@ describe('Auth api', () => {
         .post('/auth/login')
         .send({ email: 'admin@babajka.io', password: 'password' })
         .expect(200)
-        .then((res) => {
+        .then(res => {
           // eslint-disable-next-line no-unused-expressions
           expect(res.headers['set-cookie']).not.empty;
-          cookie = res.headers['set-cookie'][0];
+          [cookie] = res.headers['set-cookie'];
           expect(cookie).contains('connect.sid');
           expect(res.body.email).equal('admin@babajka.io');
         })));
