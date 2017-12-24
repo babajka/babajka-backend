@@ -38,7 +38,7 @@ UserSchema.methods.setPassword = async function set(password) {
   this.passwordHash = await this.generateHash(password);
 };
 
-UserSchema.methods.generateHash = async (password) => {
+UserSchema.methods.generateHash = async password => {
   const salt = await genSalt(config.auth.saltRounds);
   return hash(password, salt);
 };

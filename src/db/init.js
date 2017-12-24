@@ -11,7 +11,7 @@ import articlesData from './articles.json';
 
 const initUsers = () =>
   Promise.all(
-    usersData.map(async (userData) => {
+    usersData.map(async userData => {
       const user = new User(userData);
       await user.setPassword(userData.password);
       return user.save();
@@ -20,7 +20,7 @@ const initUsers = () =>
 
 const initArticleTypes = () =>
   Promise.all(
-    articleTypesData.map(async (articleTypeData) => {
+    articleTypesData.map(async articleTypeData => {
       const articleType = new ArticleType(articleTypeData);
       return articleType.save();
     })
@@ -29,7 +29,7 @@ const initArticleTypes = () =>
 const getArticleTypesDict = async () => {
   const articleTypesDict = {};
   const articleTypes = await ArticleType.find().exec();
-  await articleTypes.forEach((item) => {
+  await articleTypes.forEach(item => {
     // eslint-disable-next-line no-underscore-dangle
     articleTypesDict[item.name] = item._id;
   });
@@ -38,7 +38,7 @@ const getArticleTypesDict = async () => {
 
 const initArticles = articleTypesDict =>
   Promise.all(
-    articlesData.map(async (rawArticleData) => {
+    articlesData.map(async rawArticleData => {
       const articleData = { ...rawArticleData };
       articleData.type = articleTypesDict[articleData.type];
       if (articleData.publishAt) {

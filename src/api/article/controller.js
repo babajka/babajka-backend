@@ -25,7 +25,7 @@ export const getAll = ({ query, user }, res, next) => {
     .limit(pageSize)
     .then(atricles => atricles)
     .then(articles => articles.map(serializeArticle))
-    .then((articles) => {
+    .then(articles => {
       data = articles;
       return Article.count();
     })

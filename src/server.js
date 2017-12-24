@@ -28,8 +28,9 @@ app.use(passport.session());
 app.use('/auth', auth);
 app.use('/api', api);
 
-app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
-  console.error(err.message); // eslint-disable-line no-console
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err.message);
   sendJson(res, err.status || 500)({ error: err.message });
 });
 

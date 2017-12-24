@@ -21,7 +21,7 @@ describe('Auth api', () => {
 
   before(async () => {
     await Promise.all(
-      usersData.map(async (userData) => {
+      usersData.map(async userData => {
         const user = new User(userData);
         await user.setPassword(userData.password);
         return user.save();
@@ -30,9 +30,7 @@ describe('Auth api', () => {
   });
 
   after(async () => {
-    await Promise.all(
-      usersData.map(async userData => User.remove(userData))
-    );
+    await Promise.all(usersData.map(async userData => User.remove(userData)));
   });
 
   describe('# request on protected url without authorization', () =>
@@ -44,7 +42,7 @@ describe('Auth api', () => {
         .post('/auth/login')
         .send({ email: 'test1@babajka.io', password: '1' })
         .expect(400)
-        .then((res) => {
+        .then(res => {
           expect(res.body.error).to.have.property('password');
         })));
 
@@ -57,10 +55,10 @@ describe('Auth api', () => {
         .post('/auth/login')
         .send({ email: 'test1@babajka.io', password: 'password' })
         .expect(200)
-        .then((res) => {
+        .then(res => {
           // eslint-disable-next-line no-unused-expressions
           expect(res.headers['set-cookie']).not.empty;
-          cookie = res.headers['set-cookie'][0];
+          [cookie] = res.headers['set-cookie'];
           expect(cookie).contains('connect.sid');
           expect(res.body.email).equal('test1@babajka.io');
         })));

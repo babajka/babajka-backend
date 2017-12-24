@@ -11,7 +11,7 @@ const request = supertest.agent(app.listen());
 describe('Articles api', () => {
   before(async () => {
     // Populating DB with articles.
-    const articleType = await (new ArticleType({ name: 'Wir' })).save();
+    const articleType = await new ArticleType({ name: 'Wir' }).save();
     const promises = [];
     for (let i = 1; i < 9; i++) {
       const date = new Date(`2017-11-0${i}T18:25:43.511Z`);

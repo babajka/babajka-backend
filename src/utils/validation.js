@@ -6,7 +6,7 @@ export const ValidationError = message => HttpError(400, message);
 export const requireFields = (...fields) => (req, res, next) => {
   const errors = {};
 
-  fields.forEach((field) => {
+  fields.forEach(field => {
     if (!req.body[field]) {
       errors[field] = `поле ${field} абавязковае`;
     }
@@ -18,9 +18,9 @@ export const requireFields = (...fields) => (req, res, next) => {
   return next();
 };
 
-export const checkIsFound = (object) => {
+export const checkIsFound = object => {
   if (!object) {
-    throw (new HttpError(404));
+    throw new HttpError(404);
   }
 
   return object;
