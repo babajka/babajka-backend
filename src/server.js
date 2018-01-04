@@ -1,5 +1,4 @@
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors';
@@ -17,7 +16,6 @@ const app = express();
 app.set('trust proxy', config.trustProxy);
 app.use(cors());
 app.use(getLogger());
-app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session(config.session));

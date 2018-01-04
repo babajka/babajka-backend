@@ -8,13 +8,12 @@
   "auth": {
     "saltRounds": 8
   },
-  "trustProxy": 0,
+  "trustProxy": 1,
   "session": {
     "secret": "MUST BE SET IN $BABAJKA_SECRET",
     "resave": false,
     "saveUninitialized": false,
     "cookie": {
-      "domain": "localhost"
     }
   },
   "logger": {
