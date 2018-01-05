@@ -51,6 +51,6 @@ export const serializeUser = ({ firstName, lastName, email, permissions }) => ({
   permissions,
 });
 
-export const checkPermission = (user, permission) => user && user.permissions[permission];
+export const checkPermissions = (user, list) => user && list.every(perm => user.permissions[perm]);
 
 export default User;

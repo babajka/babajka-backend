@@ -2,7 +2,7 @@ import HttpError from 'node-http-error';
 import mongoose, { Schema } from 'mongoose';
 import omit from 'lodash/omit';
 
-import { checkPermission } from 'api/user';
+import { checkPermissions } from 'api/user';
 
 const ArticleSchema = new Schema({
   title: {
@@ -59,7 +59,7 @@ export const serializeArticle = article => ({
 });
 
 export const checkIsPublished = (article, user) => {
-  if (checkPermission(user, 'canCreateArticle')) {
+  if (checkPermissions(user, ['canCreateArticle'])) {
     return article;
   }
 
