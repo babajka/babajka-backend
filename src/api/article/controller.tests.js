@@ -4,14 +4,14 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 import Article from './article.model';
-import ArticleType from './type.model';
+import ArticleBrand from './brand.model';
 
 const request = supertest.agent(app.listen());
 
 describe('Articles api', () => {
   before(async () => {
     // Populating DB with articles.
-    const articleType = await new ArticleType({ name: 'Wir' }).save();
+    const articleBrand = await new ArticleBrand({ name: 'Wir' }).save();
     const promises = [];
     for (let i = 1; i < 9; i++) {
       const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
@@ -20,7 +20,8 @@ describe('Articles api', () => {
           title: `Api testing ${i} tit.`,
           subtitle: `Api testing ${i} sub.`,
           // eslint-disable-next-line no-underscore-dangle
-          type: articleType._id,
+          brand: articleBrand._id,
+          type: 'text',
           slug: `article-${i}`,
           createdAt: date,
           publishAt: date,
@@ -31,7 +32,7 @@ describe('Articles api', () => {
   });
 
   after(async () => {
-    await ArticleType.remove({ name: 'Wir' });
+    await ArticleBrand.remove({ name: 'Wir' });
 
     const promises = [];
     for (let i = 1; i < 9; i++) {
@@ -54,13 +55,14 @@ describe('Articles api', () => {
 
   describe('# filter articles with publishAt attribute', () => {
     before(async () => {
-      const articleType = await ArticleType.findOne({ name: 'Wir' });
+      const articleBrand = await ArticleBrand.findOne({ name: 'Wir' });
       await new Article({
         title: 'test title 1',
         subtitle: 'test subtitle 1',
         slug: 'publishAt-article-1',
         // eslint-disable-next-line no-underscore-dangle
-        type: articleType._id,
+        brand: articleBrand._id,
+        type: 'text',
         publishAt: new Date('2025-01-01T18:25:43.511Z'),
       }).save();
     });

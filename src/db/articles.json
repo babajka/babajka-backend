@@ -1,13 +1,14 @@
 [
   {
-    "title" : "Test0",
-    "subtitle" : "Subtest.",
-    "text" : {
-      "eng" : "Hi!:)",
-      "bel" : "Здароў!:)"
+    "title": "Test0",
+    "subtitle": "Subtest.",
+    "text": {
+      "eng": "Hi!:)",
+      "bel": "Здароў!:)"
     },
-    "type" : "Wir",
-    "slug" : "slug0"
+    "type": "text",
+    "brand": "Wir",
+    "slug": "slug0"
   },
   {
     "title": "Test1",
@@ -16,8 +17,9 @@
       "eng": "Hi!:)",
       "bel": "Здароў!:)"
     },
-    "type": "Wir",
-    "slug" : "slug1"
+    "type": "video",
+    "brand": "Wir",
+    "slug": "slug1"
   },
   {
     "title": "Test2",
@@ -26,8 +28,9 @@
       "eng": "Hi!:)",
       "bel": "Здароў!:)"
     },
-    "type": "Kurilka",
-    "slug" : "slug2"
+    "type": "video",
+    "brand": "Kurilka",
+    "slug": "slug2"
   },
   {
     "title": "Test3",
@@ -36,8 +39,9 @@
       "eng": "Hi!:)",
       "bel": "Здароў!:)"
     },
-    "type": "Wir",
-    "slug" : "slug3"
+    "type": "text",
+    "brand": "Wir",
+    "slug": "slug3"
   },
   {
     "title": "Test4",
@@ -46,8 +50,9 @@
       "eng": "Hi!:)",
       "bel": "Здароў!:)"
     },
-    "type": "15x4",
-    "slug" : "slug4"
+    "type": "video",
+    "brand": "15x4",
+    "slug": "slug4"
   },
   {
     "title": "Test5-postpublish",
@@ -56,8 +61,9 @@
       "eng": "Hi!:)",
       "bel": "Здароў!:)"
     },
-    "slug" : "slug5",
-    "type": "Wir",
+    "type": "text",
+    "slug": "slug5",
+    "brand": "Wir",
     "publishAt": "2020-01-01T18:25:43.511Z"
   }
 ]

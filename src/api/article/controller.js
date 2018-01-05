@@ -3,7 +3,7 @@ import { sendJson } from 'utils/api';
 
 import { checkPermission } from 'api/user';
 import Article, { serializeArticle, checkIsPublished } from './article.model';
-import ArticleType from './type.model';
+import ArticleBrand from './brand.model';
 
 export const getAll = ({ query, user }, res, next) => {
   const page = parseInt(query.page) || 0; // eslint-disable-line radix
@@ -19,7 +19,7 @@ export const getAll = ({ query, user }, res, next) => {
   }
 
   return Article.find(articlesQuery)
-    .populate('type')
+    .populate('brand')
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
@@ -50,17 +50,17 @@ export const getOne = ({ params: { slug }, user }, res, next) =>
 
 export const create = async ({ body }, res, next) => {
   try {
-    const articleTypeQuery = ArticleType.findOne({ name: body.type });
-    const articleType = (await articleTypeQuery.exec()) || new ArticleType({ name: body.type });
-    await articleType.save();
+    const articleBrandQuery = ArticleBrand.findOne({ name: body.brand });
+    const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ name: body.brand });
+    await articleBrand.save();
     const articleBody = body;
-    articleBody.type = articleType._id; // eslint-disable-line no-underscore-dangle
+    articleBody.brand = articleBrand._id; // eslint-disable-line no-underscore-dangle
     let data;
     let code;
     try {
       const article = Article(articleBody);
       await article.save();
-      data = serializeArticle(await article.populate('type').execPopulate());
+      data = serializeArticle(await article.populate('brand').execPopulate());
     } catch (err) {
       code = 400;
       data = err;
@@ -83,8 +83,8 @@ export const remove = async ({ params: { slug } }, res, next) =>
     .then(() => res.sendStatus(200))
     .catch(next);
 
-export const getAllTypes = async (req, res, next) =>
-  ArticleType.find()
+export const getAllBrands = async (req, res, next) =>
+  ArticleBrand.find()
     .select('-_id -__v')
     .then(sendJson(res))
     .catch(next);

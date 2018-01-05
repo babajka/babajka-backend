@@ -25,10 +25,16 @@ const ArticleSchema = new Schema({
     type: Schema.Types.ObjectId,
     // TODO: add reference to ArticleCollection
   },
-  type: {
+  brand: {
+    // May be 'Wir' or 'Kurilka'.
     type: Schema.Types.ObjectId,
     required: true,
-    ref: 'ArticleType',
+    ref: 'ArticleBrand',
+  },
+  type: {
+    // May be 'text' or 'video'.
+    type: String,
+    required: true,
   },
   slug: {
     type: String,
@@ -49,7 +55,7 @@ const Article = mongoose.model('Article', ArticleSchema);
 
 export const serializeArticle = article => ({
   ...omit(article.toObject(), ['_id', '__v']),
-  type: article.type.name,
+  brand: article.brand.name,
 });
 
 export const checkIsPublished = (article, user) => {
