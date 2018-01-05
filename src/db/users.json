@@ -11,7 +11,7 @@
     "firstName": "Dana",
     "lastName": "Scally",
     "password": "password1",
-    "role": "creator"
+    "role": "contentManager"
   },
   {
     "email": "user@babajka.io",

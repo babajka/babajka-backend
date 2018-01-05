@@ -1,10 +1,13 @@
 /* eslint-disable no-console */
 
 import mongoose from 'mongoose';
+import omit from 'lodash/omit';
 
 import connectDb from 'db';
 import { User } from 'api/user';
 import { Article, ArticleType } from 'api/article';
+import * as permissions from 'constants/permissions';
+
 import usersData from './users.json';
 import articleTypesData from './articletypes.json';
 import articlesData from './articles.json';
@@ -12,7 +15,14 @@ import articlesData from './articles.json';
 const initUsers = () =>
   Promise.all(
     usersData.map(async userData => {
-      const user = new User(userData);
+      const role = userData.role || 'user';
+
+      const user = new User(omit(userData, ['role']));
+      user.permissions = {};
+      permissions[role].forEach(perm => {
+        user.permissions[perm] = true;
+      });
+
       await user.setPassword(userData.password);
       return user.save();
     })

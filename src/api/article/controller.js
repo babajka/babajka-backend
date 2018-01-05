@@ -1,7 +1,7 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import { checkRoles } from 'api/user';
+import { checkPermission } from 'api/user';
 import Article, { serializeArticle, checkIsPublished } from './article.model';
 import ArticleType from './type.model';
 
@@ -12,7 +12,7 @@ export const getAll = ({ query, user }, res, next) => {
   let data;
   const articlesQuery = {};
 
-  if (!checkRoles(user, ['admin', 'creator'])) {
+  if (!checkPermission(user, 'canManageArticles')) {
     articlesQuery.publishAt = {
       $lt: Date.now(),
     };

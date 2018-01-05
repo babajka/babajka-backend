@@ -5,7 +5,7 @@ import { requireFields, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
 import passport, { authenticate } from './passport';
-import { requireAuth, allowRoles } from './middlewares';
+import { requireAuth, verifyPermission } from './middlewares';
 
 const router = Router();
 
@@ -33,5 +33,5 @@ router.get('/logout', requireAuth, (req, res, next) => {
   res.sendStatus(200);
 });
 
-export { passport, requireAuth, allowRoles };
+export { passport, requireAuth, verifyPermission };
 export default router;

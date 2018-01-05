@@ -1,4 +1,4 @@
-import { checkRoles } from 'api/user/model';
+import { checkPermission } from 'api/user/model';
 
 export const requireAuth = (req, res, next) => {
   if (!req.user) {
@@ -8,8 +8,8 @@ export const requireAuth = (req, res, next) => {
   return next();
 };
 
-export const allowRoles = roles => (req, res, next) => {
-  if (!checkRoles(req.user, roles)) {
+export const verifyPermission = permission => (req, res, next) => {
+  if (!checkPermission(req.user, permission)) {
     return res.sendStatus(403);
   }
 
