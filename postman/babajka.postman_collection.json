@@ -462,6 +462,70 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Articles: create with Collection",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "new-article",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "title",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "subtitle",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "text",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "brand",
+									"value": "Wir",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "collectionSlug",
+									"value": "collection0",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
