@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import 'db/connect';
 import Article from './article.model';
-import ArticleBrand from './brand.model';
+import ArticleBrand from './brand/model';
 
 describe('Article model', async () => {
   try {

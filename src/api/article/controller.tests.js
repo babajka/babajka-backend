@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 import Article from './article.model';
-import ArticleBrand from './brand.model';
+import ArticleBrand from './brand/model';
 
 const request = supertest.agent(app.listen());
 

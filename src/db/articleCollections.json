@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Collection First",
+    "description": "the very first collection",
+    "slug": "collection0",
+    "articleSlugs": ["slug0", "slug1"]
+  }
+]

@@ -8,7 +8,7 @@ const ArticleCollectionSchema = new Schema({
   // The order of articles below is essential and defines the structure of the collection.
   articles: [
     {
-      type: Schema.Type.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Article',
     },
   ],
