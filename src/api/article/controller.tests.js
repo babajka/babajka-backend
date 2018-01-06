@@ -8,7 +8,7 @@ import ArticleBrand from './brand/model';
 
 const request = supertest.agent(app.listen());
 
-describe('Articles api', () => {
+describe('Articles API', () => {
   before(async () => {
     // Populating DB with articles.
     const articleBrand = await new ArticleBrand({ name: 'Wir' }).save();
