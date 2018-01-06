@@ -12,12 +12,7 @@ const UserSchema = new Schema({
     required: true,
   },
   passwordHash: String,
-  role: {
-    type: String,
-    required: true,
-    enum: ['admin', 'user', 'creator'],
-    default: 'user',
-  },
+  permissions: Schema.Types.Mixed,
   createdAt: { type: Date, default: Date.now },
   active: {
     type: Boolean,
@@ -49,13 +44,13 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-export const serializeUser = ({ firstName, lastName, email, role }) => ({
+export const serializeUser = ({ firstName, lastName, email, permissions }) => ({
   firstName,
   lastName,
   email,
-  role,
+  permissions,
 });
 
-export const checkRoles = (user, roles) => user && roles.includes(user.role);
+export const checkPermissions = (user, list) => user && list.every(perm => user.permissions[perm]);
 
 export default User;

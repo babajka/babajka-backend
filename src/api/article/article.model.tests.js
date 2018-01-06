@@ -2,16 +2,16 @@ import { expect } from 'chai';
 
 import 'db/connect';
 import Article from './article.model';
-import ArticleType from './type.model';
+import ArticleBrand from './brand.model';
 
 describe('Article model', async () => {
   try {
-    const articleTypeData = { name: 'test' };
-    const articleType = new ArticleType(articleTypeData);
+    const articleBrandData = { name: 'test' };
+    const articleBrand = new ArticleBrand(articleBrandData);
 
     it('should save new article type', async () => {
-      const result = await articleType.save();
-      expect(result.name).to.equal(articleTypeData.name);
+      const result = await articleBrand.save();
+      expect(result.name).to.equal(articleBrandData.name);
     });
 
     const articleData = {
@@ -22,12 +22,13 @@ describe('Article model', async () => {
         bel: 'Здароў!:)',
       },
       slug: 'slug',
+      type: 'text',
     };
 
     it('should save new article', async () => {
-      const type = await ArticleType.findOne(articleTypeData);
+      const brand = await ArticleBrand.findOne(articleBrandData);
       // eslint-disable-next-line no-underscore-dangle
-      const article = new Article({ ...articleData, type: type._id });
+      const article = new Article({ ...articleData, brand: brand._id });
       const result = await article.save();
       expect(result.title).to.equal(articleData.title);
       expect(result.subtitle).to.equal(articleData.subtitle);
@@ -53,6 +54,6 @@ describe('Article model', async () => {
       expect(err).to.be.a(undefined);
     });
   } finally {
-    await ArticleType.remove({ name: 'test' });
+    await ArticleBrand.remove({ name: 'test' });
   }
 });

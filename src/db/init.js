@@ -1,46 +1,56 @@
 /* eslint-disable no-console */
 
 import mongoose from 'mongoose';
+import omit from 'lodash/omit';
 
 import connectDb from 'db';
 import { User } from 'api/user';
-import { Article, ArticleType } from 'api/article';
+import { Article, ArticleBrand } from 'api/article';
+import * as permissions from 'constants/permissions';
+
 import usersData from './users.json';
-import articleTypesData from './articletypes.json';
+import articleBrandsData from './articleBrands.json';
 import articlesData from './articles.json';
 
 const initUsers = () =>
   Promise.all(
     usersData.map(async userData => {
-      const user = new User(userData);
+      const role = userData.role || 'user';
+
+      const user = new User(omit(userData, ['role']));
+      user.permissions = {};
+      permissions[role].forEach(perm => {
+        user.permissions[perm] = true;
+      });
+
       await user.setPassword(userData.password);
       return user.save();
     })
   );
 
-const initArticleTypes = () =>
+const initArticleBrands = () =>
   Promise.all(
-    articleTypesData.map(async articleTypeData => {
-      const articleType = new ArticleType(articleTypeData);
-      return articleType.save();
+    articleBrandsData.map(async articleBrandData => {
+      const articleBrand = new ArticleBrand(articleBrandData);
+      return articleBrand.save();
     })
   );
 
-const getArticleTypesDict = async () => {
-  const articleTypesDict = {};
-  const articleTypes = await ArticleType.find().exec();
-  await articleTypes.forEach(item => {
+const getArticleBrandsDict = async () => {
+  const articleBrandsDict = {};
+  const articleBrands = await ArticleBrand.find().exec();
+  await articleBrands.forEach(item => {
     // eslint-disable-next-line no-underscore-dangle
-    articleTypesDict[item.name] = item._id;
+    articleBrandsDict[item.name] = item._id;
   });
-  return articleTypesDict;
+  return articleBrandsDict;
 };
 
-const initArticles = articleTypesDict =>
+const initArticles = articleBrandsDict =>
   Promise.all(
     articlesData.map(async rawArticleData => {
       const articleData = { ...rawArticleData };
-      articleData.type = articleTypesDict[articleData.type];
+      articleData.brand = articleBrandsDict[articleData.brand];
       if (articleData.publishAt) {
         articleData.publishAt = new Date(articleData.publishAt);
       }
@@ -59,12 +69,12 @@ const initArticles = articleTypesDict =>
     const users = await User.count();
     console.log(`Mongoose: insert ${users} users`);
 
-    await initArticleTypes();
-    const articleTypes = await ArticleType.count();
-    console.log(`Mongoose: insert ${articleTypes} article type(s)`);
-    const articleTypesDict = await getArticleTypesDict();
+    await initArticleBrands();
+    const articleBrands = await ArticleBrand.count();
+    console.log(`Mongoose: insert ${articleBrands} article brand(s)`);
+    const articleBrandsDict = await getArticleBrandsDict();
 
-    await initArticles(articleTypesDict);
+    await initArticles(articleBrandsDict);
     const articles = await Article.count();
     console.log(`Mongoose: insert ${articles} articles`);
   } catch (err) {
