@@ -1,7 +1,7 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import { checkPermission } from 'api/user';
+import { checkPermissions } from 'api/user';
 import Article, { serializeArticle, checkIsPublished } from './article.model';
 import ArticleBrand from './brand.model';
 
@@ -12,7 +12,7 @@ export const getAll = ({ query, user }, res, next) => {
   let data;
   const articlesQuery = {};
 
-  if (!checkPermission(user, 'canManageArticles')) {
+  if (!checkPermissions(user, ['canManageArticles'])) {
     articlesQuery.publishAt = {
       $lt: Date.now(),
     };
@@ -23,7 +23,7 @@ export const getAll = ({ query, user }, res, next) => {
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
-    .then(atricles => atricles)
+    .then(articles => articles)
     .then(articles => articles.map(serializeArticle))
     .then(articles => {
       data = articles;
