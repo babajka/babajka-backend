@@ -24,7 +24,6 @@ describe('Collections API', () => {
           title: 'title',
           subtitle: 'subtitle',
           type: 'text',
-          // eslint-disable-next-line no-underscore-dangle
           brand: brand._id,
         }).save()
       );
@@ -34,7 +33,6 @@ describe('Collections API', () => {
     const articlesDict = {};
     const articles = await Article.find().exec();
     await articles.forEach(item => {
-      // eslint-disable-next-line no-underscore-dangle
       articlesDict[item.slug] = item._id;
     });
 

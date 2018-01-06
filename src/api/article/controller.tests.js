@@ -19,7 +19,6 @@ describe('Articles API', () => {
         new Article({
           title: `Api testing ${i} tit.`,
           subtitle: `Api testing ${i} sub.`,
-          // eslint-disable-next-line no-underscore-dangle
           brand: articleBrand._id,
           type: 'text',
           slug: `article-${i}`,
@@ -59,7 +58,6 @@ describe('Articles API', () => {
         title: 'test title 1',
         subtitle: 'test subtitle 1',
         slug: 'publishAt-article-1',
-        // eslint-disable-next-line no-underscore-dangle
         brand: articleBrand._id,
         type: 'text',
         publishAt: new Date('2025-01-01T18:25:43.511Z'),

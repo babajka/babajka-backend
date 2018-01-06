@@ -1,9 +1,11 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
+import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 import Article, { serializeArticle, checkIsPublished } from './article.model';
 import ArticleBrand from './brand/model';
+import ArticleCollection from './collection/model';
 
 export const getAll = ({ query, user }, res, next) => {
   const page = parseInt(query.page) || 0; // eslint-disable-line radix
@@ -20,6 +22,7 @@ export const getAll = ({ query, user }, res, next) => {
 
   return Article.find(articlesQuery)
     .populate('brand')
+    .populate('collectionId', '-_id name slug')
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
@@ -42,6 +45,8 @@ export const getAll = ({ query, user }, res, next) => {
 
 export const getOne = ({ params: { slug }, user }, res, next) =>
   Article.findOne({ slug, active: true })
+    .populate('brand')
+    .populate('collectionId', '-_id name slug')
     .then(checkIsFound)
     .then(article => checkIsPublished(article, user))
     .then(serializeArticle)
@@ -53,14 +58,25 @@ export const create = async ({ body }, res, next) => {
     const articleBrandQuery = ArticleBrand.findOne({ name: body.brand });
     const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ name: body.brand });
     await articleBrand.save();
-    const articleBody = body;
-    articleBody.brand = articleBrand._id; // eslint-disable-line no-underscore-dangle
+
+    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug });
+
+    const articleBody = omit(body, ['collectionSlug']);
+    articleBody.brand = articleBrand._id;
+    if (articleCollection) {
+      articleBody.collectionId = articleCollection._id;
+    }
+
     let data;
     let code;
     try {
       const article = Article(articleBody);
       await article.save();
       data = serializeArticle(await article.populate('brand').execPopulate());
+      if (articleCollection) {
+        articleCollection.articles.push(article._id);
+        await articleCollection.save();
+      }
     } catch (err) {
       code = 400;
       data = err;

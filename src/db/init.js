@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
 import mongoose from 'mongoose';
-import assign from 'lodash/assign';
 import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 
 import connectDb from 'db';
 import { User } from 'api/user';
@@ -42,7 +42,6 @@ const getArticleBrandsDict = async () => {
   const articleBrandsDict = {};
   const articleBrands = await ArticleBrand.find().exec();
   await articleBrands.forEach(item => {
-    // eslint-disable-next-line no-underscore-dangle
     articleBrandsDict[item.name] = item._id;
   });
   return articleBrandsDict;
@@ -66,21 +65,25 @@ const getArticlesDict = async () => {
   const articlesDict = {};
   const articles = await Article.find().exec();
   await articles.forEach(item => {
-    // eslint-disable-next-line no-underscore-dangle
     articlesDict[item.slug] = item._id;
   });
   return articlesDict;
 };
 
-const initArticleCollections = articlesDict =>
-  Promise.all(
-    articleCollectionsData.map(async articleCollectionData => {
-      const articleIds = articleCollectionData.articleSlugs.map(slug => articlesDict[slug]);
-      return new ArticleCollection(
-        assign(omit(articleCollectionData, ['articleSlugs']), { articles: articleIds })
-      ).save();
-    })
-  );
+const initArticleCollections = articlesDict => {
+  const createCollection = async collectionData => {
+    const subDict = pick(articlesDict, collectionData.articleSlugs);
+    const body = { ...collectionData, articles: Object.values(subDict) };
+    const collection = await new ArticleCollection(body).save();
+
+    const articles = Object.keys(subDict).map(slug =>
+      Article.findOneAndUpdate({ slug }, { collectionId: collection._id })
+    );
+    Promise.all(articles);
+  };
+
+  return Promise.all(articleCollectionsData.map(createCollection));
+};
 
 (async () => {
   try {

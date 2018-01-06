@@ -27,7 +27,6 @@ describe('Article model', async () => {
 
     it('should save new article', async () => {
       const brand = await ArticleBrand.findOne(articleBrandData);
-      // eslint-disable-next-line no-underscore-dangle
       const article = new Article({ ...articleData, brand: brand._id });
       const result = await article.save();
       expect(result.title).to.equal(articleData.title);
