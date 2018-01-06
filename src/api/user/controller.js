@@ -5,7 +5,7 @@ import User, { serializeUser } from './model';
 
 export const getAll = async (req, res, next) =>
   User.find({})
-    .select('-_id -__v')
+    .then(users => users.map(serializeUser))
     .then(sendJson(res))
     .catch(next);
 
