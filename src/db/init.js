@@ -61,19 +61,24 @@ const initArticles = articleBrandsDict =>
     })
   );
 
-const initArticleCollections = () =>
+// Returns a mapping of slugs to id-s.
+const getArticlesDict = async () => {
+  const articlesDict = {};
+  const articles = await Article.find().exec();
+  await articles.forEach(item => {
+    // eslint-disable-next-line no-underscore-dangle
+    articlesDict[item.slug] = item._id;
+  });
+  return articlesDict;
+};
+
+const initArticleCollections = articlesDict =>
   Promise.all(
     articleCollectionsData.map(async articleCollectionData => {
-      const articleIds = articleCollectionData.articleSlugs.map(
-        // eslint-disable-next-line no-underscore-dangle
-        slug => Article.findOne({ slug })._id
-      );
-
-      const collection = new ArticleCollection(
+      const articleIds = articleCollectionData.articleSlugs.map(slug => articlesDict[slug]);
+      return new ArticleCollection(
         assign(omit(articleCollectionData, ['articleSlugs']), { articles: articleIds })
-      );
-
-      return collection.save();
+      ).save();
     })
   );
 
@@ -95,8 +100,9 @@ const initArticleCollections = () =>
     await initArticles(articleBrandsDict);
     const articles = await Article.count();
     console.log(`Mongoose: insert ${articles} articles`);
+    const articleDict = await getArticlesDict();
 
-    await initArticleCollections();
+    await initArticleCollections(articleDict);
     const articleCollections = await ArticleCollection.count();
     console.log(`Mongoose: insert ${articleCollections} article collection(s)`);
   } catch (err) {
