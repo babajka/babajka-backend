@@ -1,380 +1,626 @@
 {
-  "info": {
-    "name": "babajka",
-    "_postman_id": "0ce403d4-ae51-b920-3021-c641a8d1c288",
-    "description": "babajka api",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "Auth",
-      "item": [
-        {
-          "name": "Login local",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
-            "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "email",
-                  "value": "admin@babajka.io",
-                  "type": "text"
-                },
-                {
-                  "key": "password",
-                  "value": "password",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{DOMAIN}}/auth/login",
-              "host": ["{{DOMAIN}}"],
-              "path": ["auth", "login"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Register local",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
-            "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "email",
-                  "value": "admin@babajka.io",
-                  "type": "text"
-                },
-                {
-                  "key": "password",
-                  "value": "123456",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{DOMAIN}}/auth/register",
-              "host": ["{{DOMAIN}}"],
-              "path": ["auth", "register"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{DOMAIN}}/auth/logout",
-              "host": ["{{DOMAIN}}"],
-              "path": ["auth", "logout"]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Users",
-      "item": [
-        {
-          "name": "Users: get current",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/users/current",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["users", "current"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Users: get all",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {},
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/users/",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["users", ""]
-            },
-            "description": ""
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Articles",
-      "item": [
-        {
-          "name": "Articles: get all",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Articles: get all Brands",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles/brands",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles", "brands"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Articles: create",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
-            "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "slug",
-                  "value": "kek",
-                  "type": "text"
-                },
-                {
-                  "key": "subtitle",
-                  "value": "sub.",
-                  "type": "text"
-                },
-                {
-                  "key": "title",
-                  "value": "tit",
-                  "type": "text"
-                },
-                {
-                  "key": "type",
-                  "value": "text",
-                  "type": "text"
-                },
-                {
-                  "key": "brand",
-                  "value": "Wir",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Articles: create with deferred publish",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
-            "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "slug",
-                  "value": "slug-postpub",
-                  "type": "text"
-                },
-                {
-                  "key": "subtitle",
-                  "value": "sub.",
-                  "type": "text"
-                },
-                {
-                  "key": "title",
-                  "value": "tit",
-                  "type": "text"
-                },
-                {
-                  "key": "type",
-                  "value": "599ac11c20cd399a9e211f7d",
-                  "description": "todo(asntr): convert to \"type: 'Wir'\" format",
-                  "type": "text"
-                },
-                {
-                  "key": "publishAt",
-                  "value": "2025-01-01T18:25:43.511Z",
-                  "description": "a date from far future",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Articles: update",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
-            "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "slug",
-                  "value": "kek23",
-                  "type": "text"
-                },
-                {
-                  "key": "subtitle",
-                  "value": "sub2.3",
-                  "type": "text"
-                },
-                {
-                  "key": "title",
-                  "value": "tit2",
-                  "type": "text"
-                },
-                {
-                  "key": "type",
-                  "value": "599ac11c20cd399a9e211f7d",
-                  "description": "todo(asntr): convert to \"type: 'Wir'\" format",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles", "slug4"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Articles: update copy",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles/slug0",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles", "slug0"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Articles: get one",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles", "slug4"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Articles: get all with pagination",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{DOMAIN}}{{API_URL}}/articles?page=2&pageSize=1",
-              "host": ["{{DOMAIN}}{{API_URL}}"],
-              "path": ["articles"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "2",
-                  "equals": true
-                },
-                {
-                  "key": "pageSize",
-                  "value": "1",
-                  "equals": true
-                }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    }
-  ]
+	"info": {
+		"name": "babajka",
+		"_postman_id": "cfb94b2c-7e96-45c5-c307-f311f763c68c",
+		"description": "babajka api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login local",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "admin@babajka.io",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/auth/login",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register local",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "admin@babajka.io",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/auth/register",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Users: get current",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/users/current",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"users",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/users/",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Articles",
+			"item": [
+				{
+					"name": "Articles: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: get all Brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/brands",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"brands"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "kek",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub.",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "text",
+									"type": "text"
+								},
+								{
+									"key": "brand",
+									"value": "Wir",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: create with deferred publish",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "slug-postpub",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub.",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "599ac11c20cd399a9e211f7d",
+									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"type": "text"
+								},
+								{
+									"key": "publishAt",
+									"value": "2025-01-01T18:25:43.511Z",
+									"description": "a date from far future",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "kek23",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub2.3",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit2",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "599ac11c20cd399a9e211f7d",
+									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: remove",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "slug",
+									"value": "kek23",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "sub2.3",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "tit2",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "599ac11c20cd399a9e211f7d",
+									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug5",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: get one",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: get all with pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles?page=2&pageSize=1",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"equals": true
+								},
+								{
+									"key": "pageSize",
+									"value": "1",
+									"equals": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Collections",
+			"description": "",
+			"item": [
+				{
+					"name": "Collections: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"collections"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Collections: get one",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"collections",
+								"collection0"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Collections: update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "description",
+									"value": "new description",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "active",
+									"value": "true",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"collections",
+								"collection0"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Collections: remove",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection-x",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"collections",
+								"collection-x"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Collections: create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "CollectionX",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"value": "collection-x",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "New Description for Collection X",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"collections"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
 }
