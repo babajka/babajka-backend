@@ -14,14 +14,12 @@ describe('Brands API', () => {
     // Ensuring DB is free of any ArticleBrands.
     await ArticleBrand.remove();
     // Populating DB with Brands.
-    const promises = [];
-    brands.forEach(brand => promises.push(new ArticleBrand({ name: brand }).save()));
+    const promises = brands.map(brand => new ArticleBrand({ name: brand }).save());
     await Promise.all(promises);
   });
 
   after(async () => {
-    const promises = [];
-    brands.forEach(brand => promises.push(ArticleBrand.remove({ name: brand })));
+    const promises = brands.map(brand => ArticleBrand.remove({ name: brand }));
     await Promise.all(promises);
   });
 
