@@ -320,32 +320,6 @@
                 "value": "application/x-www-form-urlencoded"
               }
             ],
-            "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "slug",
-                  "value": "kek23",
-                  "type": "text"
-                },
-                {
-                  "key": "subtitle",
-                  "value": "sub2.3",
-                  "type": "text"
-                },
-                {
-                  "key": "title",
-                  "value": "tit2",
-                  "type": "text"
-                },
-                {
-                  "key": "type",
-                  "value": "599ac11c20cd399a9e211f7d",
-                  "description": "todo(asntr): convert to \"type: 'Wir'\" format",
-                  "type": "text"
-                }
-              ]
-            },
             "url": {
               "raw": "{{DOMAIN}}{{API_URL}}/articles/slug0",
               "host": ["{{DOMAIN}}{{API_URL}}"],

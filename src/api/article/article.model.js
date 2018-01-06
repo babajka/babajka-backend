@@ -23,7 +23,7 @@ const ArticleSchema = new Schema({
   tags: [String],
   collectionId: {
     type: Schema.Types.ObjectId,
-    // TODO: add reference to ArticleCollection
+    ref: 'ArticleCollection',
   },
   brand: {
     // May be 'Wir' or 'Kurilka'.
@@ -48,6 +48,10 @@ const ArticleSchema = new Schema({
   publishAt: {
     type: Date,
     default: Date.now,
+  },
+  active: {
+    type: Boolean,
+    default: true,
   },
 });
 
