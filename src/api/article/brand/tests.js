@@ -11,6 +11,8 @@ describe('Brands API', () => {
   const brands = ['Wir', 'Kurilka', 'Minsk'];
 
   before(async () => {
+    // Ensuring DB is free of any ArticleBrands.
+    await ArticleBrand.remove();
     // Populating DB with Brands.
     const promises = [];
     brands.forEach(brand => promises.push(new ArticleBrand({ name: brand }).save()));

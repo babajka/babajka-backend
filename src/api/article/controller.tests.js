@@ -32,12 +32,11 @@ describe('Articles API', () => {
   });
 
   after(async () => {
-    await ArticleBrand.remove({ name: 'Wir' });
-
     const promises = [];
     for (let i = 1; i < 9; i++) {
       promises.push(Article.remove({ slug: `article-${i}` }));
     }
+    promises.push(ArticleBrand({ name: 'Wir' }));
     await Promise.all(promises);
   });
 
