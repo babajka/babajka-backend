@@ -15,23 +15,11 @@ export const getOne = ({ params: { slug } }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const create = async ({ body }, res, next) => {
-  try {
-    let data;
-    let code;
-    try {
-      const collection = ArticleCollection(body);
-      await collection.save();
-      data = collection;
-    } catch (err) {
-      code = 400;
-      data = err;
-    }
-    sendJson(res, code)(data);
-  } catch (err) {
-    next(err);
-  }
-};
+export const create = async ({ body }, res, next) =>
+  ArticleCollection(body)
+    .save()
+    .then(sendJson(res))
+    .catch(next);
 
 export const update = ({ params: { slug }, body }, res, next) =>
   ArticleCollection.findOneAndUpdate({ slug }, body, { new: true })
