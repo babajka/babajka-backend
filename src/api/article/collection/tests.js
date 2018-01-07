@@ -51,7 +51,7 @@ describe('Collections API', () => {
 
     const user = new User({
       email: 'test2@babajka.io',
-      permissions: { canManageUsers: true },
+      permissions: { canCreateArticle: true },
     });
     await user.setPassword('password');
     await user.save();
@@ -112,18 +112,19 @@ describe('Collections API', () => {
 
     let sessionCookie;
 
-    request
-      .post('/auth/login')
-      .send({ email: 'test2@babajka.io', password: 'password' })
-      .expect(200)
-      .then(res => {
-        // eslint-disable-next-line no-unused-expressions
-        expect(res.headers['set-cookie']).not.empty;
-        [sessionCookie] = res.headers['set-cookie'];
-        expect(res.body.email).equal('test1@babajka.io');
-      });
+    it('should login with proper permissions', () =>
+      request
+        .post('/auth/login')
+        .send({ email: 'test2@babajka.io', password: 'password' })
+        .expect(200)
+        .then(res => {
+          // eslint-disable-next-line no-unused-expressions
+          expect(res.headers['set-cookie']).not.empty;
+          [sessionCookie] = res.headers['set-cookie'];
+          expect(res.body.email).equal('test2@babajka.io');
+        }));
 
-    it('should create a new collection', () => {
+    it('should create a new collection', () =>
       request
         .post('/api/articles/collections')
         .set('Cookie', sessionCookie)
@@ -134,47 +135,48 @@ describe('Collections API', () => {
         .expect(200)
         .expect(res => {
           expect(res.body.slug, 'collection-6');
-        });
+        }));
 
+    it('should return a newly created collection', () =>
       request
         .get('/api/articles/collections')
         .expect(200)
         .expect(res => {
           expect(res.body).has.length(6);
-        });
-    });
+        }));
 
-    it('should remove a collection', () => {
+    it('should remove a collection', () =>
       request
         .delete('/api/articles/collections/collection-6')
         .set('Cookie', sessionCookie)
-        .expect(200);
+        .expect(200));
 
+    it('should not return a removed collection', () =>
       request
         .get('/api/articles/collections')
         .expect(200)
         .expect(res => {
           expect(res.body).has.length(5);
-        });
-    });
+        }));
 
-    it('should recover a collection using update', () => {
+    it('should recover a collection using update', () =>
       request
         .put('/api/articles/collections/collection-6')
         .send({ active: true, description: 'desc-new' })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          expect(res.slug, 'collection-6');
-          expect(res.description, 'desc-new');
-        });
+          expect(res.body.slug).equals('collection-6');
+          expect(res.body.description).equals('desc-new');
+        }));
 
+    it('should return a recovered collection', () =>
       request
         .get('/api/articles/collections')
         .expect(200)
         .expect(res => {
           expect(res.body).has.length(6);
-        });
-    });
+          expect(res.body.map(({ slug }) => slug)).to.include('collection-6');
+        }));
   });
 });
