@@ -1,6 +1,5 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
-import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 import Article, { serializeArticle, checkIsPublished } from './article.model';
@@ -61,11 +60,11 @@ export const create = async ({ body }, res, next) => {
 
     const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug });
 
-    const articleBody = omit(body, ['collectionSlug']);
-    articleBody.brand = articleBrand._id;
-    if (articleCollection) {
-      articleBody.collectionId = articleCollection._id;
-    }
+    const articleBody = {
+      ...body,
+      brand: articleBrand._id,
+      collectionId: articleCollection && articleCollection._id,
+    };
 
     let data;
     let code;
