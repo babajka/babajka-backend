@@ -11,7 +11,7 @@ let cookie;
 
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
-describe('Auth api', () => {
+describe('Auth API', () => {
   const usersData = [
     {
       email: 'test1@babajka.io',
