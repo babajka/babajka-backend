@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "babajka",
-		"_postman_id": "cfb94b2c-7e96-45c5-c307-f311f763c68c",
+		"_postman_id": "b1b81b39-ca4d-ecbe-1859-ce015d3a92c0",
 		"description": "babajka api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -324,24 +324,19 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "slug",
-									"value": "kek23",
-									"type": "text"
-								},
-								{
 									"key": "subtitle",
-									"value": "sub2.3",
+									"value": "new subtitle",
 									"type": "text"
 								},
 								{
 									"key": "title",
-									"value": "tit2",
+									"value": "new title",
 									"type": "text"
 								},
 								{
 									"key": "type",
-									"value": "599ac11c20cd399a9e211f7d",
-									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"value": "text",
+									"description": "",
 									"type": "text"
 								}
 							]
@@ -369,40 +364,15 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "slug",
-									"value": "kek23",
-									"type": "text"
-								},
-								{
-									"key": "subtitle",
-									"value": "sub2.3",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "tit2",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "599ac11c20cd399a9e211f7d",
-									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
-									"type": "text"
-								}
-							]
-						},
+						"body": {},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug5",
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"articles",
-								"slug5"
+								"slug4"
 							]
 						}
 					},
@@ -479,37 +449,31 @@
 								{
 									"key": "slug",
 									"value": "new-article",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "title",
 									"value": "title",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "subtitle",
 									"value": "subtitle",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "type",
 									"value": "text",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "brand",
 									"value": "Wir",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "collectionSlug",
 									"value": "collection0",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -522,8 +486,7 @@
 							"path": [
 								"articles"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				}
@@ -531,14 +494,16 @@
 		},
 		{
 			"name": "Collections",
-			"description": "",
 			"item": [
 				{
 					"name": "Collections: get all",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
 							"host": [
@@ -548,8 +513,7 @@
 								"articles",
 								"collections"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -558,7 +522,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
 							"host": [
@@ -569,8 +536,7 @@
 								"collections",
 								"collection0"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -590,13 +556,11 @@
 								{
 									"key": "description",
 									"value": "new description",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "active",
 									"value": "true",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -611,8 +575,7 @@
 								"collections",
 								"collection0"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -621,7 +584,10 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection-x",
 							"host": [
@@ -632,8 +598,7 @@
 								"collections",
 								"collection-x"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -653,19 +618,16 @@
 								{
 									"key": "name",
 									"value": "CollectionX",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "slug",
 									"value": "collection-x",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "description",
 									"value": "New Description for Collection X",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -679,8 +641,7 @@
 								"articles",
 								"collections"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				}
