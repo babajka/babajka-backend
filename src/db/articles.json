@@ -3,8 +3,8 @@
     "title": "Test0",
     "subtitle": "Subtest.",
     "text": {
-      "eng": "Hi!:)",
-      "bel": "Здароў!:)"
+      "en": "Hi!:)",
+      "be": "Здароў!:)"
     },
     "type": "text",
     "brand": "Wir",
@@ -14,8 +14,8 @@
     "title": "Test1",
     "subtitle": "Subtest.",
     "text": {
-      "eng": "Hi!:)",
-      "bel": "Здароў!:)"
+      "en": "Hi!:)",
+      "be": "Здароў!:)"
     },
     "type": "video",
     "brand": "Wir",
@@ -25,8 +25,8 @@
     "title": "Test2",
     "subtitle": "Subtest.",
     "text": {
-      "eng": "Hi!:)",
-      "bel": "Здароў!:)"
+      "en": "Hi!:)",
+      "be": "Здароў!:)"
     },
     "type": "video",
     "brand": "Kurilka",
@@ -36,8 +36,8 @@
     "title": "Test3",
     "subtitle": "Subtest.",
     "text": {
-      "eng": "Hi!:)",
-      "bel": "Здароў!:)"
+      "en": "Hi!:)",
+      "be": "Здароў!:)"
     },
     "type": "text",
     "brand": "Wir",
@@ -47,8 +47,8 @@
     "title": "Test4",
     "subtitle": "Subtest.",
     "text": {
-      "eng": "Hi!:)",
-      "bel": "Здароў!:)"
+      "en": "Hi!:)",
+      "be": "Здароў!:)"
     },
     "type": "video",
     "brand": "15x4",
@@ -58,8 +58,8 @@
     "title": "Test5-postpublish",
     "subtitle": "Subtext.",
     "text": {
-      "eng": "Hi!:)",
-      "bel": "Здароў!:)"
+      "en": "Hi!:)",
+      "be": "Здароў!:)"
     },
     "type": "text",
     "slug": "slug5",
