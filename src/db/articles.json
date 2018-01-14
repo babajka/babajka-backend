@@ -1,69 +1,111 @@
 [
   {
-    "title": "Test0",
-    "subtitle": "Subtest.",
-    "text": {
-      "en": "Hi!:)",
-      "be": "Здароў!:)"
-    },
     "type": "text",
     "brand": "Wir",
-    "slug": "slug0"
+    "locales": {
+      "be": {
+        "title": "Назва 0",
+        "subtitle": "Падназва 0",
+        "text": "Здароў!:)",
+        "slug": "slug0-be"
+      },
+      "en": {
+        "title": "Title 0",
+        "subtitle": "Subtitle 0",
+        "text": "Hello! :)",
+        "slug": "slug0-en"
+      }
+    }
   },
   {
-    "title": "Test1",
-    "subtitle": "Subtest.",
-    "text": {
-      "en": "Hi!:)",
-      "be": "Здароў!:)"
-    },
     "type": "video",
     "brand": "Wir",
-    "slug": "slug1"
+    "locales": {
+      "be": {
+        "title": "Назва 1",
+        "subtitle": "Падназва 1",
+        "text": "Здароў!:)",
+        "slug": "slug1-be"
+      },
+      "en": {
+        "title": "Title 1",
+        "subtitle": "Subtitle 1",
+        "text": "Hello! :)",
+        "slug": "slug1-en"
+      }
+    }
   },
   {
-    "title": "Test2",
-    "subtitle": "Subtest.",
-    "text": {
-      "en": "Hi!:)",
-      "be": "Здароў!:)"
-    },
     "type": "video",
     "brand": "Kurilka",
-    "slug": "slug2"
+    "locales": {
+      "be": {
+        "title": "Назва 2",
+        "subtitle": "Падназва 2",
+        "text": "Здароў!:)",
+        "slug": "slug2-be"
+      },
+      "en": {
+        "title": "Title 2",
+        "subtitle": "Subtitle 2",
+        "text": "Hello! :)",
+        "slug": "slug2-en"
+      }
+    }
   },
   {
-    "title": "Test3",
-    "subtitle": "Subtest.",
-    "text": {
-      "en": "Hi!:)",
-      "be": "Здароў!:)"
-    },
     "type": "text",
     "brand": "Wir",
-    "slug": "slug3"
+    "locales": {
+      "be": {
+        "title": "Назва 3",
+        "subtitle": "Падназва 3",
+        "text": "Здароў!:)",
+        "slug": "slug3-be"
+      },
+      "en": {
+        "title": "Title 3",
+        "subtitle": "Subtitle 3",
+        "text": "Hello! :)",
+        "slug": "slug3-en"
+      }
+    }
   },
   {
-    "title": "Test4",
-    "subtitle": "Subtest.",
-    "text": {
-      "en": "Hi!:)",
-      "be": "Здароў!:)"
-    },
     "type": "video",
     "brand": "15x4",
-    "slug": "slug4"
+    "locales": {
+      "be": {
+        "title": "Назва 4",
+        "subtitle": "Падназва 4",
+        "text": "Здароў!:)",
+        "slug": "slug4-be"
+      },
+      "en": {
+        "title": "Title 4",
+        "subtitle": "Subtitle 4",
+        "text": "Hello! :)",
+        "slug": "slug4-en"
+      }
+    }
   },
   {
-    "title": "Test5-postpublish",
-    "subtitle": "Subtext.",
-    "text": {
-      "en": "Hi!:)",
-      "be": "Здароў!:)"
-    },
     "type": "text",
-    "slug": "slug5",
     "brand": "Wir",
-    "publishAt": "2020-01-01T18:25:43.511Z"
+    "publishAt": "2020-01-01T18:25:43.511Z",
+    "locales": {
+      "be": {
+        "title": "Назва 5",
+        "subtitle": "Падназва 5 з адкладзенай публікацыяй",
+        "text": "Здароў!:)",
+        "slug": "slug5-be"
+      },
+      "en": {
+        "title": "Title 5",
+        "subtitle": "Subtitle 5 with postpublishing",
+        "text": "Hello! :)",
+        "slug": "slug5-en"
+      }
+    }
   }
 ]

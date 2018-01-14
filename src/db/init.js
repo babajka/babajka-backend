@@ -6,7 +6,7 @@ import pick from 'lodash/pick';
 
 import connectDb from 'db';
 import { User } from 'api/user';
-import { Article, ArticleBrand, ArticleCollection } from 'api/article';
+import { Article, ArticleBrand, ArticleCollection, ArticleData } from 'api/article';
 import * as permissions from 'constants/permissions';
 
 import usersData from './users.json';
@@ -50,12 +50,24 @@ const getArticleBrandsDict = async () => {
 const initArticles = articleBrandsDict =>
   Promise.all(
     articlesData.map(async rawArticleData => {
-      const articleData = { ...rawArticleData };
+      const articleLocales = rawArticleData.locales;
+      const articleData = omit(rawArticleData, ['locales']);
       articleData.brand = articleBrandsDict[articleData.brand];
       if (articleData.publishAt) {
         articleData.publishAt = new Date(articleData.publishAt);
       }
       const article = new Article(articleData);
+      Promise.all(
+        Object.keys(articleLocales).map(locale => {
+          const data = new ArticleData({
+            ...articleLocales[locale],
+            locale,
+            articleId: article._id,
+          });
+          article.locales.push(data._id);
+          return data.save();
+        })
+      );
       return article.save();
     })
   );
