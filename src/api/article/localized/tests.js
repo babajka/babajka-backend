@@ -84,6 +84,18 @@ describe('Locales API', () => {
           expect(res.body.locales.en.slug).equals('slug-en');
         }));
 
+    it('should fail to create another EN localization', () =>
+      request
+        .post(`/api/articles/localize/${articleId}`)
+        .set('Cookie', sessionCookie)
+        .send({
+          slug: 'slug-en2',
+          title: 'another title',
+          subtitle: 'another subtitle',
+          locale: 'en',
+        })
+        .expect(400));
+
     it('should update an existing EN locale', () =>
       request
         .put('/api/articles/localize/slug-en')
