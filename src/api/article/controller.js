@@ -44,25 +44,20 @@ export const getAll = ({ query, user }, res, next) => {
     .catch(next);
 };
 
-export const getOne = async ({ params: { slug }, user }, res, next) => {
-  // TODO(uladbohdan): to fix for unexisting article.
-  let articleData;
-  try {
-    articleData = await ArticleData.findOne({ slug }).exec();
-  } catch (err) {
-    next(err);
-  }
-
-  return Article.findOne({ _id: articleData.articleId, active: true })
-    .populate('brand')
-    .populate('collectionId', '-_id name slug')
-    .populate('locales', '-_id -__v')
+export const getOne = async ({ params: { slug }, user }, res, next) =>
+  ArticleData.findOne({ slug })
+    .then(checkIsFound)
+    .then(({ articleId }) =>
+      Article.findOne({ _id: articleId, active: true })
+        .populate('brand')
+        .populate('collectionId', '-_id name slug')
+        .populate('locales', '-_id -__v')
+    )
     .then(checkIsFound)
     .then(article => checkIsPublished(article, user))
     .then(serializeArticle)
     .then(sendJson(res))
     .catch(next);
-};
 
 export const create = async ({ body }, res, next) => {
   try {
@@ -98,16 +93,26 @@ export const create = async ({ body }, res, next) => {
   }
 };
 
-// TODO(uladbohdan): to update methods below using ArticleData presence.
-
 export const update = ({ params: { slug }, body }, res, next) =>
-  Article.findOneAndUpdate({ slug }, body, { new: true })
+  ArticleData.findOne({ slug })
     .then(checkIsFound)
+    .then(({ articleId }) =>
+      Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
+        .populate('brand')
+        .populate('collectionId', '-_id name slug')
+        .populate('locales', '-_id -__v')
+    )
+    .then(checkIsFound)
+    .then(serializeArticle)
     .then(sendJson(res))
     .catch(next);
 
 export const remove = ({ params: { slug } }, res, next) =>
-  Article.findOneAndUpdate({ slug }, { active: false }, { new: true })
+  ArticleData.findOne({ slug })
+    .then(checkIsFound)
+    .then(({ articleId }) =>
+      Article.findOneAndUpdate({ _id: articleId }, { active: false }, { new: true })
+    )
     .then(checkIsFound)
     .then(() => res.sendStatus(200))
     .catch(next);
