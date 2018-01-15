@@ -1,5 +1,6 @@
 import HttpError from 'node-http-error';
 import mongoose, { Schema } from 'mongoose';
+import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
@@ -49,6 +50,7 @@ const Article = mongoose.model('Article', ArticleSchema);
 export const serializeArticle = article => ({
   ...omit(article.toObject(), ['__v']),
   brand: article.brand.name,
+  locales: keyBy(article.locales, 'locale'),
 });
 
 export const checkIsPublished = (article, user) => {

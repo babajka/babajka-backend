@@ -6,42 +6,70 @@ import 'db/connect';
 import User from 'api/user/model';
 import Article from './article.model';
 import ArticleBrand from './brand/model';
+import ArticleData from './data/model';
 
 const request = supertest.agent(app.listen());
 
 describe('Articles API', () => {
   let articleBrandId;
+  const articleIDs = [];
 
   before(async () => {
+    // TODO(uladbohdan): to fix.
+    await Article.remove();
     // Populating DB with articles.
     const articleBrand = await new ArticleBrand({ name: 'Wir' }).save();
     articleBrandId = articleBrand._id;
-    const promises = [];
+    let promises = [];
     for (let i = 1; i <= 8; i++) {
       const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
       promises.push(
         new Article({
-          title: `Api testing ${i} tit.`,
-          subtitle: `Api testing ${i} sub.`,
           brand: articleBrand._id,
           type: 'text',
-          slug: `article-${i}`,
           createdAt: date,
           publishAt: date,
-        }).save()
+        })
+          .save()
+          .then(({ _id }) => {
+            articleIDs[i - 1] = _id;
+          })
       );
     }
     // An article with post publishing.
     promises.push(
       new Article({
-        title: 'test title 1',
-        subtitle: 'test subtitle 1',
-        slug: 'publishAt-article-1',
         brand: articleBrand._id,
         type: 'text',
         publishAt: new Date('2025-01-01T18:25:43.511Z'),
-      }).save()
+      })
+        .save()
+        .then(({ _id }) => {
+          articleIDs[8] = _id;
+        })
     );
+    await Promise.all(promises);
+
+    promises = [];
+    ['en', 'be'].forEach(loc => {
+      for (let i = 1; i <= 9; i++) {
+        promises.push(
+          new ArticleData({
+            locale: `${loc}`,
+            title: `title-${i}-${loc}`,
+            subtitle: `subtitle-${i}-${loc}`,
+            slug: i === 9 ? `postpublished-slug-${loc}` : `article-${i}-${loc}`,
+            articleId: articleIDs[i - 1],
+          })
+            .save()
+            .then(async ({ _id }) => {
+              const article = await Article.findOne({ _id: articleIDs[i - 1] }).exec();
+              article.locales.push(_id);
+              await article.save();
+            })
+        );
+      }
+    });
     await Promise.all(promises);
 
     const user = new User({
@@ -54,9 +82,8 @@ describe('Articles API', () => {
 
   after(async () => {
     const promises = [];
-    for (let i = 1; i < 9; i++) {
-      promises.push(Article.remove({ slug: `article-${i}` }));
-    }
+    promises.push(Article.remove());
+    promises.push(ArticleData.remove());
     promises.push(ArticleBrand.remove({ name: 'Wir' }));
     promises.push(User.remove({ email: 'admin1@babajka.io' }));
     await Promise.all(promises);
@@ -69,8 +96,10 @@ describe('Articles API', () => {
         .expect(200)
         .expect(res => {
           expect(res.body.data).has.length(4);
-          expect(res.body.data[0].slug).to.equal('article-8');
-          expect(res.body.data[3].slug).to.equal('article-5');
+          expect(res.body.data[0].locales.be.slug).to.equal('article-8-be');
+          expect(res.body.data[0].locales.en.slug).to.equal('article-8-en');
+          expect(res.body.data[3].locales.be.slug).to.equal('article-5-be');
+          expect(res.body.data[3].locales.en.slug).to.equal('article-5-en');
         }));
 
     it('should return 8 published articles and skip 1 unpublished', () =>
@@ -79,15 +108,17 @@ describe('Articles API', () => {
         .expect(200)
         .expect(res => {
           expect(res.body.data).has.length(8);
-          expect(res.body.data.map(({ slug }) => slug)).not.includes('publishAt-article-1');
+          expect(res.body.data.map(({ locales }) => locales.en.slug)).not.includes(
+            'postpublished-article-en'
+          );
         }));
 
     it('should return an article by slug', () =>
       request
-        .get('/api/articles/article-2')
+        .get('/api/articles/article-2-be')
         .expect(200)
         .expect(res => {
-          expect(res.body.slug).equal('article-2');
+          expect(res.body.locales.be.slug).equal('article-2-be');
         }));
 
     it('should not return with bad slug', () =>
@@ -126,32 +157,34 @@ describe('Articles API', () => {
         .expect(200)
         .expect(res => {
           expect(res.body.data).has.length(9);
-          expect(res.body.data.map(({ slug }) => slug)).includes('publishAt-article-1');
+          expect(res.body.data.map(({ locales }) => locales.be.slug)).includes(
+            'postpublished-slug-be'
+          );
         }));
 
     it('should return unpublished', () =>
       request
-        .get('/api/articles/publishAt-article-1')
+        .get('/api/articles/postpublished-slug-en')
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          expect(res.body.slug).equal('publishAt-article-1');
+          expect(res.body.locales.en.slug).equal('postpublished-slug-en');
+          expect(res.body.locales.be.slug).equal('postpublished-slug-be');
         }));
+
+    let newArticleId;
 
     it('should create an article', () =>
       request
         .post('/api/articles')
         .set('Cookie', sessionCookie)
         .send({
-          title: 'title',
-          subtitle: 'subtitle',
           brand: articleBrandId,
           type: 'text',
-          slug: 'article-new',
         })
         .expect(200)
         .expect(res => {
-          expect(res.body.slug).equal('article-new');
+          newArticleId = res.body._id;
         }));
 
     it('should contain a newly created article', () =>
@@ -161,21 +194,30 @@ describe('Articles API', () => {
         .expect(200)
         .expect(res => {
           expect(res.body.data).has.length(10);
-          expect(res.body.data.map(({ slug }) => slug)).includes('article-new');
+          expect(res.body.data.map(({ _id }) => _id)).includes(newArticleId);
+        }));
+
+    it('should create a localization and assign to the article', () =>
+      request
+        .post(`/api/articles/data/${newArticleId}`)
+        .send({ title: 'title-new', subtitle: 'subtitle-new', slug: 'article-new', locale: 'en' })
+        .set('Cookie', sessionCookie)
+        .expect(200)
+        .expect(res => {
+          expect(res.body.title).equal('title-new');
         }));
 
     it('should update an article', () =>
       request
         .put('/api/articles/article-new')
         .send({
-          title: 'title-new',
-          subtitle: 'subtitle-new',
+          // TODO(uladbohdan): to replace with a better example of an update.
+          active: true,
         })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          expect(res.body.title).equal('title-new');
-          expect(res.body.subtitle).equal('subtitle-new');
+          expect(res.body.active).equal(true);
         }));
 
     it('should remove an article', () =>
