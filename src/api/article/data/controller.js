@@ -5,24 +5,24 @@ import Article from 'api/article/article.model';
 
 import ArticleData from './model';
 
-export const create = async ({ params: { articleId }, body }, res, next) => {
-  let article;
-  try {
-    article = await Article.findOne({ _id: articleId }).exec();
-  } catch (err) {
-    next(err);
-  }
-
-  return ArticleData({ ...body, articleId: article._id })
-    .save()
-    .then(async data => {
-      article.locales.push(data._id);
-      await article.save();
-      return data;
+export const create = async ({ params: { articleId }, body }, res, next) =>
+  Article.findOne({ _id: articleId })
+    .then(checkIsFound)
+    .then(article => {
+      ArticleData({ ...body, articleId: article._id })
+        .save()
+        .then(data => {
+          article.locales.push(data._id);
+          return data;
+        })
+        .then(data => {
+          article.save();
+          return data;
+        })
+        .then(sendJson(res))
+        .catch(next);
     })
-    .then(sendJson(res))
     .catch(next);
-};
 
 export const update = ({ params: { slug }, body }, res, next) =>
   ArticleData.findOneAndUpdate({ slug }, body, { new: true })
