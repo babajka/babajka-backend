@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "babajka",
-		"_postman_id": "b1b81b39-ca4d-ecbe-1859-ce015d3a92c0",
+		"_postman_id": "1b00e4b0-033a-7e4b-7090-1bbe592a67c2",
 		"description": "babajka api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -218,21 +218,6 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "slug",
-									"value": "kek",
-									"type": "text"
-								},
-								{
-									"key": "subtitle",
-									"value": "sub.",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "tit",
-									"type": "text"
-								},
-								{
 									"key": "type",
 									"value": "text",
 									"type": "text"
@@ -270,24 +255,14 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "slug",
-									"value": "slug-postpub",
-									"type": "text"
-								},
-								{
-									"key": "subtitle",
-									"value": "sub.",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "tit",
+									"key": "brand",
+									"value": "Wir",
 									"type": "text"
 								},
 								{
 									"key": "type",
-									"value": "599ac11c20cd399a9e211f7d",
-									"description": "todo(asntr): convert to \"type: 'Wir'\" format",
+									"value": "text",
+									"description": "",
 									"type": "text"
 								},
 								{
@@ -324,31 +299,26 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "subtitle",
-									"value": "new subtitle",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "new title",
-									"type": "text"
-								},
-								{
 									"key": "type",
 									"value": "text",
+									"type": "text"
+								},
+								{
+									"key": "active",
+									"value": "true",
 									"description": "",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4-be",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"articles",
-								"slug4"
+								"slug4-be"
 							]
 						}
 					},
@@ -364,7 +334,10 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
 							"host": [
@@ -388,13 +361,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4-be",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"articles",
-								"slug4"
+								"slug4-be"
 							]
 						}
 					},
@@ -487,6 +460,96 @@
 								"articles"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: add localization",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "locale",
+									"value": "fr",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "French title",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "French subtitle",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "slug",
+									"value": "slug4-fr",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/localize/5a5d39050638ea7bf52b213c",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"localize",
+								"5a5d39050638ea7bf52b213c"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: update localization",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "title",
+									"value": "new French title",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/localize/slug4-fr",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"localize",
+								"slug4-fr"
+							]
+						},
+						"description": ""
 					},
 					"response": []
 				}
