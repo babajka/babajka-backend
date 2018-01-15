@@ -13,7 +13,7 @@ const ArticleSchema = new Schema({
   locales: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'ArticleData',
+      ref: 'LocalizedArticle',
     },
   ],
   collectionId: {

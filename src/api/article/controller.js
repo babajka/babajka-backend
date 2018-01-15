@@ -5,7 +5,7 @@ import { checkPermissions } from 'api/user';
 import Article, { serializeArticle, checkIsPublished } from './article.model';
 import ArticleBrand from './brand/model';
 import ArticleCollection from './collection/model';
-import ArticleData from './data/model';
+import LocalizedArticle from './localized/model';
 
 export const getAll = ({ query, user }, res, next) => {
   const page = parseInt(query.page) || 0; // eslint-disable-line radix
@@ -45,7 +45,7 @@ export const getAll = ({ query, user }, res, next) => {
 };
 
 export const getOne = async ({ params: { slug }, user }, res, next) =>
-  ArticleData.findOne({ slug })
+  LocalizedArticle.findOne({ slug })
     .then(checkIsFound)
     .then(({ articleId }) =>
       Article.findOne({ _id: articleId, active: true })
@@ -94,7 +94,7 @@ export const create = async ({ body }, res, next) => {
 };
 
 export const update = ({ params: { slug }, body }, res, next) =>
-  ArticleData.findOne({ slug })
+  LocalizedArticle.findOne({ slug })
     .then(checkIsFound)
     .then(({ articleId }) =>
       Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
@@ -108,7 +108,7 @@ export const update = ({ params: { slug }, body }, res, next) =>
     .catch(next);
 
 export const remove = ({ params: { slug } }, res, next) =>
-  ArticleData.findOne({ slug })
+  LocalizedArticle.findOne({ slug })
     .then(checkIsFound)
     .then(({ articleId }) =>
       Article.findOneAndUpdate({ _id: articleId }, { active: false }, { new: true })

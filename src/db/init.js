@@ -6,7 +6,7 @@ import pick from 'lodash/pick';
 
 import connectDb from 'db';
 import { User } from 'api/user';
-import { Article, ArticleBrand, ArticleCollection, ArticleData } from 'api/article';
+import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
 import * as permissions from 'constants/permissions';
 
 import usersData from './users.json';
@@ -59,7 +59,7 @@ const initArticles = articleBrandsDict =>
       const article = new Article(articleData);
       Promise.all(
         Object.keys(articleLocales).map(locale => {
-          const data = new ArticleData({
+          const data = new LocalizedArticle({
             ...articleLocales[locale],
             locale,
             articleId: article._id,

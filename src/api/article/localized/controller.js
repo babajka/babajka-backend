@@ -3,13 +3,13 @@ import { sendJson } from 'utils/api';
 
 import Article from 'api/article/article.model';
 
-import ArticleData from './model';
+import LocalizedArticle from './model';
 
 export const create = async ({ params: { articleId }, body }, res, next) =>
   Article.findOne({ _id: articleId })
     .then(checkIsFound)
     .then(article => {
-      ArticleData({ ...body, articleId: article._id })
+      LocalizedArticle({ ...body, articleId: article._id })
         .save()
         .then(data => {
           article.locales.push(data._id);
@@ -25,7 +25,7 @@ export const create = async ({ params: { articleId }, body }, res, next) =>
     .catch(next);
 
 export const update = ({ params: { slug }, body }, res, next) =>
-  ArticleData.findOneAndUpdate({ slug }, body, { new: true })
+  LocalizedArticle.findOneAndUpdate({ slug }, body, { new: true })
     .then(checkIsFound)
     .then(sendJson(res))
     .catch(next);

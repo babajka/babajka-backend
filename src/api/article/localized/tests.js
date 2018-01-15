@@ -8,7 +8,7 @@ import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
 import User from 'api/user/model';
 
-import ArticleData from './model';
+import LocalizedArticle from './model';
 
 const request = supertest.agent(app.listen());
 
@@ -37,14 +37,14 @@ describe('Locales API', () => {
     const promises = [];
     promises.push(ArticleBrand.remove());
     promises.push(Article.remove());
-    promises.push(ArticleData.remove());
+    promises.push(LocalizedArticle.remove());
     promises.push(User.remove());
     await Promise.all(promises);
   });
 
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>
-      request.post(`/api/articles/data/${articleId}`).expect(401));
+      request.post(`/api/articles/localize/${articleId}`).expect(401));
 
     let sessionCookie;
 
@@ -62,7 +62,7 @@ describe('Locales API', () => {
 
     it('should add EN locale into the article', () =>
       request
-        .post(`/api/articles/data/${articleId}`)
+        .post(`/api/articles/localize/${articleId}`)
         .set('Cookie', sessionCookie)
         .send({
           slug: 'slug-en',
@@ -86,7 +86,7 @@ describe('Locales API', () => {
 
     it('should update an existing EN locale', () =>
       request
-        .put('/api/articles/data/slug-en')
+        .put('/api/articles/localize/slug-en')
         .set('Cookie', sessionCookie)
         .send({ title: 'new-title' })
         .expect(200)

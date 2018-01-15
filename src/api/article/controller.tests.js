@@ -6,7 +6,7 @@ import 'db/connect';
 import User from 'api/user/model';
 import Article from './article.model';
 import ArticleBrand from './brand/model';
-import ArticleData from './data/model';
+import LocalizedArticle from './localized/model';
 
 const request = supertest.agent(app.listen());
 
@@ -54,7 +54,7 @@ describe('Articles API', () => {
     ['en', 'be'].forEach(loc => {
       for (let i = 1; i <= 9; i++) {
         promises.push(
-          new ArticleData({
+          new LocalizedArticle({
             locale: `${loc}`,
             title: `title-${i}-${loc}`,
             subtitle: `subtitle-${i}-${loc}`,
@@ -83,7 +83,7 @@ describe('Articles API', () => {
   after(async () => {
     const promises = [];
     promises.push(Article.remove());
-    promises.push(ArticleData.remove());
+    promises.push(LocalizedArticle.remove());
     promises.push(ArticleBrand.remove({ name: 'Wir' }));
     promises.push(User.remove({ email: 'admin1@babajka.io' }));
     await Promise.all(promises);
@@ -199,7 +199,7 @@ describe('Articles API', () => {
 
     it('should create a localization and assign to the article', () =>
       request
-        .post(`/api/articles/data/${newArticleId}`)
+        .post(`/api/articles/localize/${newArticleId}`)
         .send({ title: 'title-new', subtitle: 'subtitle-new', slug: 'article-new', locale: 'en' })
         .set('Cookie', sessionCookie)
         .expect(200)

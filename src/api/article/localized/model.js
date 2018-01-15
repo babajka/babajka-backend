@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const ArticleDataSchema = new Schema({
+const LocalizedArticleSchema = new Schema({
   articleId: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -31,6 +31,6 @@ const ArticleDataSchema = new Schema({
   },
 });
 
-const ArticleData = mongoose.model('ArticleData', ArticleDataSchema);
+const LocalizedArticle = mongoose.model('LocalizedArticle', LocalizedArticleSchema);
 
-export default ArticleData;
+export default LocalizedArticle;
