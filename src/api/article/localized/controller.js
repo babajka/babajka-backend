@@ -11,14 +11,9 @@ export const create = ({ params: { articleId }, body }, res, next) =>
     .populate('locales', 'locale')
     .then(checkIsFound)
     .then(article => {
-      article.locales.forEach(loc => {
-        if (loc.locale === body.locale) {
-          throw new HttpError(
-            400,
-            'Locale exists already, should be updated instead of recreation.'
-          );
-        }
-      });
+      if (article.locales.map(({ locale }) => locale).includes(body.locale)) {
+        throw new HttpError(400, 'Locale exists already, should be updated instead of recreation.');
+      }
       return article;
     })
     .then(article => {
