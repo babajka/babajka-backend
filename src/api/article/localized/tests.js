@@ -34,12 +34,12 @@ describe('Locales API', () => {
   });
 
   after(async () => {
-    const promises = [];
-    promises.push(ArticleBrand.remove());
-    promises.push(Article.remove());
-    promises.push(LocalizedArticle.remove());
-    promises.push(User.remove());
-    await Promise.all(promises);
+    await Promise.all([
+      ArticleBrand.remove(),
+      Article.remove(),
+      LocalizedArticle.remove(),
+      User.remove(),
+    ]);
   });
 
   describe('# Locales CRUD', () => {

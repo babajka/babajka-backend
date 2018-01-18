@@ -420,21 +420,6 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "slug",
-									"value": "new-article",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "title",
-									"type": "text"
-								},
-								{
-									"key": "subtitle",
-									"value": "subtitle",
-									"type": "text"
-								},
-								{
 									"key": "type",
 									"value": "text",
 									"type": "text"

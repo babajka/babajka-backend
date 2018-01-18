@@ -6,7 +6,7 @@ import Article from 'api/article/article.model';
 
 import LocalizedArticle from './model';
 
-export const create = async ({ params: { articleId }, body }, res, next) =>
+export const create = ({ params: { articleId }, body }, res, next) =>
   Article.findOne({ _id: articleId })
     .populate('locales', 'locale')
     .then(checkIsFound)
@@ -24,12 +24,9 @@ export const create = async ({ params: { articleId }, body }, res, next) =>
     .then(article => {
       LocalizedArticle({ ...body, articleId: article._id })
         .save()
-        .then(data => {
+        .then(async data => {
           article.locales.push(data._id);
-          return data;
-        })
-        .then(data => {
-          article.save();
+          await article.save();
           return data;
         })
         .then(sendJson(res))

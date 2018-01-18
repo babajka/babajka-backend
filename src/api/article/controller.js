@@ -44,7 +44,7 @@ export const getAll = ({ query, user }, res, next) => {
     .catch(next);
 };
 
-export const getOne = async ({ params: { slug }, user }, res, next) =>
+export const getOne = ({ params: { slug }, user }, res, next) =>
   LocalizedArticle.findOne({ slug })
     .then(checkIsFound)
     .then(({ articleId }) =>
@@ -65,7 +65,7 @@ export const create = async ({ body }, res, next) => {
     const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ name: body.brand });
     await articleBrand.save();
 
-    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
+    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug });
 
     const articleBody = {
       ...body,
@@ -110,9 +110,6 @@ export const update = ({ params: { slug }, body }, res, next) =>
 export const remove = ({ params: { slug } }, res, next) =>
   LocalizedArticle.findOne({ slug })
     .then(checkIsFound)
-    .then(({ articleId }) =>
-      Article.findOneAndUpdate({ _id: articleId }, { active: false }, { new: true })
-    )
-    .then(checkIsFound)
+    .then(({ articleId }) => Article.update({ _id: articleId }, { active: false }))
     .then(() => res.sendStatus(200))
     .catch(next);
