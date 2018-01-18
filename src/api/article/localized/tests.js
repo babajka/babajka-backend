@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
+import { dropData } from 'utils/testing';
+
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
 import User from 'api/user/model';
-
-import LocalizedArticle from './model';
 
 const request = supertest.agent(app.listen());
 
@@ -33,14 +33,7 @@ describe('Locales API', () => {
     await user.save();
   });
 
-  after(async () => {
-    await Promise.all([
-      ArticleBrand.remove(),
-      Article.remove(),
-      LocalizedArticle.remove(),
-      User.remove(),
-    ]);
-  });
+  after(dropData);
 
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>

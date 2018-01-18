@@ -4,6 +4,8 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
+import { dropData } from 'utils/testing';
+
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
 import User from 'api/user/model';
@@ -57,18 +59,7 @@ describe('Collections API', () => {
     await user.save();
   });
 
-  after(async () => {
-    const promises = [];
-    for (let i = 1; i <= 5; i++) {
-      promises.push(ArticleCollection.remove({ slug: `collection-${i}` }));
-    }
-    for (let i = 1; i <= 5; i++) {
-      promises.push(Article.remove({ slug: `article-${i}` }));
-    }
-    promises.push(ArticleBrand.remove({ name: 'Wir' }));
-    promises.push(User.remove({ email: 'test2@babajka.io' }));
-    await Promise.all(promises);
-  });
+  after(dropData);
 
   describe('# Collections CRUD', () => {
     it('should return 5 collections', () =>

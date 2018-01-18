@@ -65,7 +65,7 @@ export const create = async ({ body }, res, next) => {
     const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ name: body.brand });
     await articleBrand.save();
 
-    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug });
+    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
 
     const articleBody = {
       ...body,

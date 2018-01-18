@@ -1,6 +1,8 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 
+import { dropData } from 'utils/testing';
+
 import app from 'server';
 import 'db/connect';
 import User from 'api/user/model';
@@ -15,8 +17,6 @@ describe('Articles API', () => {
   const articleIDs = [];
 
   before(async () => {
-    // TODO(uladbohdan): to fix.
-    await Article.remove();
     // Populating DB with articles.
     const articleBrand = await new ArticleBrand({ name: 'Wir' }).save();
     articleBrandId = articleBrand._id;
@@ -80,14 +80,7 @@ describe('Articles API', () => {
     await user.save();
   });
 
-  after(async () => {
-    const promises = [];
-    promises.push(Article.remove());
-    promises.push(LocalizedArticle.remove());
-    promises.push(ArticleBrand.remove({ name: 'Wir' }));
-    promises.push(User.remove({ email: 'admin1@babajka.io' }));
-    await Promise.all(promises);
-  });
+  after(dropData);
 
   describe('# Articles CRUD', () => {
     it('should return 4 articles from the first page', () =>

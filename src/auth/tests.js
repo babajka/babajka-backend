@@ -6,6 +6,8 @@ import app from 'server';
 import 'db/connect';
 import { requireAuth } from 'auth';
 
+import { dropData } from 'utils/testing';
+
 const request = supertest.agent(app.listen());
 let cookie;
 
@@ -29,9 +31,7 @@ describe('Auth API', () => {
     );
   });
 
-  after(async () => {
-    await Promise.all(usersData.map(async userData => User.remove(userData)));
-  });
+  after(dropData);
 
   describe('# request on protected url without authorization', () =>
     it('should respond with 401 Unauthorized', () => request.get('/protected').expect(401)));
