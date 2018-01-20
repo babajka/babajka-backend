@@ -4,7 +4,7 @@ import { requireAuth, verifyPermission } from 'auth';
 
 import brandRoutes from 'api/article/brand';
 import collectionRoutes from 'api/article/collection';
-import dataRoutes from 'api/article/localized';
+import localeRoutes from 'api/article/localized';
 
 import * as controller from './controller';
 
@@ -18,7 +18,7 @@ const router = Router();
 router.use('/brands', brandRoutes);
 router.use('/collections', collectionRoutes);
 
-router.use('/localize', dataRoutes);
+router.use('/localize', localeRoutes);
 
 router.get('/', controller.getAll);
 router.post('/', requireAuth, verifyPermission('canCreateArticle'), controller.create);

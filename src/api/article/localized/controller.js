@@ -6,28 +6,21 @@ import Article from 'api/article/article.model';
 
 import LocalizedArticle from './model';
 
-export const create = ({ params: { articleId }, body }, res, next) =>
-  Article.findOne({ _id: articleId })
-    .populate('locales', 'locale')
-    .then(checkIsFound)
-    .then(article => {
-      if (article.locales.map(({ locale }) => locale).includes(body.locale)) {
-        throw new HttpError(400, 'Locale exists already, should be updated instead of recreation.');
-      }
-      return article;
-    })
-    .then(article => {
-      LocalizedArticle({ ...body, articleId: article._id })
-        .save()
-        .then(async data => {
-          article.locales.push(data._id);
-          await article.save();
-          return data;
-        })
-        .then(sendJson(res))
-        .catch(next);
-    })
-    .catch(next);
+export const create = async ({ params: { articleId }, body }, res, next) => {
+  try {
+    const article = await Article.findOne({ _id: articleId }).populate('locales', 'locale');
+    checkIsFound(article);
+    if (article.locales.map(({ locale }) => locale).includes(body.locale)) {
+      throw new HttpError(400, 'Locale exists already, should be updated instead of recreation.');
+    }
+    const localized = await LocalizedArticle({ ...body, articleId: article._id }).save();
+    article.locales.push(localized._id);
+    await article.save();
+    return sendJson(res)(localized);
+  } catch (err) {
+    return next(err);
+  }
+};
 
 export const update = ({ params: { slug }, body }, res, next) =>
   LocalizedArticle.findOneAndUpdate({ slug }, body, { new: true })
