@@ -1,5 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
+import { slugValidator } from 'utils/validation';
+
 const ArticleCollectionSchema = new Schema({
   name: {
     type: String,
@@ -17,6 +19,7 @@ const ArticleCollectionSchema = new Schema({
     type: String,
     required: true,
     unique: true,
+    validate: slugValidator,
   },
   active: {
     type: Boolean,

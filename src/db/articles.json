@@ -1,7 +1,7 @@
 [
   {
     "type": "text",
-    "brand": "Wir",
+    "brand": "wir",
     "locales": {
       "be": {
         "title": "Назва 0",
@@ -19,7 +19,7 @@
   },
   {
     "type": "video",
-    "brand": "Wir",
+    "brand": "wir",
     "locales": {
       "be": {
         "title": "Назва 1",
@@ -37,7 +37,7 @@
   },
   {
     "type": "video",
-    "brand": "Kurilka",
+    "brand": "kurilka",
     "locales": {
       "be": {
         "title": "Назва 2",
@@ -55,7 +55,7 @@
   },
   {
     "type": "text",
-    "brand": "Wir",
+    "brand": "wir",
     "locales": {
       "be": {
         "title": "Назва 3",
@@ -91,7 +91,7 @@
   },
   {
     "type": "text",
-    "brand": "Wir",
+    "brand": "wir",
     "publishAt": "2020-01-01T18:25:43.511Z",
     "locales": {
       "be": {

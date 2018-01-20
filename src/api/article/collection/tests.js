@@ -16,7 +16,7 @@ const request = supertest.agent(app.listen());
 
 describe('Collections API', () => {
   before(async () => {
-    const brand = await new ArticleBrand({ name: 'Wir' }).save();
+    const brand = await new ArticleBrand({ slug: 'Wir' }).save();
     // Populating DB with Collections.
     const articlePromises = [];
     for (let i = 1; i <= 5; i++) {

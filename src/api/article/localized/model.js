@@ -1,5 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
+import { slugValidator } from 'utils/validation';
+
 const LocalizedArticleSchema = new Schema({
   articleId: {
     type: Schema.Types.ObjectId,
@@ -24,6 +26,7 @@ const LocalizedArticleSchema = new Schema({
     type: String,
     required: true,
     unique: true,
+    validate: slugValidator,
   },
   createdAt: {
     type: Date,

@@ -14,7 +14,7 @@ describe('Brands API', () => {
   const brands = ['Wir', 'Kurilka', 'Minsk'];
 
   before(async () => {
-    const promises = brands.map(brand => new ArticleBrand({ name: brand }).save());
+    const promises = brands.map(brand => new ArticleBrand({ slug: brand }).save());
     await Promise.all(promises);
   });
 

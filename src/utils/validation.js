@@ -25,3 +25,8 @@ export const checkIsFound = object => {
 
   return object;
 };
+
+export const slugValidator = {
+  validator: v => /^[a-zA-Z0-9_-]+$/.test(v),
+  message: 'failed to match regexp',
+};

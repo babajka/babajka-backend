@@ -42,7 +42,7 @@ const getArticleBrandsDict = async () => {
   const articleBrandsDict = {};
   const articleBrands = await ArticleBrand.find().exec();
   await articleBrands.forEach(item => {
-    articleBrandsDict[item.name] = item._id;
+    articleBrandsDict[item.slug] = item._id;
   });
   return articleBrandsDict;
 };

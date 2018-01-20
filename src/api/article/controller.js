@@ -61,8 +61,8 @@ export const getOne = ({ params: { slug }, user }, res, next) =>
 
 export const create = async ({ body }, res, next) => {
   try {
-    const articleBrandQuery = ArticleBrand.findOne({ name: body.brand });
-    const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ name: body.brand });
+    const articleBrandQuery = ArticleBrand.findOne({ slug: body.brand });
+    const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ slug: body.brand });
     await articleBrand.save();
 
     const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
