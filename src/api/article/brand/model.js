@@ -11,7 +11,7 @@ const ArticleBrandSchema = new Schema({
   },
   image: String,
   // names maps locales (be, ru, ...) to the name. Once amount of localized data for
-  // ArticleBrand increases implementing LocalizedArticleBrand model might be considered.
+  // ArticleBrand increases implementation of LocalizedArticleBrand model might be considered.
   names: Schema.Types.Mixed,
 });
 

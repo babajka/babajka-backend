@@ -22,7 +22,7 @@ export const getAll = ({ query, user }, res, next) => {
 
   return Article.find(articlesQuery)
     .populate('brand', '-_id slug names')
-    .populate('collectionId', '-_id name slug')
+    .populate('collectionId', '-_id name slug description')
     .populate('locales', '-_id -__v')
     .sort({ publishAt: 'desc' })
     .skip(skip)
@@ -50,7 +50,7 @@ export const getOne = ({ params: { slug }, user }, res, next) =>
     .then(({ articleId }) =>
       Article.findOne({ _id: articleId, active: true })
         .populate('brand', '-_id slug names')
-        .populate('collectionId', '-_id name slug')
+        .populate('collectionId', '-_id name slug description')
         .populate('locales', '-_id -__v')
     )
     .then(checkIsFound)
@@ -78,7 +78,12 @@ export const create = async ({ body }, res, next) => {
     try {
       const article = Article(articleBody);
       await article.save();
-      data = serializeArticle(await article.populate('brand').execPopulate());
+      data = serializeArticle(
+        await article
+          .populate('brand', '-_id slug names')
+          .populate('collectionId', '-_id name slug description')
+          .execPopulate()
+      );
       if (articleCollection) {
         articleCollection.articles.push(article._id);
         await articleCollection.save();
@@ -99,7 +104,7 @@ export const update = ({ params: { slug }, body }, res, next) =>
     .then(({ articleId }) =>
       Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
         .populate('brand', '-_id slug names')
-        .populate('collectionId', '-_id name slug')
+        .populate('collectionId', '-_id name slug description')
         .populate('locales', '-_id -__v')
     )
     .then(checkIsFound)

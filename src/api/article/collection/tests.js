@@ -42,8 +42,8 @@ describe('Collections API', () => {
     for (let i = 1; i <= 5; i++) {
       promises.push(
         new ArticleCollection({
-          name: `Collection ${i}`,
-          description: `a description`,
+          name: { en: `Collection ${i}` },
+          description: { en: `a description` },
           slug: `collection-${i}`,
           articles: articlesDict[`article-${i}`],
         }).save()
@@ -121,7 +121,7 @@ describe('Collections API', () => {
         .set('Cookie', sessionCookie)
         .send({
           slug: 'collection-6',
-          name: 'New Collection',
+          name: `{ "en": "New Collection" }`,
         })
         .expect(200)
         .expect(res => {
@@ -153,12 +153,12 @@ describe('Collections API', () => {
     it('should recover a collection using update', () =>
       request
         .put('/api/articles/collections/collection-6')
-        .send({ active: true, description: 'desc-new' })
+        .send({ active: true, description: `{ "en": "desc-new" }` })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
           expect(res.body.slug).equals('collection-6');
-          expect(res.body.description).equals('desc-new');
+          expect(res.body.description.en).equals('desc-new');
         }));
 
     it('should return a recovered collection', () =>
