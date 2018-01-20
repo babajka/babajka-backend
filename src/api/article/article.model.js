@@ -49,7 +49,6 @@ const Article = mongoose.model('Article', ArticleSchema);
 
 export const serializeArticle = article => ({
   ...omit(article.toObject(), ['__v']),
-  brand: article.brand.name,
   locales: keyBy(article.locales, 'locale'),
 });
 

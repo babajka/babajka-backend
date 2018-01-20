@@ -21,7 +21,7 @@ export const getAll = ({ query, user }, res, next) => {
   }
 
   return Article.find(articlesQuery)
-    .populate('brand')
+    .populate('brand', '-_id slug names')
     .populate('collectionId', '-_id name slug')
     .populate('locales', '-_id -__v')
     .sort({ publishAt: 'desc' })
@@ -49,7 +49,7 @@ export const getOne = ({ params: { slug }, user }, res, next) =>
     .then(checkIsFound)
     .then(({ articleId }) =>
       Article.findOne({ _id: articleId, active: true })
-        .populate('brand')
+        .populate('brand', '-_id slug names')
         .populate('collectionId', '-_id name slug')
         .populate('locales', '-_id -__v')
     )
@@ -98,7 +98,7 @@ export const update = ({ params: { slug }, body }, res, next) =>
     .then(checkIsFound)
     .then(({ articleId }) =>
       Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
-        .populate('brand')
+        .populate('brand', '-_id slug names')
         .populate('collectionId', '-_id name slug')
         .populate('locales', '-_id -__v')
     )
