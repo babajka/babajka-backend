@@ -1,26 +1,21 @@
 import HttpError from 'node-http-error';
 import mongoose, { Schema } from 'mongoose';
+import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 
 const ArticleSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  subtitle: {
-    type: String,
-    required: true,
-  },
-  video: String,
-  image: String,
-  text: Schema.Types.Mixed,
   author: {
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
-  tags: [String],
+  locales: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'LocalizedArticle',
+    },
+  ],
   collectionId: {
     type: Schema.Types.ObjectId,
     ref: 'ArticleCollection',
@@ -32,14 +27,9 @@ const ArticleSchema = new Schema({
     ref: 'ArticleBrand',
   },
   type: {
-    // May be 'text' or 'video'.
     type: String,
+    enum: ['text', 'video'],
     required: true,
-  },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
   },
   createdAt: {
     type: Date,
@@ -58,8 +48,9 @@ const ArticleSchema = new Schema({
 const Article = mongoose.model('Article', ArticleSchema);
 
 export const serializeArticle = article => ({
-  ...omit(article.toObject(), ['_id', '__v']),
+  ...omit(article.toObject(), ['__v']),
   brand: article.brand.name,
+  locales: keyBy(article.locales, 'locale'),
 });
 
 export const checkIsPublished = (article, user) => {

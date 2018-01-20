@@ -5,6 +5,7 @@ import { checkPermissions } from 'api/user';
 import Article, { serializeArticle, checkIsPublished } from './article.model';
 import ArticleBrand from './brand/model';
 import ArticleCollection from './collection/model';
+import LocalizedArticle from './localized/model';
 
 export const getAll = ({ query, user }, res, next) => {
   const page = parseInt(query.page) || 0; // eslint-disable-line radix
@@ -22,6 +23,7 @@ export const getAll = ({ query, user }, res, next) => {
   return Article.find(articlesQuery)
     .populate('brand')
     .populate('collectionId', '-_id name slug')
+    .populate('locales', '-_id -__v')
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
@@ -43,9 +45,14 @@ export const getAll = ({ query, user }, res, next) => {
 };
 
 export const getOne = ({ params: { slug }, user }, res, next) =>
-  Article.findOne({ slug, active: true })
-    .populate('brand')
-    .populate('collectionId', '-_id name slug')
+  LocalizedArticle.findOne({ slug })
+    .then(checkIsFound)
+    .then(({ articleId }) =>
+      Article.findOne({ _id: articleId, active: true })
+        .populate('brand')
+        .populate('collectionId', '-_id name slug')
+        .populate('locales', '-_id -__v')
+    )
     .then(checkIsFound)
     .then(article => checkIsPublished(article, user))
     .then(serializeArticle)
@@ -58,7 +65,7 @@ export const create = async ({ body }, res, next) => {
     const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ name: body.brand });
     await articleBrand.save();
 
-    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug });
+    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
 
     const articleBody = {
       ...body,
@@ -87,13 +94,22 @@ export const create = async ({ body }, res, next) => {
 };
 
 export const update = ({ params: { slug }, body }, res, next) =>
-  Article.findOneAndUpdate({ slug }, body, { new: true })
+  LocalizedArticle.findOne({ slug })
     .then(checkIsFound)
+    .then(({ articleId }) =>
+      Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
+        .populate('brand')
+        .populate('collectionId', '-_id name slug')
+        .populate('locales', '-_id -__v')
+    )
+    .then(checkIsFound)
+    .then(serializeArticle)
     .then(sendJson(res))
     .catch(next);
 
 export const remove = ({ params: { slug } }, res, next) =>
-  Article.findOneAndUpdate({ slug }, { active: false }, { new: true })
+  LocalizedArticle.findOne({ slug })
     .then(checkIsFound)
+    .then(({ articleId }) => Article.update({ _id: articleId }, { active: false }))
     .then(() => res.sendStatus(200))
     .catch(next);
