@@ -586,23 +586,12 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"value": "application/json"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "description",
-									"value": "{ \"en\": \"new description\" }",
-									"type": "text"
-								},
-								{
-									"key": "active",
-									"value": "true",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"active\": true,\n\t\"description\": {\n\t\t\"en\": \"new description\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
@@ -648,28 +637,12 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"value": "application/json"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "name",
-									"value": "{ \"be\": \"CollectionX\", \"en\": \"CollectionX\" }",
-									"type": "text"
-								},
-								{
-									"key": "slug",
-									"value": "collection-2",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "{ \"be\": \"Новая калекцыя\", \"en\": \"New Description for Collection X\" }",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"slug\": \"collection-2\",\n\t\"name\": {\n\t\t\"be\": \"Калекцыя 2\",\n\t\t\"en\": \"Collection 2\"\n\t},\n\t\"description\": {\n\t\t\"be\": \"Апісанне калекцыі 2\",\n\t\t\"en\": \"Collection 2 description\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",

@@ -2,8 +2,6 @@ import { Router } from 'express';
 
 import { requireAuth, verifyPermission } from 'auth';
 
-import { parseLocalized } from './middlewares';
-
 import * as controller from './controller';
 import ArticleCollection from './model';
 
@@ -11,20 +9,8 @@ const router = Router();
 
 router.get('/', controller.getAll);
 router.get('/:slug', controller.getOne);
-router.post(
-  '/',
-  requireAuth,
-  verifyPermission('canCreateArticle'),
-  parseLocalized,
-  controller.create
-);
-router.put(
-  '/:slug',
-  requireAuth,
-  verifyPermission('canCreateArticle'),
-  parseLocalized,
-  controller.update
-);
+router.post('/', requireAuth, verifyPermission('canCreateArticle'), controller.create);
+router.put('/:slug', requireAuth, verifyPermission('canCreateArticle'), controller.update);
 router.delete('/:slug', requireAuth, verifyPermission('canCreateArticle'), controller.remove);
 
 export { ArticleCollection };

@@ -121,7 +121,7 @@ describe('Collections API', () => {
         .set('Cookie', sessionCookie)
         .send({
           slug: 'collection-6',
-          name: `{ "en": "New Collection" }`,
+          name: { en: 'New Collection' },
         })
         .expect(200)
         .expect(res => {
@@ -153,7 +153,7 @@ describe('Collections API', () => {
     it('should recover a collection using update', () =>
       request
         .put('/api/articles/collections/collection-6')
-        .send({ active: true, description: `{ "en": "desc-new" }` })
+        .send({ active: true, description: { en: 'desc-new' } })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
