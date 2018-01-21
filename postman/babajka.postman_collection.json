@@ -586,12 +586,25 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"active\": true,\n\t\"description\": {\n\t\t\"en\": \"new description\"\n\t}\n}"
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "active",
+									"value": "true",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "description.en",
+									"value": "new EN description",
+									"description": "",
+									"type": "text"
+								}
+							]
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
