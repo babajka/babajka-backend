@@ -5,14 +5,14 @@ import { sendJson } from 'utils/api';
 import User, { serializeAuthor } from 'api/user/model';
 
 export const getAll = (req, res, next) =>
-  User.find({ role: 'author' })
+  User.find({ active: true, role: 'author' })
     .then(users => users.map(serializeAuthor))
     .then(sendJson(res))
     .catch(next);
 
 export const create = async ({ body }, res, next) => {
-  const emailRgxp = /generated-author-\d+@wir.by/;
-  const capturingRgxp = /generated-author-(.*?)@wir.by/;
+  const emailRgxp = /^generated-author-\d+@wir.by$/;
+  const capturingRgxp = /^generated-author-(.*?)@wir.by$/;
 
   let nextNum = 0;
   await User.find({ email: { $regex: emailRgxp } }).then(authors => {
@@ -27,7 +27,7 @@ export const create = async ({ body }, res, next) => {
 
   const authorBody = {
     ...pick(body, ['firstName', 'lastName', 'bio']),
-    email: `generated-author-${nextNum}@wir.by'`,
+    email: `generated-author-${nextNum}@wir.by`,
     role: 'author',
   };
 
