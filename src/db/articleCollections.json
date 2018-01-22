@@ -1,7 +1,15 @@
 [
   {
-    "name": "Collection First",
-    "description": "the very first collection",
+    "name": {
+      "be": "Першая калекцыя",
+      "ru": "Первая коллекция",
+      "en": "Collection First"
+    },
+    "description": {
+      "be": "Апісанне самай першай калекцыі",
+      "ru": "Описание самой первой коллекции",
+      "en": "The description of the very first collection"
+    },
     "slug": "collection0",
     "articleSlugs": ["slug0", "slug1"]
   }

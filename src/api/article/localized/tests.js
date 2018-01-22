@@ -16,7 +16,7 @@ describe('Locales API', () => {
   let articleId;
 
   before(async () => {
-    const brand = await ArticleBrand({ name: 'test' }).save();
+    const brand = await ArticleBrand({ slug: 'test' }).save();
 
     const article = await Article({
       brand: brand._id,

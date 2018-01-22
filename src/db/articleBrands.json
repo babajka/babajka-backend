@@ -1,11 +1,25 @@
 [
   {
-    "name": "Wir"
+    "slug": "wir",
+    "names": {
+      "be": "Wir.by - Адукацыйная платформа",
+      "ru": "Wir.by - Образовательная платформа",
+      "en": "Wir.by - Educational platform"
+    }
   },
   {
-    "name": "Kurilka"
+    "slug": "kurilka",
+    "image": "kurilka-logo.png",
+    "names": {
+      "be": "Курылка Гутэнберга",
+      "ru": "Курилка Гутенберга"
+    }
   },
   {
-    "name": "15x4"
+    "slug": "15x4",
+    "names": {
+      "be": "Мінск",
+      "ru": "Минск"
+    }
   }
 ]

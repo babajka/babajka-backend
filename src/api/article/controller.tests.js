@@ -18,7 +18,7 @@ describe('Articles API', () => {
 
   before(async () => {
     // Populating DB with articles.
-    const articleBrand = await new ArticleBrand({ name: 'Wir' }).save();
+    const articleBrand = await new ArticleBrand({ slug: 'Wir' }).save();
     articleBrandId = articleBrand._id;
     let promises = [];
     for (let i = 1; i <= 8; i++) {

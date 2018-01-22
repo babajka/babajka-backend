@@ -21,7 +21,7 @@ const ArticleSchema = new Schema({
     ref: 'ArticleCollection',
   },
   brand: {
-    // May be 'Wir' or 'Kurilka'.
+    // May be e.g. 'wir' or 'kurilka'.
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'ArticleBrand',
@@ -49,7 +49,6 @@ const Article = mongoose.model('Article', ArticleSchema);
 
 export const serializeArticle = article => ({
   ...omit(article.toObject(), ['__v']),
-  brand: article.brand.name,
   locales: keyBy(article.locales, 'locale'),
 });
 

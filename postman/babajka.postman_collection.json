@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "babajka",
-		"_postman_id": "1b00e4b0-033a-7e4b-7090-1bbe592a67c2",
+		"_postman_id": "1c2a536a-6a5f-6666-8465-3ec5f32939d1",
 		"description": "babajka api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -224,7 +224,7 @@
 								},
 								{
 									"key": "brand",
-									"value": "Wir",
+									"value": "wir",
 									"type": "text"
 								}
 							]
@@ -256,13 +256,12 @@
 							"urlencoded": [
 								{
 									"key": "brand",
-									"value": "Wir",
+									"value": "wir",
 									"type": "text"
 								},
 								{
 									"key": "type",
 									"value": "text",
-									"description": "",
 									"type": "text"
 								},
 								{
@@ -306,7 +305,6 @@
 								{
 									"key": "active",
 									"value": "true",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -426,7 +424,7 @@
 								},
 								{
 									"key": "brand",
-									"value": "Wir",
+									"value": "wir",
 									"type": "text"
 								},
 								{
@@ -464,25 +462,21 @@
 								{
 									"key": "locale",
 									"value": "fr",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "title",
 									"value": "French title",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "subtitle",
 									"value": "French subtitle",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "slug",
 									"value": "slug4-fr",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -497,8 +491,7 @@
 								"localize",
 								"5a5d39050638ea7bf52b213c"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -518,7 +511,6 @@
 								{
 									"key": "title",
 									"value": "new French title",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -533,8 +525,7 @@
 								"localize",
 								"slug4-fr"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				}
@@ -602,13 +593,15 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "description",
-									"value": "new description",
+									"key": "active",
+									"value": "true",
+									"description": "",
 									"type": "text"
 								},
 								{
-									"key": "active",
-									"value": "true",
+									"key": "description.en",
+									"value": "new EN description",
+									"description": "",
 									"type": "text"
 								}
 							]
@@ -657,28 +650,12 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"value": "application/json"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "name",
-									"value": "CollectionX",
-									"type": "text"
-								},
-								{
-									"key": "slug",
-									"value": "collection-x",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "New Description for Collection X",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"slug\": \"collection-2\",\n\t\"name\": {\n\t\t\"be\": \"Калекцыя 2\",\n\t\t\"en\": \"Collection 2\"\n\t},\n\t\"description\": {\n\t\t\"be\": \"Апісанне калекцыі 2\",\n\t\t\"en\": \"Collection 2 description\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
