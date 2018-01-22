@@ -24,7 +24,6 @@
     "email": "very-first-author@wir.by",
     "firstName": "Very",
     "lastName": "First",
-    "password": "some-random-password",
     "bio": "That is an author created by Content Managers",
     "role": "author"
   }

@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
+import pick from 'lodash/pick';
 
 import config from 'config';
 
@@ -50,14 +51,11 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-export const serializeUser = ({ firstName, lastName, email, permissions, role, active }) => ({
-  firstName,
-  lastName,
-  email,
-  permissions,
-  role,
-  active,
-});
+export const serializeUser = object =>
+  pick(object, ['firstName', 'lastName', 'email', 'permissions', 'role', 'active']);
+
+export const serializeAuthor = object =>
+  pick(object, ['firstName', 'lastName', 'email', 'role', 'active', 'bio']);
 
 export const checkPermissions = (user, list) => user && list.every(perm => user.permissions[perm]);
 

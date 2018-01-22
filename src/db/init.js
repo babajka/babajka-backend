@@ -25,7 +25,9 @@ const initUsers = () =>
         user.permissions[perm] = true;
       });
 
-      await user.setPassword(userData.password);
+      if (userData.role !== 'author') {
+        await user.setPassword(userData.password);
+      }
       return user.save();
     })
   );
