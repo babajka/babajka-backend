@@ -17,11 +17,11 @@ import articlesData from './articles.json';
 const initUsers = () =>
   Promise.all(
     usersData.map(async userData => {
-      const role = userData.role || 'user';
+      const permPreset = userData.permissionsPreset || 'user';
 
-      const user = new User(omit(userData, ['role']));
+      const user = new User(userData);
       user.permissions = {};
-      permissions[role].forEach(perm => {
+      permissions[permPreset].forEach(perm => {
         user.permissions[perm] = true;
       });
 

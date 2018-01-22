@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import { requireAuth, verifyPermission } from 'auth';
 
+import authorRoutes from 'api/article/author';
 import brandRoutes from 'api/article/brand';
 import collectionRoutes from 'api/article/collection';
 import localeRoutes from 'api/article/localized';
@@ -15,6 +16,7 @@ import LocalizedArticle from './localized/model';
 
 const router = Router();
 
+router.use('/authors', authorRoutes);
 router.use('/brands', brandRoutes);
 router.use('/collections', collectionRoutes);
 

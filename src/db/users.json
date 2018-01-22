@@ -4,14 +4,14 @@
     "firstName": "Fox",
     "lastName": "Muller",
     "password": "password",
-    "role": "admin"
+    "permissionsPreset": "admin"
   },
   {
     "email": "creator@babajka.io",
     "firstName": "Dana",
     "lastName": "Scally",
     "password": "password1",
-    "role": "contentManager"
+    "permissionsPreset": "contentManager"
   },
   {
     "email": "user@babajka.io",
@@ -19,5 +19,13 @@
     "lastName": "Smith",
     "password": "password2",
     "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+  },
+  {
+    "email": "very-first-author@wir.by",
+    "firstName": "Very",
+    "lastName": "First",
+    "password": "some-random-password",
+    "bio": "That is an author created by Content Managers",
+    "role": "author"
   }
 ]
