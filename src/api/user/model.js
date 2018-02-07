@@ -51,12 +51,14 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-export const serializeUser = object =>
-  pick(object, ['firstName', 'lastName', 'email', 'permissions', 'role', 'active']);
+const basicFields = ['firstName', 'lastName', 'email', 'role', 'active', 'bio'];
 
-export const serializeAuthor = object =>
-  pick(object, ['firstName', 'lastName', 'email', 'role', 'active', 'bio']);
+export const serializeUser = object => pick(object, [...basicFields, 'permissions']);
+
+export const serializeAuthor = object => pick(object, basicFields);
 
 export const checkPermissions = (user, list) => user && list.every(perm => user.permissions[perm]);
+
+export const generatedEmailRgxp = /^generated-author-(\d+)@wir.by$/;
 
 export default User;

@@ -64,4 +64,11 @@ export const checkIsPublished = (article, user) => {
   return article;
 };
 
+export const populateOptions = {
+  author: '-_id firstName lastName email role active bio',
+  brand: '-_id slug names',
+  collection: '-_id name slug description',
+  locales: '-_id -__v',
+};
+
 export default Article;
