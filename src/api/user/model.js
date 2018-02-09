@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
+import pick from 'lodash/pick';
 
 import config from 'config';
 
@@ -19,6 +20,12 @@ const UserSchema = new Schema({
     default: true,
   },
   bio: String,
+  role: {
+    type: String,
+    enum: ['author', 'regular'],
+    required: true,
+    default: 'regular',
+  },
 });
 
 UserSchema.virtual('name').get(function get() {
@@ -44,13 +51,14 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-export const serializeUser = ({ firstName, lastName, email, permissions }) => ({
-  firstName,
-  lastName,
-  email,
-  permissions,
-});
+const basicFields = ['firstName', 'lastName', 'email', 'role', 'active', 'bio'];
+
+export const serializeUser = object => pick(object, [...basicFields, 'permissions']);
+
+export const serializeAuthor = object => pick(object, basicFields);
 
 export const checkPermissions = (user, list) => user && list.every(perm => user.permissions[perm]);
+
+export const GENERATED_EMAIL_RGXP = /^generated-author-(\d+)@wir.by$/;
 
 export default User;

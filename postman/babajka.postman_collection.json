@@ -528,6 +528,52 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Articles: create with Author",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "type",
+									"value": "video",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "brand",
+									"value": "wir",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "authorEmail",
+									"value": "very-first-author@wir.by",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -667,6 +713,81 @@
 								"collections"
 							]
 						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authors",
+			"description": "",
+			"item": [
+				{
+					"name": "Authors: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"authors",
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Authors: create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "firstName",
+									"value": "author-first-name",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "author-last-name",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "bio",
+									"value": "Here is a short bio for a new author.",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"authors",
+								""
+							]
+						},
+						"description": ""
 					},
 					"response": []
 				}

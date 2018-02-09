@@ -18,7 +18,10 @@ passport.use(
     },
     (req, email, password, done) => {
       let user;
-      User.findOne({ email })
+      // Below we restrict Users with any roles other than 'regular' to login.
+      // This is to prevent situations somebody tries to login as User with role 'author':
+      // such users do not have a password and are not yet allowed to login.
+      User.findOne({ email, role: 'regular' })
         .then(result => {
           if (!result) {
             throw new ValidationError({ password: 'Няправільны емэйл ці пароль' });
