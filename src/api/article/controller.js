@@ -2,7 +2,7 @@ import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
 import { User, checkPermissions } from 'api/user';
-import Article, { serializeArticle, checkIsPublished, populateOptions } from './article.model';
+import Article, { serializeArticle, checkIsPublished, POPULATE_OPTIONS } from './article.model';
 import ArticleBrand from './brand/model';
 import ArticleCollection from './collection/model';
 import LocalizedArticle from './localized/model';
@@ -21,10 +21,10 @@ export const getAll = ({ query, user }, res, next) => {
   }
 
   return Article.find(articlesQuery)
-    .populate('author', populateOptions.author)
-    .populate('brand', populateOptions.brand)
-    .populate('collectionId', populateOptions.collection)
-    .populate('locales', populateOptions.locales)
+    .populate('author', POPULATE_OPTIONS.author)
+    .populate('brand', POPULATE_OPTIONS.brand)
+    .populate('collectionId', POPULATE_OPTIONS.collection)
+    .populate('locales', POPULATE_OPTIONS.locales)
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
@@ -50,10 +50,10 @@ export const getOne = ({ params: { slug }, user }, res, next) =>
     .then(checkIsFound)
     .then(({ articleId }) =>
       Article.findOne({ _id: articleId, active: true })
-        .populate('author', populateOptions.author)
-        .populate('brand', populateOptions.brand)
-        .populate('collectionId', populateOptions.collection)
-        .populate('locales', populateOptions.locales)
+        .populate('author', POPULATE_OPTIONS.author)
+        .populate('brand', POPULATE_OPTIONS.brand)
+        .populate('collectionId', POPULATE_OPTIONS.collection)
+        .populate('locales', POPULATE_OPTIONS.locales)
     )
     .then(checkIsFound)
     .then(article => checkIsPublished(article, user))
@@ -85,9 +85,9 @@ export const create = async ({ body }, res, next) => {
       await article.save();
       data = serializeArticle(
         await article
-          .populate('author', populateOptions.author)
-          .populate('brand', populateOptions.brand)
-          .populate('collectionId', populateOptions.collection)
+          .populate('author', POPULATE_OPTIONS.author)
+          .populate('brand', POPULATE_OPTIONS.brand)
+          .populate('collectionId', POPULATE_OPTIONS.collection)
           .execPopulate()
       );
       if (articleCollection) {
@@ -109,10 +109,10 @@ export const update = ({ params: { slug }, body }, res, next) =>
     .then(checkIsFound)
     .then(({ articleId }) =>
       Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
-        .populate('author', populateOptions.author)
-        .populate('brand', populateOptions.brand)
-        .populate('collectionId', populateOptions.collection)
-        .populate('locales', populateOptions.locales)
+        .populate('author', POPULATE_OPTIONS.author)
+        .populate('brand', POPULATE_OPTIONS.brand)
+        .populate('collectionId', POPULATE_OPTIONS.collection)
+        .populate('locales', POPULATE_OPTIONS.locales)
     )
     .then(checkIsFound)
     .then(serializeArticle)

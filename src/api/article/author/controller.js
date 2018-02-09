@@ -2,7 +2,7 @@ import pick from 'lodash/pick';
 
 import { sendJson } from 'utils/api';
 
-import User, { serializeAuthor, generatedEmailRgxp } from 'api/user/model';
+import User, { serializeAuthor, GENERATED_EMAIL_RGXP } from 'api/user/model';
 
 export const getAll = (req, res, next) =>
   User.find({ active: true, role: 'author' })
@@ -12,11 +12,11 @@ export const getAll = (req, res, next) =>
 
 export const create = async ({ body }, res, next) => {
   let nextNum = 0;
-  await User.find({ email: { $regex: generatedEmailRgxp } }).then(authors => {
+  await User.find({ email: { $regex: GENERATED_EMAIL_RGXP } }).then(authors => {
     if (authors.length > 0) {
       nextNum =
         authors
-          .map(({ email }) => parseInt(generatedEmailRgxp.exec(email)[1], 10))
+          .map(({ email }) => parseInt(GENERATED_EMAIL_RGXP.exec(email)[1], 10))
           .sort((a, b) => a - b)
           .pop() + 1;
     }
