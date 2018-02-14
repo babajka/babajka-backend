@@ -32,7 +32,7 @@ export const slugValidator = {
 };
 
 export const colloquialDateValidator = {
-  // Colloquial Date has YYYY-MM-DD format.
-  validator: v => /\d{4}-\d{2}-\d{2}/.test(v),
+  // Colloquial Date has MM-DD format.
+  validator: v => /\d{2}-\d{2}/.test(v),
   message: 'failed to match regexp',
 };

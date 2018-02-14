@@ -3,18 +3,21 @@
     "author": "Author1",
     "text": "Diary text 1",
     "locale": "be",
-    "colloquialDate": "2018-02-13"
+    "colloquialDate": "02-13",
+    "year": "2018"
   },
   {
     "author": "Author2",
     "text": "Diary text 2",
-    "locale": "be",
-    "colloquialDate": "2018-02-14"
+    "locale": "en",
+    "colloquialDate": "02-14",
+    "year": "2001"
   },
   {
     "author": "Author3",
     "text": "Diary text 3",
-    "locale": "be",
-    "colloquialDate": "2018-02-15"
+    "locale": "ru",
+    "colloquialDate": "02-15",
+    "year": "1985"
   }
 ]

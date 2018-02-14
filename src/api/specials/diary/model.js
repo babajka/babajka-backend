@@ -20,6 +20,7 @@ const DiarySchema = new Schema({
     required: true,
     validate: colloquialDateValidator,
   },
+  year: String,
   createdAt: {
     type: Date,
     default: Date.now,

@@ -15,8 +15,9 @@ describe('Diary API', () => {
     await Diary({
       author: 'TestAuthor',
       text: 'SomeDiary',
-      colloquialDate: '2018-02-14',
+      colloquialDate: '02-14',
       locale: 'be',
+      year: '2018',
     }).save();
   });
 
@@ -25,12 +26,13 @@ describe('Diary API', () => {
   describe('# Diary CRUD', () => {
     it('get an existing diary', () =>
       request
-        .get('/api/specials/diary/2018/02/14/')
+        .get('/api/specials/diary/be/02/14/')
         .expect(200)
         .expect(res => {
           expect(res.body.author).to.equal('TestAuthor');
+          expect(res.body.year).to.equal('2018');
         }));
 
-    it('request unexisting diary', () => request.get('/api/specials/diary/2018/02/15').expect(404));
+    it('request unexisting diary', () => request.get('/api/specials/diary/be/02/15').expect(404));
   });
 });

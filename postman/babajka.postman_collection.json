@@ -795,14 +795,14 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/specials/diary/2018/02/14/",
+							"raw": "{{DOMAIN}}{{API_URL}}/specials/diary/en/02/14/",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"specials",
 								"diary",
-								"2018",
+								"en",
 								"02",
 								"14",
 								""

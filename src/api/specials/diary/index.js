@@ -5,7 +5,8 @@ import Diary from './model';
 
 const router = Router();
 
-router.get('/:year/:month/:day/', controller.getDay);
+// :year might be added to the URL once we decide to distinguish them.
+router.get('/:locale/:month/:day/', controller.getDay);
 
 export { Diary };
 export default router;
