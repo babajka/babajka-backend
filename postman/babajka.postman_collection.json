@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "babajka",
-		"_postman_id": "1c2a536a-6a5f-6666-8465-3ec5f32939d1",
+		"_postman_id": "9ebbeafc-e05a-ea97-c48d-23114f3a2c25",
 		"description": "babajka api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -545,19 +545,16 @@
 								{
 									"key": "type",
 									"value": "video",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "brand",
 									"value": "wir",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "authorEmail",
 									"value": "very-first-author@wir.by",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -570,8 +567,7 @@
 							"path": [
 								"articles"
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				}
@@ -641,13 +637,11 @@
 								{
 									"key": "active",
 									"value": "true",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "description.en",
 									"value": "new EN description",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -720,14 +714,16 @@
 		},
 		{
 			"name": "Authors",
-			"description": "",
 			"item": [
 				{
 					"name": "Authors: get all",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
 							"host": [
@@ -738,8 +734,7 @@
 								"authors",
 								""
 							]
-						},
-						"description": ""
+						}
 					},
 					"response": []
 				},
@@ -759,19 +754,16 @@
 								{
 									"key": "firstName",
 									"value": "author-first-name",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "lastName",
 									"value": "author-last-name",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "bio",
 									"value": "Here is a short bio for a new author.",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -784,6 +776,35 @@
 							"path": [
 								"articles",
 								"authors",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Specials",
+			"description": "",
+			"item": [
+				{
+					"name": "Diary: get by date",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/specials/diary/en/02/14/",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"specials",
+								"diary",
+								"en",
+								"02",
+								"14",
 								""
 							]
 						},

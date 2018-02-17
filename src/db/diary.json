@@ -1,0 +1,23 @@
+[
+  {
+    "author": "Author1",
+    "text": "Diary text 1",
+    "locale": "be",
+    "colloquialDate": "02-13",
+    "year": "2018"
+  },
+  {
+    "author": "Author2",
+    "text": "Diary text 2",
+    "locale": "en",
+    "colloquialDate": "02-14",
+    "year": "2001"
+  },
+  {
+    "author": "Author3",
+    "text": "Diary text 3",
+    "locale": "ru",
+    "colloquialDate": "02-15",
+    "year": "1985"
+  }
+]

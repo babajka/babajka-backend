@@ -7,12 +7,14 @@ import pick from 'lodash/pick';
 import connectDb from 'db';
 import { User } from 'api/user';
 import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
+import { Diary } from 'api/specials';
 import * as permissions from 'constants/permissions';
 
 import usersData from './users.json';
 import articleBrandsData from './articleBrands.json';
 import articleCollectionsData from './articleCollections.json';
 import articlesData from './articles.json';
+import diariesData from './diary.json';
 
 const initUsers = () =>
   Promise.all(
@@ -34,10 +36,7 @@ const initUsers = () =>
 
 const initArticleBrands = () =>
   Promise.all(
-    articleBrandsData.map(async articleBrandData => {
-      const articleBrand = new ArticleBrand(articleBrandData);
-      return articleBrand.save();
-    })
+    articleBrandsData.map(async articleBrandData => new ArticleBrand(articleBrandData).save())
   );
 
 const getArticleBrandsDict = async () => {
@@ -99,6 +98,9 @@ const initArticleCollections = articlesDict => {
   return Promise.all(articleCollectionsData.map(createCollection));
 };
 
+const initDiaries = () =>
+  Promise.all(diariesData.map(async diaryData => new Diary(diaryData).save()));
+
 (async () => {
   try {
     await connectDb();
@@ -122,6 +124,10 @@ const initArticleCollections = articlesDict => {
     await initArticleCollections(articleDict);
     const articleCollections = await ArticleCollection.count();
     console.log(`Mongoose: insert ${articleCollections} article collection(s)`);
+
+    await initDiaries();
+    const diariesCount = await Diary.count();
+    console.log(`Mongoose: insert ${diariesCount} diaries`);
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);
