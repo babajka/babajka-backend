@@ -37,7 +37,7 @@ describe('Locales API', () => {
 
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>
-      request.post(`/api/articles/localize/${articleId}`).expect(401));
+      request.post(`/api/articles/localize/${articleId}`).expect(403));
 
     let sessionCookie;
 

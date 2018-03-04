@@ -44,7 +44,7 @@ describe('Authors API', () => {
       request
         .post('/api/articles/authors')
         .send({ bio: 'new bio' })
-        .expect(401));
+        .expect(403));
 
     it('should login with proper permissions', () =>
       request
