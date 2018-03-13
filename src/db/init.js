@@ -52,10 +52,14 @@ const initArticles = articleBrandsDict =>
   Promise.all(
     articlesData.map(async rawArticleData => {
       const articleLocales = rawArticleData.locales;
-      const articleData = omit(rawArticleData, ['locales']);
+      const articleData = omit(rawArticleData, ['locales', 'author']);
       articleData.brand = articleBrandsDict[articleData.brand];
       if (articleData.publishAt) {
         articleData.publishAt = new Date(articleData.publishAt);
+      }
+      if (rawArticleData.author) {
+        const author = await new User(rawArticleData.author).save();
+        articleData.author = author._id;
       }
       const article = new Article(articleData);
       Promise.all(
