@@ -58,7 +58,7 @@ const initArticles = articleBrandsDict =>
         articleData.publishAt = new Date(articleData.publishAt);
       }
       if (rawArticleData.author) {
-        const author = await new User(rawArticleData.author).save();
+        const author = await new User({ ...rawArticleData.author, role: 'author' }).save();
         articleData.author = author._id;
       }
       const article = new Article(articleData);
