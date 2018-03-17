@@ -4,27 +4,31 @@
     "firstName": "Fox",
     "lastName": "Muller",
     "password": "password",
-    "permissionsPreset": "admin"
+    "permissionsPreset": "admin",
+    "pictureURL": "/test/images/einstein.jpeg"
   },
   {
     "email": "creator@babajka.io",
     "firstName": "Dana",
     "lastName": "Scally",
     "password": "password1",
-    "permissionsPreset": "contentManager"
+    "permissionsPreset": "contentManager",
+    "pictureURL": "/test/images/curie.jpg"
   },
   {
     "email": "user@babajka.io",
     "firstName": "John",
     "lastName": "Smith",
     "password": "password2",
-    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    "pictureURL": "/test/images/einstein.jpeg"
   },
   {
     "email": "very-first-author@wir.by",
     "firstName": "Very",
     "lastName": "First",
     "bio": "That is an author created by Content Managers",
-    "role": "author"
+    "role": "author",
+    "pictureURL": "/test/images/curie.jpg"
   }
 ]

@@ -20,7 +20,8 @@
       "email": "prepopulated-0@wir.by",
       "firstName": "authorFirstName",
       "lastName": "authorLastName",
-      "bio": "new author bio"
+      "bio": "new author bio",
+      "pictureURL": "/test/images/curie.jpg"
     }
   },
   {

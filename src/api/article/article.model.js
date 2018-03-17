@@ -65,7 +65,7 @@ export const checkIsPublished = (article, user) => {
 };
 
 export const POPULATE_OPTIONS = {
-  author: '-_id firstName lastName email role active bio',
+  author: '-_id firstName lastName email role active bio pictureURL',
   brand: '-_id slug names',
   collection: '-_id name slug description',
   locales: '-_id -__v',
