@@ -16,13 +16,7 @@
         "slug": "slug0-en"
       }
     },
-    "author": {
-      "email": "prepopulated-0@wir.by",
-      "firstName": "authorFirstName",
-      "lastName": "authorLastName",
-      "bio": "new author bio",
-      "pictureURL": "/test/images/curie.jpg"
-    }
+    "authorEmail": "albert@wir.by"
   },
   {
     "type": "video",
@@ -40,7 +34,8 @@
         "text": "Hello! :)",
         "slug": "slug1-en"
       }
-    }
+    },
+    "authorEmail": "curie@wir.by"
   },
   {
     "type": "video",
@@ -58,7 +53,8 @@
         "text": "Hello! :)",
         "slug": "slug2-en"
       }
-    }
+    },
+    "authorEmail": "albert@wir.by"
   },
   {
     "type": "text",
@@ -76,7 +72,8 @@
         "text": "Hello! :)",
         "slug": "slug3-en"
       }
-    }
+    },
+    "authorEmail": "curie@wir.by"
   },
   {
     "type": "video",
