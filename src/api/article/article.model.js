@@ -43,6 +43,9 @@ const ArticleSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  pictureURL: String,
+  // This is a YouTube video ID. Ignored unless Article type is video.
+  videoID: String,
 });
 
 const Article = mongoose.model('Article', ArticleSchema);
