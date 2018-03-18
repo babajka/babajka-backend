@@ -26,6 +26,7 @@ describe('Locales API', () => {
     articleId = article._id;
 
     const user = new User({
+      firstName: 'Name',
       email: 'admin1@babajka.io',
       permissions: { canCreateArticle: true, canManageArticles: true },
     });

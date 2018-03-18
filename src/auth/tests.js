@@ -16,6 +16,7 @@ app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 describe('Auth API', () => {
   const usersData = [
     {
+      firstName: 'Name',
       email: 'test1@babajka.io',
       password: 'password',
     },

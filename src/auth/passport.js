@@ -48,8 +48,9 @@ passport.use(
     {
       usernameField: 'email',
       passwordField: 'password',
+      passReqToCallback: true,
     },
-    (email, password, done) => {
+    ({ body: { firstName } }, email, password, done) => {
       let user;
       User.findOne({ email })
         .then(result => {
@@ -57,7 +58,7 @@ passport.use(
             throw new ValidationError({ email: 'Гэты емэйл ужо выкарыстаны' });
           }
 
-          user = new User({ email });
+          user = new User({ email, firstName });
           return user.setPassword(password);
         })
         .then(() => user.save())

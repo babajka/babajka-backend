@@ -13,13 +13,19 @@ const request = supertest.agent(app.listen());
 describe('Authors API', () => {
   before(async () => {
     await Promise.all([
-      User({ email: 'author1@wir.by', role: 'author' }).save(),
-      User({ email: 'author2@wir.by', role: 'author' }).save(),
-      User({ email: 'author-non-active@wir.by', role: 'author', active: false }).save(),
-      User({ email: 'regular-user@wir.by' }).save(),
+      User({ firstName: 'Name', email: 'author1@wir.by', role: 'author' }).save(),
+      User({ firstName: 'Name', email: 'author2@wir.by', role: 'author' }).save(),
+      User({
+        firstName: 'Name',
+        email: 'author-non-active@wir.by',
+        role: 'author',
+        active: false,
+      }).save(),
+      User({ firstName: 'Name', email: 'regular-user@wir.by' }).save(),
     ]);
 
     const user = new User({
+      firstName: 'Name',
       email: 'test2@babajka.io',
       permissions: { canCreateArticle: true },
     });

@@ -15,7 +15,7 @@ router.post('/login', requireFields('email', 'password'), (req, res, next) =>
     .catch(next)
 );
 
-router.post('/register', requireFields('email', 'password'), (req, res, next) => {
+router.post('/register', requireFields('email', 'password', 'firstName'), (req, res, next) => {
   const { password } = req.body;
 
   if (password.length < 7) {

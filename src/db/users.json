@@ -1,47 +1,90 @@
 [
   {
     "email": "admin@babajka.io",
-    "firstName": "Fox",
-    "lastName": "Muller",
+    "firstName": {
+      "en": "Fox",
+      "be": "Фокс"
+    },
+    "lastName": {
+      "en": "Muller",
+      "be": "Мюллер"
+    },
     "password": "password",
     "permissionsPreset": "admin"
   },
   {
     "email": "creator@babajka.io",
-    "firstName": "Dana",
-    "lastName": "Scally",
+    "firstName": {
+      "en": "Dana"
+    },
+    "lastName": {
+      "en": "Scally"
+    },
     "password": "password1",
     "permissionsPreset": "contentManager"
   },
   {
     "email": "user@babajka.io",
-    "firstName": "John",
-    "lastName": "Smith",
+    "firstName": {
+      "en": "John",
+      "be": "Джон"
+    },
+    "lastName": {
+      "en": "Smith",
+      "be": "Сміт"
+    },
     "password": "password2",
-    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    "bio": {
+      "en": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      "be": "бла-бла-бла"
+    },
     "pictureURL": "/test/images/einstein.jpeg"
   },
   {
     "email": "very-first-author@wir.by",
-    "firstName": "Very",
-    "lastName": "First",
-    "bio": "That is an author created by Content Managers",
+    "firstName": {
+      "en": "Very"
+    },
+    "lastName": {
+      "en": "First"
+    },
+    "bio": {
+      "en": "That is an author created by Content Managers"
+    },
     "role": "author",
     "pictureURL": "/test/images/curie.jpg"
   },
   {
     "email": "albert@wir.by",
-    "firstName": "Albert",
-    "lastName": "Einstein",
-    "bio": "I am Einstein and what about you?",
+    "firstName": {
+      "en": "Albert",
+      "be": "Альберт"
+    },
+    "lastName": {
+      "en": "Einstein",
+      "be": "Эйнштэйн"
+    },
+    "bio": {
+      "en": "I am Einstein and what about you?",
+      "be": "Я - Эйнштэйн, а чаго дасягнуў ты?"
+    },
     "role": "author",
     "pictureURL": "/test/images/einstein.jpeg"
   },
   {
     "email": "curie@wir.by",
-    "firstName": "Maria",
-    "lastName": "Curie",
-    "bio": "When was the last time you were X-Ray-ed?",
+    "firstName": {
+      "en": "Maria",
+      "be": "Марыя"
+    },
+    "lastName": {
+      "en": "Curie",
+      "be": "Кюры"
+    },
+    "bio": {
+      "en": "When was the last time you were X-Ray-ed?",
+      "be": "Калі табе апошні раз рабілі рэнтген?"
+    },
     "role": "author",
     "pictureURL": "/test/images/curie.jpg"
   }

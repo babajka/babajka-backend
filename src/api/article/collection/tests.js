@@ -52,6 +52,7 @@ describe('Collections API', () => {
     await Promise.all(promises);
 
     const user = new User({
+      firstName: 'Name',
       email: 'test2@babajka.io',
       permissions: { canCreateArticle: true },
     });

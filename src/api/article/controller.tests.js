@@ -73,6 +73,7 @@ describe('Articles API', () => {
     await Promise.all(promises);
 
     const user = new User({
+      firstName: 'Name',
       email: 'admin1@babajka.io',
       permissions: { canCreateArticle: true, canManageArticles: true },
     });
