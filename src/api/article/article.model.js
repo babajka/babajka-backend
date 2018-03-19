@@ -43,9 +43,9 @@ const ArticleSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  pictureURL: String,
+  imageUrl: String,
   // This is a YouTube video ID. Ignored unless Article type is video.
-  videoID: String,
+  videoId: String,
 });
 
 const Article = mongoose.model('Article', ArticleSchema);
@@ -68,7 +68,7 @@ export const checkIsPublished = (article, user) => {
 };
 
 export const POPULATE_OPTIONS = {
-  author: '-_id firstName lastName email role active bio pictureURL',
+  author: '-_id firstName lastName email role active bio imageUrl',
   brand: '-_id slug names',
   collection: '-_id name slug description',
   locales: '-_id -__v',

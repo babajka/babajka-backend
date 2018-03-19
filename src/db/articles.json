@@ -17,7 +17,7 @@
       }
     },
     "authorEmail": "albert@wir.by",
-    "pictureURL": "/test/images/einstein.jpeg"
+    "imageUrl": "/test/images/einstein.jpeg"
   },
   {
     "type": "video",
@@ -37,7 +37,7 @@
       }
     },
     "authorEmail": "curie@wir.by",
-    "videoID": "SPauxWv1Rnk"
+    "videoId": "SPauxWv1Rnk"
   },
   {
     "type": "video",
@@ -57,7 +57,7 @@
       }
     },
     "authorEmail": "albert@wir.by",
-    "videoID": "SPauxWv1Rnk"
+    "videoId": "SPauxWv1Rnk"
   },
   {
     "type": "text",
