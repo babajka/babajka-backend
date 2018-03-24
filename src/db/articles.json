@@ -15,7 +15,9 @@
         "text": "Hello! :)",
         "slug": "slug0-en"
       }
-    }
+    },
+    "authorEmail": "albert@wir.by",
+    "imageUrl": "/test/images/einstein.jpeg"
   },
   {
     "type": "video",
@@ -33,7 +35,9 @@
         "text": "Hello! :)",
         "slug": "slug1-en"
       }
-    }
+    },
+    "authorEmail": "curie@wir.by",
+    "videoId": "SPauxWv1Rnk"
   },
   {
     "type": "video",
@@ -51,7 +55,9 @@
         "text": "Hello! :)",
         "slug": "slug2-en"
       }
-    }
+    },
+    "authorEmail": "albert@wir.by",
+    "videoId": "SPauxWv1Rnk"
   },
   {
     "type": "text",
@@ -69,7 +75,8 @@
         "text": "Hello! :)",
         "slug": "slug3-en"
       }
-    }
+    },
+    "authorEmail": "curie@wir.by"
   },
   {
     "type": "video",

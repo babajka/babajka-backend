@@ -73,6 +73,7 @@ describe('Articles API', () => {
     await Promise.all(promises);
 
     const user = new User({
+      firstName: 'Name',
       email: 'admin1@babajka.io',
       permissions: { canCreateArticle: true, canManageArticles: true },
     });
@@ -121,13 +122,13 @@ describe('Articles API', () => {
       request.get('/api/articles/publishAt-article-1').expect(404));
 
     it('should fail to create an article due to lack of permissions', () =>
-      request.post('/api/articles').expect(401));
+      request.post('/api/articles').expect(403));
 
     it('should fail to update an article due to lack of permissions', () =>
-      request.put('/api/articles/article-1').expect(401));
+      request.put('/api/articles/article-1').expect(403));
 
     it('should fail to remove an article due to lack of permissions', () =>
-      request.delete('/api/articles/article-1').expect(401));
+      request.delete('/api/articles/article-1').expect(403));
 
     let sessionCookie;
 

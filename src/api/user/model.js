@@ -5,8 +5,11 @@ import pick from 'lodash/pick';
 import config from 'config';
 
 const UserSchema = new Schema({
-  firstName: String,
-  lastName: String,
+  firstName: {
+    type: Schema.Types.Mixed,
+    required: true,
+  },
+  lastName: Schema.Types.Mixed,
   email: {
     type: String,
     unique: true,
@@ -19,13 +22,14 @@ const UserSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  bio: String,
+  bio: Schema.Types.Mixed,
   role: {
     type: String,
     enum: ['author', 'regular'],
     required: true,
     default: 'regular',
   },
+  imageUrl: String,
 });
 
 UserSchema.virtual('name').get(function get() {
@@ -51,7 +55,7 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-const basicFields = ['firstName', 'lastName', 'email', 'role', 'active', 'bio'];
+const basicFields = ['firstName', 'lastName', 'email', 'role', 'active', 'bio', 'imageUrl'];
 
 export const serializeUser = object => pick(object, [...basicFields, 'permissions']);
 

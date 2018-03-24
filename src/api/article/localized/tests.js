@@ -26,6 +26,7 @@ describe('Locales API', () => {
     articleId = article._id;
 
     const user = new User({
+      firstName: 'Name',
       email: 'admin1@babajka.io',
       permissions: { canCreateArticle: true, canManageArticles: true },
     });
@@ -37,7 +38,7 @@ describe('Locales API', () => {
 
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>
-      request.post(`/api/articles/localize/${articleId}`).expect(401));
+      request.post(`/api/articles/localize/${articleId}`).expect(403));
 
     let sessionCookie;
 

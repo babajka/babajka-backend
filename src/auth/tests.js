@@ -16,6 +16,7 @@ app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 describe('Auth API', () => {
   const usersData = [
     {
+      firstName: 'Name',
       email: 'test1@babajka.io',
       password: 'password',
     },
@@ -34,7 +35,7 @@ describe('Auth API', () => {
   after(dropData);
 
   describe('# request on protected url without authorization', () =>
-    it('should respond with 401 Unauthorized', () => request.get('/protected').expect(401)));
+    it('should respond with 403 Forbidden', () => request.get('/protected').expect(403)));
 
   describe('# login with incorrect password', () =>
     it('should respond with 400 and error message', () =>
@@ -47,7 +48,7 @@ describe('Auth API', () => {
         })));
 
   describe('# logout without authorization', () =>
-    it('should respond with 401 Unauthorized', () => request.get('/auth/logout').expect(401)));
+    it('should respond with 403 Forbidden', () => request.get('/auth/logout').expect(403)));
 
   describe('# login with correct credentials', () =>
     it('should respond with 200, user object and set-cookie header', () =>
@@ -78,5 +79,5 @@ describe('Auth API', () => {
         .expect(200)));
 
   describe('# request on protected url after logout', () =>
-    it('should respond with 401 Unauthorized', () => request.get('/protected').expect(401)));
+    it('should respond with 403 Forbidden', () => request.get('/protected').expect(403)));
 });

@@ -52,6 +52,7 @@ describe('Collections API', () => {
     await Promise.all(promises);
 
     const user = new User({
+      firstName: 'Name',
       email: 'test2@babajka.io',
       permissions: { canCreateArticle: true },
     });
@@ -90,16 +91,16 @@ describe('Collections API', () => {
         }));
 
     it('should fail to create a collection due to lack of permissions', () =>
-      request.post('/api/articles/collections').expect(401));
+      request.post('/api/articles/collections').expect(403));
 
     it('should fail to update a collection due to lack of permissions', () =>
       request
         .put('/api/articles/collections/collection-1')
         .send({ description: 'a completely new description' })
-        .expect(401));
+        .expect(403));
 
     it('should fail to remove a collection due to lack of permissions', () =>
-      request.delete('/api/articles/collections/collection-1').expect(401));
+      request.delete('/api/articles/collections/collection-1').expect(403));
 
     let sessionCookie;
 

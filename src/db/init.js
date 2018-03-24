@@ -48,12 +48,24 @@ const getArticleBrandsDict = async () => {
   return articleBrandsDict;
 };
 
-const initArticles = articleBrandsDict =>
+const getAuthorsDict = async () => {
+  const authorsDict = {};
+  const authors = await User.find({ role: 'author' }).exec();
+  await authors.forEach(author => {
+    authorsDict[author.email] = author._id;
+  });
+  return authorsDict;
+};
+
+const initArticles = (articleBrandsDict, authorsDict) =>
   Promise.all(
     articlesData.map(async rawArticleData => {
       const articleLocales = rawArticleData.locales;
       const articleData = omit(rawArticleData, ['locales']);
       articleData.brand = articleBrandsDict[articleData.brand];
+      if (articleData.authorEmail) {
+        articleData.author = authorsDict[articleData.authorEmail];
+      }
       if (articleData.publishAt) {
         articleData.publishAt = new Date(articleData.publishAt);
       }
@@ -114,9 +126,11 @@ const initDiaries = () =>
     await initArticleBrands();
     const articleBrands = await ArticleBrand.count();
     console.log(`Mongoose: insert ${articleBrands} article brand(s)`);
-    const articleBrandsDict = await getArticleBrandsDict();
 
-    await initArticles(articleBrandsDict);
+    const articleBrandsDict = await getArticleBrandsDict();
+    const authorsDict = await getAuthorsDict();
+
+    await initArticles(articleBrandsDict, authorsDict);
     const articles = await Article.count();
     console.log(`Mongoose: insert ${articles} articles`);
     const articleDict = await getArticlesDict();
