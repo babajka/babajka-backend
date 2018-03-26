@@ -4,7 +4,7 @@ import { serializeUser } from 'api/user';
 import { requireFields, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import passport, { authenticate } from './passport';
+import passport, { authenticate, social } from './passport';
 import { requireAuth, verifyPermission } from './middlewares';
 
 const router = Router();
@@ -26,6 +26,9 @@ router.post('/register', requireFields('email', 'password', 'firstName'), (req, 
     .then(user => sendJson(res)(serializeUser(user)))
     .catch(next);
 });
+
+router.get('/google', social.google.authenticate);
+router.get('/google/callback', social.google.callback, (req, res) => res.redirect('/'));
 
 // eslint-disable-next-line no-unused-vars
 router.get('/logout', requireAuth, (req, res, next) => {

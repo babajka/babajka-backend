@@ -1,8 +1,11 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
+import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 
 import { User } from 'api/user';
-import { ValidationError } from 'utils/validation';
+import { ValidationError, cutSizing } from 'utils/validation';
+import config from 'config';
+import dictionary from 'constants/dictionary';
 
 passport.serializeUser((user, done) => done(null, user.id));
 
@@ -24,7 +27,7 @@ passport.use(
       User.findOne({ email, role: 'regular' })
         .then(result => {
           if (!result) {
-            throw new ValidationError({ password: 'Няправільны емэйл ці пароль' });
+            throw new ValidationError({ email: dictionary.be.badEmail });
           }
 
           user = result;
@@ -32,7 +35,7 @@ passport.use(
         })
         .then(isAuthenticated => {
           if (!isAuthenticated) {
-            throw new ValidationError({ password: 'Няправільны емэйл ці пароль' });
+            throw new ValidationError({ password: dictionary.be.badPassword });
           }
 
           return done(null, user);
@@ -55,7 +58,7 @@ passport.use(
       User.findOne({ email })
         .then(result => {
           if (result) {
-            throw new ValidationError({ email: 'Гэты емэйл ужо выкарыстаны' });
+            throw new ValidationError({ email: dictionary.be.usedEmail });
           }
 
           user = new User({ email, firstName });
@@ -79,5 +82,43 @@ const authenticate = (strategy, req, res, next) =>
     })(req, res, next);
   });
 
-export { authenticate };
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: config.social.google.clientId,
+      clientSecret: config.social.google.clientSecret,
+      callbackURL: 'http://localhost:8080/auth/google/callback',
+    },
+    (accessToken, refreshToken, profile, done) => {
+      const email = profile.emails[0].value;
+      User.findOne({ email })
+        .then(async user => {
+          if (user) {
+            return user;
+          }
+          const firstName = { unknown: profile.name && profile.name.givenName };
+          const lastName = { unknown: profile.name && profile.name.familyName };
+          const imageUrl = cutSizing(profile.photos && profile.photos[0].value);
+          const result = await new User({ email, firstName, lastName, imageUrl }).save();
+          return result;
+        })
+        .then(result => done(null, result))
+        .catch(done);
+    }
+  )
+);
+
+const social = {
+  google: {
+    authenticate: passport.authenticate('google', {
+      scope: [
+        'https://www.googleapis.com/auth/plus.login',
+        'https://www.googleapis.com/auth/plus.profile.emails.read',
+      ],
+    }),
+    callback: passport.authenticate('google', { failureRedirect: '/auth/login' }),
+  },
+};
+
+export { authenticate, social };
 export default passport;
