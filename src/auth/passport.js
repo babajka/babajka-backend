@@ -79,16 +79,16 @@ passport.use(
       clientSecret: config.social.google.clientSecret,
       callbackURL: '/auth/google/callback',
     },
-    (accessToken, refreshToken, profile, done) => {
-      // profile here is as described in http://www.passportjs.org/docs/profile/
-      const email = profile.emails[0].value;
+    // third parameter here (profile) is as described in http://www.passportjs.org/docs/profile/
+    (accessToken, refreshToken, { emails, name, photos }, done) => {
+      const [{ value: email }] = emails;
       User.findOne({ email })
         .then(async user => {
           if (user) {
             return user;
           }
-          const { givenName: firstName, familyName: lastName } = profile.name || {};
-          const imageUrl = cutUrlParams(profile.photos.length && profile.photos[0].value);
+          const { givenName: firstName, familyName: lastName } = name || {};
+          const imageUrl = cutUrlParams(photos.length && photos[0].value);
           return new User({ email, firstName, lastName, imageUrl }).save();
         })
         .then(result => done(null, result))
