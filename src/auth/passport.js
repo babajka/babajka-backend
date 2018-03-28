@@ -71,17 +71,6 @@ passport.use(
   )
 );
 
-const authenticate = (strategy, req, res, next) =>
-  new Promise((resolve, reject) => {
-    passport.authenticate(strategy, { failureMessage: true }, (err, user) => {
-      if (err) {
-        reject(err);
-      }
-
-      req.login(user, loginErr => (loginErr ? reject(loginErr) : resolve(user)));
-    })(req, res, next);
-  });
-
 passport.use(
   new GoogleStrategy(
     {
@@ -108,6 +97,22 @@ passport.use(
   )
 );
 
+const authenticate = (strategy, options) => (req, res, next) =>
+  new Promise((resolve, reject) =>
+    passport.authenticate(strategy, options, (err, user) => {
+      if (err) {
+        reject(err);
+      }
+
+      req.login(user, loginErr => (loginErr ? reject(loginErr) : resolve(user)));
+    })(req, res, next)
+  );
+
+const local = {
+  login: authenticate('local-login', { failureMessage: true }),
+  register: authenticate('local-register', { failureMessage: true }),
+};
+
 const social = {
   google: {
     authenticate: passport.authenticate('google', {
@@ -120,5 +125,5 @@ const social = {
   },
 };
 
-export { authenticate, social };
+export { local, social };
 export default passport;
