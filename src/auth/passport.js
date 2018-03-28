@@ -77,19 +77,17 @@ passport.use(
     {
       clientID: config.social.google.clientId,
       clientSecret: config.social.google.clientSecret,
-      // TODO(uladbohdan): to generalize.
-      callbackURL: 'http://localhost:8080/auth/google/callback',
+      callbackURL: '/auth/google/callback',
     },
     (accessToken, refreshToken, profile, done) => {
+      // profile here is as described in http://www.passportjs.org/docs/profile/
       const email = profile.emails[0].value;
       User.findOne({ email })
         .then(async user => {
           if (user) {
             return user;
           }
-          const firstName = { unknown: profile.name && profile.name.givenName };
-          const lastName = { unknown: profile.name && profile.name.familyName };
-          // length ?
+          const { givenName: firstName, familyName: lastName } = profile.name || {};
           const imageUrl = cutUrlParams(profile.photos.length && profile.photos[0].value);
           return new User({ email, firstName, lastName, imageUrl }).save();
         })

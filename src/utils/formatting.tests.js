@@ -3,8 +3,7 @@ import { expect } from 'chai';
 import { cutUrlParams } from './formatting';
 
 describe('Formatting Tests', () => {
-  // TODO(uladbohdan): to figure out how to handle empty strings / undefineds.
-  // it('empty string is provided and is expected', () => expect(cutUrlParams('').to.be.undefined));
+  it('empty string is provided and is expected', () => expect(cutUrlParams('')).to.equal(''));
 
   it('should return a string with no sz param', () =>
     expect(cutUrlParams('https://googleapis.com/imageUrl?sz=50')).to.equal(
