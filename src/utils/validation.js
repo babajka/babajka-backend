@@ -36,5 +36,3 @@ export const colloquialDateValidator = {
   validator: v => /\d{2}-\d{2}/.test(v),
   message: 'failed to match regexp',
 };
-
-export const cutSizing = photoUrl => photoUrl.split('?sz=')[0];

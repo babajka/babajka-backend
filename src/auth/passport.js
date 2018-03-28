@@ -3,7 +3,8 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 
 import { User } from 'api/user';
-import { ValidationError, cutSizing } from 'utils/validation';
+import { ValidationError } from 'utils/validation';
+import { cutUrlParams } from 'utils/formatting';
 import config from 'config';
 import dictionary from 'constants/dictionary';
 
@@ -87,6 +88,7 @@ passport.use(
     {
       clientID: config.social.google.clientId,
       clientSecret: config.social.google.clientSecret,
+      // TODO(uladbohdan): to generalize.
       callbackURL: 'http://localhost:8080/auth/google/callback',
     },
     (accessToken, refreshToken, profile, done) => {
@@ -98,9 +100,9 @@ passport.use(
           }
           const firstName = { unknown: profile.name && profile.name.givenName };
           const lastName = { unknown: profile.name && profile.name.familyName };
-          const imageUrl = cutSizing(profile.photos && profile.photos[0].value);
-          const result = await new User({ email, firstName, lastName, imageUrl }).save();
-          return result;
+          // length ?
+          const imageUrl = cutUrlParams(profile.photos.length && profile.photos[0].value);
+          return new User({ email, firstName, lastName, imageUrl }).save();
         })
         .then(result => done(null, result))
         .catch(done);
