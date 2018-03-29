@@ -19,5 +19,11 @@
     "mode": "dev",
     "writeToFile": false,
     "fileName": "babajka.log"
+  },
+  "social": {
+    "google": {
+      "clientId": "MUST BE SET IN $BABAJKA_SECRET",
+      "clientSecret": "MUST BE SET IN $BABAJKA_SECRET"
+    }
   }
 }

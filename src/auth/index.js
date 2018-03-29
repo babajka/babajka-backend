@@ -4,13 +4,14 @@ import { serializeUser } from 'api/user';
 import { requireFields, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import passport, { authenticate } from './passport';
+import passport, { social, local } from './passport';
 import { requireAuth, verifyPermission } from './middlewares';
 
 const router = Router();
 
 router.post('/login', requireFields('email', 'password'), (req, res, next) =>
-  authenticate('local-login', req, res, next)
+  local
+    .login(req, res, next)
     .then(user => sendJson(res)(serializeUser(user)))
     .catch(next)
 );
@@ -22,10 +23,14 @@ router.post('/register', requireFields('email', 'password', 'firstName'), (req, 
     return next(new ValidationError({ password: 'Пароль павінен змяшчаць хаця б 7 сімвалаў' }));
   }
 
-  return authenticate('local-register', req, res, next)
+  return local
+    .register(req, res, next)
     .then(user => sendJson(res)(serializeUser(user)))
     .catch(next);
 });
+
+router.get('/google', social.google.authenticate);
+router.get('/google/callback', social.google.callback, (req, res) => res.redirect('/'));
 
 // eslint-disable-next-line no-unused-vars
 router.get('/logout', requireAuth, (req, res, next) => {
