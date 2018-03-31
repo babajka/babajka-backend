@@ -28,6 +28,7 @@ const ArticleCollectionSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  imageUrl: String,
 });
 
 export const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionSchema);

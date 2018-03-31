@@ -5,21 +5,26 @@
       "be": "Wir.by - Адукацыйная платформа",
       "ru": "Wir.by - Образовательная платформа",
       "en": "Wir.by - Educational platform"
-    }
+    },
+    "imageUrl": "http://res.cloudinary.com/dhgy4yket/image/upload/v1522527204/babajka-dev/wir-logo.jpg",
+    "imageUrlSmall": "http://res.cloudinary.com/dhgy4yket/image/upload/c_scale,w_100/v1522527204/babajka-dev/wir-logo.jpg"
   },
   {
     "slug": "kurilka",
-    "image": "kurilka-logo.png",
     "names": {
       "be": "Курылка Гутэнберга",
       "ru": "Курилка Гутенберга"
-    }
+    },
+    "imageUrl": "http://res.cloudinary.com/dhgy4yket/image/upload/v1522527334/babajka-dev/kurilka.jpg",
+    "imageUrlSmall": "http://res.cloudinary.com/dhgy4yket/image/upload/c_scale,w_100/v1522527334/babajka-dev/kurilka.jpg"
   },
   {
     "slug": "15x4",
     "names": {
       "be": "Мінск",
       "ru": "Минск"
-    }
+    },
+    "imageUrl": "http://res.cloudinary.com/dhgy4yket/image/upload/v1522527434/babajka-dev/15x4.png",
+    "imageUrlSmall": "http://res.cloudinary.com/dhgy4yket/image/upload/c_scale,w_100/v1522527434/babajka-dev/15x4.png"
   }
 ]
