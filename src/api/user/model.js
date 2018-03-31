@@ -9,6 +9,8 @@ const UserSchema = new Schema({
   // to the values. A set of locales must be the same for all of the fields mentioned.
   // For a User with a role 'regular' firstName, lastName and bio are Strings;
   // the language of these strings is undefined.
+  // TODO(uladbohdan): to implement validator to verify the set of locales is the same
+  // for all the fields.
   firstName: {
     type: Schema.Types.Mixed,
     required: true,
