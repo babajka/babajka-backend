@@ -5,6 +5,10 @@ import pick from 'lodash/pick';
 import config from 'config';
 
 const UserSchema = new Schema({
+  // For a User with a role 'author' firstName, lastName and bio map locales
+  // to the values. A set of locales must be the same for all of the fields mentioned.
+  // For a User with a role 'regular' firstName, lastName and bio are Strings;
+  // the language of these strings is undefined.
   firstName: {
     type: Schema.Types.Mixed,
     required: true,
@@ -33,8 +37,19 @@ const UserSchema = new Schema({
 });
 
 UserSchema.virtual('displayName').get(function get() {
-  const postfix = this.lastName ? ` ${this.lastName}` : '';
-  return `${this.firstName}${postfix}`;
+  const joinNames = (firstName, lastName) => {
+    const postfix = lastName ? ` ${lastName}` : '';
+    return `${firstName}${postfix}`;
+  };
+  if (this.role === 'author') {
+    const result = {};
+    Object.keys(this.firstName).forEach(locale => {
+      result[locale] = joinNames(this.firstName[locale], this.lastName && this.lastName[locale]);
+    });
+    return result;
+  }
+  // The role is 'regular' (default).
+  return joinNames(this.firstName, this.lastName);
 });
 
 UserSchema.virtual('password').get(function get() {

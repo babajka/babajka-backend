@@ -1,43 +1,24 @@
 [
   {
     "email": "admin@babajka.io",
-    "firstName": {
-      "en": "Fox",
-      "be": "Фокс"
-    },
-    "lastName": {
-      "en": "Muller",
-      "be": "Мюллер"
-    },
+    "firstName": "Fox",
+    "lastName": "Muller",
     "password": "password",
     "permissionsPreset": "admin"
   },
   {
     "email": "creator@babajka.io",
-    "firstName": {
-      "en": "Dana"
-    },
-    "lastName": {
-      "en": "Scally"
-    },
+    "firstName": "Dana",
+    "lastName": "Scally",
     "password": "password1",
     "permissionsPreset": "contentManager"
   },
   {
     "email": "user@babajka.io",
-    "firstName": {
-      "en": "John",
-      "be": "Джон"
-    },
-    "lastName": {
-      "en": "Smith",
-      "be": "Сміт"
-    },
+    "firstName": "Джон",
+    "lastName": "Сміт",
     "password": "password2",
-    "bio": {
-      "en": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-      "be": "бла-бла-бла"
-    },
+    "bio": "бла-бла-бла",
     "imageUrl": "/test/images/einstein.jpeg"
   },
   {
