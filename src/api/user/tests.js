@@ -7,7 +7,7 @@ import User from './model';
 
 describe('User model', () => {
   const userData = { firstName: 'Name', email: 'test@test.test', password: 'secret' };
-  const { email, password } = userData;
+  const { firstName, email, password } = userData;
   const user = new User(userData);
 
   after(dropData);
@@ -23,6 +23,17 @@ describe('User model', () => {
     const result = await User.findOne({ email });
     expect(result.email).to.equal(email);
     expect(result.password).to.equal(user.password);
+  });
+
+  it('should only return firstName as displayName', async () => {
+    const result = await User.findOne({ email });
+    expect(result.displayName).to.equal(`${firstName}`);
+  });
+
+  it('should return firstName and lastName as displayName', async () => {
+    const lastName = 'LastName';
+    const result = await User.findOneAndUpdate({ email }, { lastName }, { new: true }).exec();
+    expect(result.displayName).to.equal(`${firstName} ${lastName}`);
   });
 
   it('should crypt password', () => expect(user.password).to.not.equal(password));

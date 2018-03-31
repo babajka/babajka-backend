@@ -32,8 +32,9 @@ const UserSchema = new Schema({
   imageUrl: String,
 });
 
-UserSchema.virtual('name').get(function get() {
-  return `${this.firstName} ${this.lastName}`;
+UserSchema.virtual('displayName').get(function get() {
+  const postfix = this.lastName ? ` ${this.lastName}` : '';
+  return `${this.firstName}${postfix}`;
 });
 
 UserSchema.virtual('password').get(function get() {
@@ -55,7 +56,16 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-const basicFields = ['firstName', 'lastName', 'email', 'role', 'active', 'bio', 'imageUrl'];
+const basicFields = [
+  'firstName',
+  'lastName',
+  'displayName',
+  'email',
+  'role',
+  'active',
+  'bio',
+  'imageUrl',
+];
 
 export const serializeUser = object => pick(object, [...basicFields, 'permissions']);
 
