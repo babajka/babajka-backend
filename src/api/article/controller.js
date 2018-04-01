@@ -1,3 +1,5 @@
+import omit from 'lodash/omit';
+
 import { checkIsFound, isValidId } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
@@ -61,6 +63,7 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
+// TODO(uladbohdan): to refactor the method, it looks super ugly.
 export const create = async ({ body }, res, next) => {
   try {
     const articleBrandQuery = ArticleBrand.findOne({ slug: body.brand });
@@ -72,7 +75,7 @@ export const create = async ({ body }, res, next) => {
     const author = await User.findOne({ email: body.authorEmail }).exec();
 
     const articleBody = {
-      ...body,
+      ...omit(body, ['locales']),
       author: author && author._id,
       brand: articleBrand._id,
       collectionId: articleCollection && articleCollection._id,
@@ -82,12 +85,22 @@ export const create = async ({ body }, res, next) => {
     let code;
     try {
       const article = Article(articleBody);
+      if (body.locales) {
+        Object.keys(body.locales).forEach(async locale => {
+          const localization = await LocalizedArticle({
+            ...body.locales[locale],
+            articleId: article._id,
+          }).save();
+          article.locales.push(localization._id);
+        });
+      }
       await article.save();
       data = serializeArticle(
         await article
           .populate('author', POPULATE_OPTIONS.author)
           .populate('brand', POPULATE_OPTIONS.brand)
           .populate('collectionId', POPULATE_OPTIONS.collection)
+          .populate('locales', POPULATE_OPTIONS.locales)
           .execPopulate()
       );
       if (articleCollection) {

@@ -264,3 +264,78 @@ describe('Articles API', () => {
         }));
   });
 });
+
+describe('Articles Bundled API', () => {
+  let articleBrandId;
+  const authorEmail = 'the-best-author-ever@wir.by';
+
+  before(async () => {
+    const articleBrand = await new ArticleBrand({ slug: 'Wir' }).save();
+    articleBrandId = articleBrand._id;
+
+    await new User({
+      firstName: 'First',
+      lastName: 'Second',
+      email: authorEmail,
+      role: 'author',
+    }).save();
+
+    const user = new User({
+      firstName: 'Name',
+      email: 'admin1@babajka.io',
+      permissions: { canCreateArticle: true, canManageArticles: true },
+    });
+    await user.setPassword('password');
+    await user.save();
+  });
+
+  after(dropData);
+
+  let sessionCookie;
+
+  it('should login as admin successfully', () =>
+    request
+      .post('/auth/login')
+      .send({ email: 'admin1@babajka.io', password: 'password' })
+      .expect(200)
+      .then(res => {
+        // eslint-disable-next-line no-unused-expressions
+        expect(res.headers['set-cookie']).not.empty;
+        [sessionCookie] = res.headers['set-cookie'];
+        expect(res.body.email).equal('admin1@babajka.io');
+      }));
+
+  it('should create an article with localizations with one API call', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brand: articleBrandId,
+        collectionSlug: 'precreated-collection',
+        type: 'text',
+        imageUrl: 'some-image-url',
+        authorEmail,
+        locales: {
+          be: {
+            title: 'be-title',
+            subtitle: 'be-subtitle',
+            text: 'some-be-text',
+            slug: 'be-slug',
+            locale: 'be',
+          },
+        },
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.imageUrl).to.equal('some-image-url');
+        expect(Object.keys(res.body.locales)).has.length(1);
+        expect(res.body.locales.be.slug).to.equal('be-slug');
+      }));
+
+  // TODO(uladbohdan): to test:
+  // bad author.
+  // bad brand.
+  // bad collection.
+  // bad locale.
+  // ...
+});

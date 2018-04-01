@@ -68,9 +68,10 @@ export const checkIsPublished = (article, user) => {
 };
 
 export const POPULATE_OPTIONS = {
-  author: '-_id firstName lastName email role active bio imageUrl',
-  brand: '-_id slug names',
-  collection: '-_id name slug description',
+  // TODO(uladbohdan): to merge with User basicFields.
+  author: '-_id firstName lastName email role active bio imageUrl displayName',
+  brand: '-_id slug names imageUrl imageUrlSmall',
+  collection: '-_id name slug description imageUrl',
   locales: '-_id -__v',
 };
 
