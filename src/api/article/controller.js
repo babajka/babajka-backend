@@ -1,4 +1,4 @@
-import { checkIsFound } from 'utils/validation';
+import { checkIsFound, isValidId } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
 import { User, checkPermissions } from 'api/user';
@@ -28,7 +28,6 @@ export const getAll = ({ query, user }, res, next) => {
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
-    .then(articles => articles)
     .then(articles => articles.map(serializeArticle))
     .then(articles => {
       data = articles;
@@ -45,10 +44,11 @@ export const getAll = ({ query, user }, res, next) => {
     .catch(next);
 };
 
-export const getOne = ({ params: { slug }, user }, res, next) =>
-  LocalizedArticle.findOne({ slug })
+export const getOne = ({ params: { slugOrId }, user }, res, next) =>
+  LocalizedArticle.findOne({ slug: slugOrId })
+    .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound)
-    .then(({ articleId }) =>
+    .then(articleId =>
       Article.findOne({ _id: articleId, active: true })
         .populate('author', POPULATE_OPTIONS.author)
         .populate('brand', POPULATE_OPTIONS.brand)
@@ -104,10 +104,11 @@ export const create = async ({ body }, res, next) => {
   }
 };
 
-export const update = ({ params: { slug }, body }, res, next) =>
-  LocalizedArticle.findOne({ slug })
+export const update = ({ params: { slugOrId }, body }, res, next) =>
+  LocalizedArticle.findOne({ slug: slugOrId })
+    .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound)
-    .then(({ articleId }) =>
+    .then(articleId =>
       Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
         .populate('author', POPULATE_OPTIONS.author)
         .populate('brand', POPULATE_OPTIONS.brand)
@@ -119,9 +120,10 @@ export const update = ({ params: { slug }, body }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const remove = ({ params: { slug } }, res, next) =>
-  LocalizedArticle.findOne({ slug })
+export const remove = ({ params: { slugOrId } }, res, next) =>
+  LocalizedArticle.findOne({ slug: slugOrId })
+    .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound)
-    .then(({ articleId }) => Article.update({ _id: articleId }, { active: false }))
+    .then(articleId => Article.update({ _id: articleId }, { active: false }))
     .then(() => res.sendStatus(200))
     .catch(next);

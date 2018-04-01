@@ -1,5 +1,6 @@
 import HttpError from 'node-http-error';
 import isEmpty from 'lodash/isEmpty';
+import mongoose from 'mongoose';
 
 export const ValidationError = message => HttpError(400, message);
 
@@ -25,6 +26,8 @@ export const checkIsFound = object => {
 
   return object;
 };
+
+export const isValidId = id => mongoose.Types.ObjectId.isValid(id);
 
 export const slugValidator = {
   validator: v => /^[a-zA-Z0-9_-]+$/.test(v),

@@ -201,17 +201,51 @@ describe('Articles API', () => {
           expect(res.body.title).equal('title-new');
         }));
 
+    let articleId;
+
     it('should update an article', () =>
       request
         .put('/api/articles/article-new')
         .send({
-          // TODO(uladbohdan): to replace with a better example of an update.
-          active: true,
+          imageUrl: 'new-image-url',
         })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
+          articleId = res.body._id;
+          expect(res.body.imageUrl).equal('new-image-url');
           expect(res.body.active).equal(true);
+        }));
+
+    it('should get an article by ID', () =>
+      request
+        .get(`/api/articles/${articleId}`)
+        .expect(200)
+        .expect(res => {
+          expect(res.body.imageUrl).equal('new-image-url');
+        }));
+
+    it('should fail to get an article due to invalid ID', () =>
+      request.get(`/api/articles/${articleId}X`).expect(404));
+
+    it('should remove an article by ID', () =>
+      request
+        .delete(`/api/articles/${articleId}`)
+        .set('Cookie', sessionCookie)
+        .expect(200));
+
+    it('should fail to get removed article by ID', () =>
+      request.get(`/api/articles/${articleId}X`).expect(404));
+
+    it('should recover an article by ID', () =>
+      request
+        .put(`/api/articles/${articleId}`)
+        .send({ active: true })
+        .set('Cookie', sessionCookie)
+        .expect(200)
+        .expect(res => {
+          expect(res.body.imageUrl).to.equal('new-image-url');
+          expect(res.body.active).to.equal(true);
         }));
 
     it('should remove an article', () =>
