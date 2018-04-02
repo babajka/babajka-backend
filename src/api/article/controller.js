@@ -1,3 +1,4 @@
+import difference from 'lodash/difference';
 import omit from 'lodash/omit';
 
 import { checkIsFound, isValidId } from 'utils/validation';
@@ -47,7 +48,7 @@ export const getAll = ({ query, user }, res, next) => {
 };
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>
-  LocalizedArticle.findOne({ slug: slugOrId })
+  LocalizedArticle.findOne({ slug: slugOrId, active: true })
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound)
     .then(articleId =>
@@ -82,7 +83,7 @@ export const create = ({ body }, res, next) =>
               })
                 .save()
                 .then(async article => {
-                  // Proceesing with localizations (Bundled API).
+                  // Processing with localizations (Bundled API).
                   if (body.locales) {
                     await Promise.all(
                       Object.values(body.locales).map(localization =>
@@ -118,19 +119,112 @@ export const create = ({ body }, res, next) =>
     .catch(next);
 
 export const update = ({ params: { slugOrId }, body }, res, next) =>
-  LocalizedArticle.findOne({ slug: slugOrId })
+  LocalizedArticle.findOne({ slug: slugOrId, active: true })
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound)
     .then(articleId =>
-      Article.findOneAndUpdate({ _id: articleId }, body, { new: true })
-        .populate('author', POPULATE_OPTIONS.author)
-        .populate('brand', POPULATE_OPTIONS.brand)
-        .populate('collectionId', POPULATE_OPTIONS.collection)
-        .populate('locales', POPULATE_OPTIONS.locales)
+      ArticleBrand.findOne({ slug: body.brandSlug })
+        .then(newBrand =>
+          ArticleCollection.findOne({ slug: body.collectionSlug })
+            .then(newCollection =>
+              User.findOne({ email: body.authorEmail, role: 'author' })
+                .then(newAuthor => {
+                  const defaultFields = omit(body, [
+                    'author',
+                    'authorEmail',
+                    'brand',
+                    'brandSlug',
+                    'collectionSlug',
+                    'locales',
+                  ]);
+                  // TODO(uladbohdan): to refactor that, i.e. with pickBy / omitBy.
+                  if (newBrand) {
+                    defaultFields.brand = newBrand._id;
+                  }
+                  if (newCollection) {
+                    defaultFields.collectionId = newCollection._id;
+                  }
+                  if (newAuthor) {
+                    defaultFields.author = newAuthor._id;
+                  }
+
+                  return defaultFields;
+                })
+                .then(updateFields =>
+                  Article.findOneAndUpdate({ _id: articleId }, updateFields, { new: true })
+                    .then(checkIsFound)
+                    .then(async article => {
+                      // Here Article is properly updated. Proceeding with locales.
+                      let articleOldLocales = [];
+                      if (body.locales) {
+                        articleOldLocales = article.locales.slice(); // Copying.
+                        article.locales.splice(0, article.locales.length); // Clearing with no reassignment.
+                        await Promise.all(
+                          Object.keys(body.locales).map(updLoc =>
+                            LocalizedArticle.findOneAndUpdate(
+                              {
+                                locale: updLoc,
+                                articleId,
+                              },
+                              body.locales[updLoc],
+                              { new: true }
+                            )
+                              .then(async updatedLocalization => {
+                                if (!updatedLocalization) {
+                                  // Was not found + updated. Must be created. I assume.
+                                  const newLocalization = await LocalizedArticle({
+                                    ...body.locales[updLoc],
+                                    articleId,
+                                  }).save();
+                                  return newLocalization._id;
+                                }
+                                return updatedLocalization._id;
+                              })
+                              .then(localeId => article.locales.push(localeId))
+                              .catch(next)
+                          )
+                        );
+                      }
+                      return { article, articleOldLocales };
+                    })
+                    .then(({ article, articleOldLocales }) =>
+                      article.save().then(async () => {
+                        // Here I want to remove unnecessary locales.
+                        // All locales which are in articleOldLocales and are not in article.locales
+                        // must be removed.
+                        await Promise.all(
+                          difference(
+                            articleOldLocales.map(l => l.toString()),
+                            article.locales.map(l => l.toString())
+                          ).map(oldLocaleId =>
+                            LocalizedArticle.findOneAndUpdate(
+                              { _id: oldLocaleId },
+                              { active: false },
+                              { new: true }
+                            ).catch(next)
+                          )
+                        );
+                        return article;
+                      })
+                    )
+                    .then(() =>
+                      Article.findOne({ _id: articleId })
+                        .populate('author', POPULATE_OPTIONS.author)
+                        .populate('brand', POPULATE_OPTIONS.brand)
+                        .populate('collectionId', POPULATE_OPTIONS.collection)
+                        .populate('locales', POPULATE_OPTIONS.locales)
+                        .then(serializeArticle)
+                        .then(sendJson(res))
+                        .catch(next)
+                    )
+                    .catch(next)
+                )
+                .catch(next)
+            )
+            .catch(next)
+        )
+        .catch(next)
     )
-    .then(checkIsFound)
-    .then(serializeArticle)
-    .then(sendJson(res))
     .catch(next);
 
 export const remove = ({ params: { slugOrId } }, res, next) =>

@@ -32,6 +32,10 @@ const LocalizedArticleSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const LocalizedArticle = mongoose.model('LocalizedArticle', LocalizedArticleSchema);

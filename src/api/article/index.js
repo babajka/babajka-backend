@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { requireAuth, verifyPermission } from 'auth';
+import { requireFields, precheck } from 'utils/validation';
 
 import authorRoutes from 'api/article/author';
 import brandRoutes from 'api/article/brand';
@@ -23,10 +24,23 @@ router.use('/collections', collectionRoutes);
 router.use('/localize', localeRoutes);
 
 router.get('/', controller.getAll);
-router.post('/', requireAuth, verifyPermission('canCreateArticle'), controller.create);
+router.post(
+  '/',
+  requireAuth,
+  verifyPermission('canCreateArticle'),
+  requireFields('brandSlug', 'type'),
+  precheck.createArticle,
+  controller.create
+);
 // slugOrId parameter below either contains ID of an Article or a slug of any Article Localization.
 router.get('/:slugOrId', controller.getOne);
-router.put('/:slugOrId', requireAuth, verifyPermission('canCreateArticle'), controller.update);
+router.put(
+  '/:slugOrId',
+  requireAuth,
+  verifyPermission('canCreateArticle'),
+  precheck.updateArticle,
+  controller.update
+);
 router.delete('/:slugOrId', requireAuth, verifyPermission('canCreateArticle'), controller.remove);
 
 export { Article, ArticleBrand, ArticleCollection, LocalizedArticle };

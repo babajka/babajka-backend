@@ -6,6 +6,7 @@ import Article from 'api/article/article.model';
 
 import LocalizedArticle from './model';
 
+// TODO(uladbohdan): to refactor using then-chaining.
 export const create = async ({ params: { articleId }, body }, res, next) => {
   try {
     const article = await Article.findOne({ _id: articleId }).populate('locales', 'locale');

@@ -306,6 +306,50 @@ describe('Articles Bundled API', () => {
 
   let articleId;
 
+  it('should fail to create a broken article due to validation failure', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        imageUrl: 'ololo',
+      })
+      .expect(400));
+
+  it('should fail to create an article with broken localization', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brandSlug: 'wir',
+        type: 'text',
+        locales: {
+          be: {
+            title: 'xx',
+            subtitle: 'yy',
+          },
+        },
+      })
+      .expect(400));
+
+  it('should fail to create an article with unsynced locale', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brandSlug: 'wir',
+        type: 'text',
+        locales: {
+          be: {
+            title: 'xx',
+            subtitle: 'yy',
+            text: 'text',
+            slug: 'slug',
+            locale: 'en',
+          },
+        },
+      })
+      .expect(400));
+
   it('should create an article with localizations with one API call', () =>
     request
       .post('/api/articles')
@@ -344,51 +388,131 @@ describe('Articles Bundled API', () => {
         expect(res.body.locales.be.title).to.equal('be-title');
       }));
 
-  // it('should update an article with localization', () =>
-  //   request
-  //     .put('/api/articles/be-slug')
-  //     .set('Cookie', sessionCookie)
-  //     .send({
-  //       imageUrl: 'new-image-url',
-  //       locales: {
-  //         be: {
-  //           title: 'new-be-title',
-  //           subtitle: 'new-be-subtitle',
-  //         },
-  //       },
-  //     })
-  //     .expect(200)
-  //     .expect(res => {
-  //       expect(res.body.imageUrl).to.equal('new-image-url');
-  //       expect(Object.keys(res.body.locales)).has.length(1);
-  //       expect(res.body.locales.be.title).to.equal('new-be-title');
-  //     }));
+  it('should update an article with localization', () =>
+    request
+      .put('/api/articles/be-slug')
+      .set('Cookie', sessionCookie)
+      .send({
+        imageUrl: 'new-image-url',
+        locales: {
+          be: {
+            title: 'new-be-title',
+            subtitle: 'new-be-subtitle',
+          },
+        },
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.imageUrl).to.equal('new-image-url');
+        expect(Object.keys(res.body.locales)).has.length(1);
+        expect(res.body.locales.be.title).to.equal('new-be-title');
+        expect(res.body.locales.be.subtitle).to.equal('new-be-subtitle');
+      }));
 
-  // it('should add a localization by updating an article', () =>
-  //   request
-  //     .put('/api/articles/be-slug')
-  //     .set('Cookie', sessionCookie)
-  //     .send({
-  //       locales: {
-  //         en: {
-  //           title: 'en-title',
-  //           subtitle: 'en-subtitle',
-  //           text: 'some en text',
-  //           slug: 'en-slug',
-  //           locale: 'en',
-  //         },
-  //       },
-  //     })
-  //     .expect(200)
-  //     .expect(res => {
-  //       expect(Object.keys(res.body.locales)).has.length(2);
-  //       expect(res.body.locales.en.title).to.equal('en-title');
-  //     }));
+  it('should return an article again by ID', () =>
+    request
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.imageUrl).to.equal('new-image-url');
+        expect(Object.keys(res.body.locales)).has.length(1);
+        expect(res.body.locales.be.title).to.equal('new-be-title');
+      }));
 
-  // TODO(uladbohdan): to test:
-  // bad author.
-  // bad brand.
-  // bad collection.
-  // bad locale.
-  // ...
+  it('should add a localization by updating an article', () =>
+    request
+      .put('/api/articles/be-slug')
+      .set('Cookie', sessionCookie)
+      .send({
+        locales: {
+          be: {}, // This is enough for locale to be considered unremoved.
+          en: {
+            title: 'en-title',
+            subtitle: 'en-subtitle',
+            text: 'some en text',
+            slug: 'en-slug',
+            locale: 'en',
+          },
+        },
+      })
+      .expect(200)
+      .expect(res => {
+        expect(Object.keys(res.body.locales)).has.length(2);
+        expect(res.body.locales.en.title).to.equal('en-title');
+        expect(res.body.locales.en.slug).to.equal('en-slug');
+      }));
+
+  it('should return the article again by ID', () =>
+    request
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.imageUrl).to.equal('new-image-url');
+        expect(Object.keys(res.body.locales)).has.length(2);
+        expect(res.body.locales.be.title).to.equal('new-be-title');
+        expect(res.body.locales.en.title).to.equal('en-title');
+      }));
+
+  it('should remove BE locale due to absense in update request', () =>
+    request
+      .put('/api/articles/en-slug')
+      .set('Cookie', sessionCookie)
+      .send({
+        locales: { en: {} },
+      })
+      .expect(200)
+      .expect(res => {
+        expect(Object.keys(res.body.locales)).has.length(1);
+        expect(res.body.locales.en.subtitle).to.equal('en-subtitle');
+      }));
+
+  it('should not found an article with removed localization', () =>
+    request.get('/api/articles/be-slug').expect(404));
+
+  it('should add two new locales and update existent one', () =>
+    request
+      .put('/api/articles/en-slug')
+      .set('Cookie', sessionCookie)
+      .send({
+        locales: {
+          fr: {
+            title: 'title-fr',
+            subtitle: 'subtitle-fr',
+            slug: 'slug-fr',
+            text: 'some-text',
+            locale: 'fr',
+          },
+          de: {
+            title: 'title-de',
+            subtitle: 'subtitle-de',
+            slug: 'slug-de',
+            text: 'some-text',
+            locale: 'de',
+          },
+          en: {
+            slug: 'new-en-slug',
+          },
+        },
+      })
+      .expect(200)
+      .expect(res => {
+        expect(Object.keys(res.body.locales)).has.length(3);
+        expect(res.body.locales.fr.slug).to.equal('slug-fr');
+        expect(res.body.locales.de.slug).to.equal('slug-de');
+        expect(res.body.locales.en.slug).to.equal('new-en-slug');
+      }));
+
+  it('should fail to remove article type', () =>
+    request
+      .put('/api/articles/new-en-slug')
+      .set('Cookie', sessionCookie)
+      .send({ type: '' })
+      .expect(400));
+
+  it('should fail to remove localization title', () =>
+    request
+      .put('/api/articles/new-en-slug')
+      .set('Cookie', sessionCookie)
+      .send({ locales: { de: { title: '' } } })
+      .expect(400));
 });
