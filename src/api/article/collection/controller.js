@@ -15,7 +15,7 @@ export const getOne = ({ params: { slug } }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const create = async ({ body }, res, next) =>
+export const create = ({ body }, res, next) =>
   ArticleCollection(body)
     .save()
     .then(sendJson(res))

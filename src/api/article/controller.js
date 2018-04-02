@@ -63,59 +63,59 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-// TODO(uladbohdan): to refactor the method, it looks super ugly.
-export const create = async ({ body }, res, next) => {
-  try {
-    const articleBrandQuery = ArticleBrand.findOne({ slug: body.brand });
-    const articleBrand = (await articleBrandQuery.exec()) || new ArticleBrand({ slug: body.brand });
-    await articleBrand.save();
-
-    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
-
-    const author = await User.findOne({ email: body.authorEmail }).exec();
-
-    const articleBody = {
-      ...omit(body, ['locales']),
-      author: author && author._id,
-      brand: articleBrand._id,
-      collectionId: articleCollection && articleCollection._id,
-    };
-
-    let data;
-    let code;
-    try {
-      const article = Article(articleBody);
-      if (body.locales) {
-        Object.keys(body.locales).forEach(async locale => {
-          const localization = await LocalizedArticle({
-            ...body.locales[locale],
-            articleId: article._id,
-          }).save();
-          article.locales.push(localization._id);
-        });
-      }
-      await article.save();
-      data = serializeArticle(
-        await article
-          .populate('author', POPULATE_OPTIONS.author)
-          .populate('brand', POPULATE_OPTIONS.brand)
-          .populate('collectionId', POPULATE_OPTIONS.collection)
-          .populate('locales', POPULATE_OPTIONS.locales)
-          .execPopulate()
-      );
-      if (articleCollection) {
-        articleCollection.articles.push(article._id);
-        await articleCollection.save();
-      }
-    } catch (err) {
-      code = 400;
-      data = err;
-    }
-    sendJson(res, code)(data);
-  } catch (err) {
-    next(err);
-  }
-};
+export const create = ({ body }, res, next) =>
+  // TODO(uladbohdan): to deprecate body.brand.
+  ArticleBrand.findOne({ slug: body.brand || body.brandSlug })
+    .then(checkIsFound) // Brand is required.
+    .then(({ _id: brandId }) =>
+      ArticleCollection.findOne({ slug: body.collectionSlug })
+        .then(collection => collection && collection._id) // Collection is not required.
+        .then(collectionId =>
+          User.findOne({ email: body.authorEmail, role: 'author' })
+            .then(author => author && author._id) // Author is not required.
+            .then(authorId =>
+              Article({
+                ...omit(body, ['locales']),
+                author: authorId,
+                brand: brandId,
+                collectionId,
+              })
+                .save()
+                .then(async article => {
+                  // Proceesing with localizations (Bundled API).
+                  if (body.locales) {
+                    await Promise.all(
+                      Object.values(body.locales).map(localization =>
+                        LocalizedArticle({
+                          ...localization,
+                          articleId: article._id,
+                        })
+                          .save()
+                          .then(({ _id: locId }) => article.locales.push(locId))
+                          .catch(next)
+                      )
+                    );
+                  }
+                  return article;
+                })
+                .then(article => article.save())
+                .then(({ _id: articleId }) =>
+                  Article.findOne({ _id: articleId })
+                    .populate('author', POPULATE_OPTIONS.author)
+                    .populate('brand', POPULATE_OPTIONS.brand)
+                    .populate('collectionId', POPULATE_OPTIONS.collection)
+                    .populate('locales', POPULATE_OPTIONS.locales)
+                    .then(serializeArticle)
+                    .then(sendJson(res))
+                    .catch(next)
+                )
+                .catch(next)
+            )
+            .catch(next)
+        )
+        .catch(next)
+    )
+    .catch(next);
 
 export const update = ({ params: { slugOrId }, body }, res, next) =>
   LocalizedArticle.findOne({ slug: slugOrId })

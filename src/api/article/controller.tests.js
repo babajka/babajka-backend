@@ -13,19 +13,19 @@ import LocalizedArticle from './localized/model';
 const request = supertest.agent(app.listen());
 
 describe('Articles API', () => {
-  let articleBrandId;
   const articleIDs = [];
+  const brandSlug = 'wir';
 
   before(async () => {
     // Populating DB with articles.
-    const articleBrand = await new ArticleBrand({ slug: 'Wir' }).save();
-    articleBrandId = articleBrand._id;
+    const { _id: articleBrandId } = await new ArticleBrand({ slug: brandSlug }).save();
+
     let promises = [];
     for (let i = 1; i <= 8; i++) {
       const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
       promises.push(
         new Article({
-          brand: articleBrand._id,
+          brand: articleBrandId,
           type: 'text',
           createdAt: date,
           publishAt: date,
@@ -39,7 +39,7 @@ describe('Articles API', () => {
     // An article with post publishing.
     promises.push(
       new Article({
-        brand: articleBrand._id,
+        brand: articleBrandId,
         type: 'text',
         publishAt: new Date('2025-01-01T18:25:43.511Z'),
       })
@@ -173,7 +173,7 @@ describe('Articles API', () => {
         .post('/api/articles')
         .set('Cookie', sessionCookie)
         .send({
-          brand: articleBrandId,
+          brandSlug,
           type: 'text',
         })
         .expect(200)
@@ -266,12 +266,11 @@ describe('Articles API', () => {
 });
 
 describe('Articles Bundled API', () => {
-  let articleBrandId;
+  const brandSlug = 'wir';
   const authorEmail = 'the-best-author-ever@wir.by';
 
   before(async () => {
-    const articleBrand = await new ArticleBrand({ slug: 'Wir' }).save();
-    articleBrandId = articleBrand._id;
+    await new ArticleBrand({ slug: brandSlug }).save();
 
     await new User({
       firstName: 'First',
@@ -305,12 +304,14 @@ describe('Articles Bundled API', () => {
         expect(res.body.email).equal('admin1@babajka.io');
       }));
 
+  let articleId;
+
   it('should create an article with localizations with one API call', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        brand: articleBrandId,
+        brandSlug,
         collectionSlug: 'precreated-collection',
         type: 'text',
         imageUrl: 'some-image-url',
@@ -327,10 +328,62 @@ describe('Articles Bundled API', () => {
       })
       .expect(200)
       .expect(res => {
+        articleId = res.body._id;
         expect(res.body.imageUrl).to.equal('some-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.slug).to.equal('be-slug');
       }));
+
+  it('should return an article again by ID', () =>
+    request
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.imageUrl).to.equal('some-image-url');
+        expect(Object.keys(res.body.locales)).has.length(1);
+        expect(res.body.locales.be.title).to.equal('be-title');
+      }));
+
+  // it('should update an article with localization', () =>
+  //   request
+  //     .put('/api/articles/be-slug')
+  //     .set('Cookie', sessionCookie)
+  //     .send({
+  //       imageUrl: 'new-image-url',
+  //       locales: {
+  //         be: {
+  //           title: 'new-be-title',
+  //           subtitle: 'new-be-subtitle',
+  //         },
+  //       },
+  //     })
+  //     .expect(200)
+  //     .expect(res => {
+  //       expect(res.body.imageUrl).to.equal('new-image-url');
+  //       expect(Object.keys(res.body.locales)).has.length(1);
+  //       expect(res.body.locales.be.title).to.equal('new-be-title');
+  //     }));
+
+  // it('should add a localization by updating an article', () =>
+  //   request
+  //     .put('/api/articles/be-slug')
+  //     .set('Cookie', sessionCookie)
+  //     .send({
+  //       locales: {
+  //         en: {
+  //           title: 'en-title',
+  //           subtitle: 'en-subtitle',
+  //           text: 'some en text',
+  //           slug: 'en-slug',
+  //           locale: 'en',
+  //         },
+  //       },
+  //     })
+  //     .expect(200)
+  //     .expect(res => {
+  //       expect(Object.keys(res.body.locales)).has.length(2);
+  //       expect(res.body.locales.en.title).to.equal('en-title');
+  //     }));
 
   // TODO(uladbohdan): to test:
   // bad author.
