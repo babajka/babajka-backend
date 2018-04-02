@@ -33,6 +33,6 @@ describe('Diary API', () => {
           expect(res.body.year).to.equal('2018');
         }));
 
-    it('request unexisting diary', () => request.get('/api/specials/diary/be/02/15').expect(404));
+    it('request unexisting diary', () => request.get('/api/specials/diary/be/02/15').expect(204));
   });
 });

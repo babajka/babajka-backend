@@ -23,7 +23,13 @@ export const checkIsFound = object => {
   if (!object) {
     throw new HttpError(404);
   }
+  return object;
+};
 
+export const checkDiaryIsFound = object => {
+  if (!object) {
+    throw new HttpError(204);
+  }
   return object;
 };
 
