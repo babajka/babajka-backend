@@ -208,13 +208,15 @@ describe('Articles API', () => {
         .put('/api/articles/article-new')
         .send({
           imageUrl: 'new-image-url',
+          locales: { en: {} }, // This is for server to keep the locale.
         })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
           articleId = res.body._id;
-          expect(res.body.imageUrl).equal('new-image-url');
-          expect(res.body.active).equal(true);
+          expect(res.body.imageUrl).to.equal('new-image-url');
+          expect(res.body.active).to.equal(true);
+          expect(res.body.locales.en.title).to.equal('title-new');
         }));
 
     it('should get an article by ID', () =>
@@ -223,6 +225,7 @@ describe('Articles API', () => {
         .expect(200)
         .expect(res => {
           expect(res.body.imageUrl).equal('new-image-url');
+          expect(res.body.locales.en.slug).to.equal('article-new');
         }));
 
     it('should fail to get an article due to invalid ID', () =>
@@ -235,17 +238,25 @@ describe('Articles API', () => {
         .expect(200));
 
     it('should fail to get removed article by ID', () =>
-      request.get(`/api/articles/${articleId}X`).expect(404));
+      request.get(`/api/articles/${articleId}`).expect(404));
 
     it('should recover an article by ID', () =>
       request
         .put(`/api/articles/${articleId}`)
-        .send({ active: true })
+        .send({ active: true, locales: { en: {} } })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
           expect(res.body.imageUrl).to.equal('new-image-url');
           expect(res.body.active).to.equal(true);
+        }));
+
+    it('should get an article by slug', () =>
+      request
+        .get(`/api/articles/article-new`)
+        .expect(200)
+        .expect(res => {
+          expect(res.body.locales.en.slug).to.equal('article-new');
         }));
 
     it('should remove an article', () =>
@@ -466,7 +477,7 @@ describe('Articles Bundled API', () => {
         expect(res.body.locales.en.subtitle).to.equal('en-subtitle');
       }));
 
-  it('should not found an article with removed localization', () =>
+  it('should not find an article with removed localization', () =>
     request.get('/api/articles/be-slug').expect(404));
 
   it('should add two new locales and update existent one', () =>

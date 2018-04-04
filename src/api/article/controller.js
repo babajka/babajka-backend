@@ -47,13 +47,13 @@ export const getAll = ({ query, user }, res, next) => {
     .catch(next);
 };
 
-const retrieveArticleId = slugOrId =>
-  LocalizedArticle.findOne({ slug: slugOrId, active: true })
+const retrieveArticleId = (slugOrId, options) =>
+  LocalizedArticle.findOne({ slug: slugOrId, ...options })
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>
-  retrieveArticleId(slugOrId)
+  retrieveArticleId(slugOrId, { active: true })
     .then(articleId =>
       Article.findOne({ _id: articleId, active: true })
         .populate('author', POPULATE_OPTIONS.author)
@@ -67,163 +67,154 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const create = ({ body }, res, next) =>
-  // TODO(uladbohdan): to deprecate body.brand.
-  ArticleBrand.findOne({ slug: body.brand || body.brandSlug })
-    .then(obj => checkIsFound(obj, 400)) // Brand is required.
-    .then(({ _id: brandId }) =>
-      ArticleCollection.findOne({ slug: body.collectionSlug })
-        .then(collection => collection && collection._id) // Collection is not required.
-        .then(collectionId =>
-          User.findOne({ email: body.authorEmail, role: 'author' })
-            .then(author => author && author._id) // Author is not required.
-            .then(authorId =>
-              Article({
-                ...omit(body, ['locales']),
-                author: authorId,
-                brand: brandId,
-                collectionId,
-              })
-                .save()
-                .then(async article => {
-                  // Processing with localizations (Bundled API).
-                  if (body.locales) {
-                    await Promise.all(
-                      Object.values(body.locales).map(localization =>
-                        LocalizedArticle({
-                          ...localization,
-                          articleId: article._id,
-                        })
-                          .save()
-                          .then(({ _id: locId }) => article.locales.push(locId))
-                          .catch(next)
-                      )
-                    );
-                  }
-                  return article;
-                })
-                .then(article => article.save())
-                .then(({ _id: articleId }) =>
-                  Article.findOne({ _id: articleId })
-                    .populate('author', POPULATE_OPTIONS.author)
-                    .populate('brand', POPULATE_OPTIONS.brand)
-                    .populate('collectionId', POPULATE_OPTIONS.collection)
-                    .populate('locales', POPULATE_OPTIONS.locales)
-                    .then(serializeArticle)
-                    .then(sendJson(res))
-                    .catch(next)
-                )
-                .catch(next)
-            )
-            .catch(next)
-        )
-        .catch(next)
-    )
-    .catch(next);
+export const create = async ({ body }, res, next) => {
+  try {
+    const articleBrand = await ArticleBrand.findOne({
+      // TODO(uladbohdan): to deprecate body.brand.
+      slug: body.brand || body.brandSlug,
+    }).exec();
+    checkIsFound(articleBrand, 400); // Brand is required.
+    const brandId = articleBrand._id;
 
-export const update = ({ params: { slugOrId }, body }, res, next) =>
-  retrieveArticleId(slugOrId)
-    .then(articleId =>
-      ArticleBrand.findOne({ slug: body.brandSlug })
-        .then(newBrand =>
-          ArticleCollection.findOne({ slug: body.collectionSlug })
-            .then(newCollection =>
-              User.findOne({ email: body.authorEmail, role: 'author' })
-                .then(newAuthor => {
-                  const defaultFields = omit(body, [
-                    'author',
-                    'authorEmail',
-                    'brand',
-                    'brandSlug',
-                    'collectionSlug',
-                    'locales',
-                  ]);
-                  // TODO(uladbohdan): to refactor that, i.e. with pickBy / omitBy.
-                  if (newBrand) {
-                    defaultFields.brand = newBrand._id;
-                  }
-                  defaultFields.collectionId = newCollection && newCollection._id;
-                  defaultFields.author = newAuthor && newAuthor._id;
-                  return defaultFields;
-                })
-                .then(updateFields =>
-                  Article.findOneAndUpdate({ _id: articleId }, updateFields, { new: true })
-                    .then(async article => {
-                      // Here Article is properly updated. Proceeding with locales.
-                      let articleOldLocales = [];
-                      if (body.locales) {
-                        articleOldLocales = article.locales.slice(); // Copying.
-                        article.locales.splice(0, article.locales.length); // Clearing with no reassignment.
-                        await Promise.all(
-                          Object.keys(body.locales).map(updLoc =>
-                            LocalizedArticle.findOneAndUpdate(
-                              {
-                                locale: updLoc,
-                                articleId,
-                              },
-                              body.locales[updLoc],
-                              { new: true }
-                            )
-                              .then(async updatedLocalization => {
-                                if (!updatedLocalization) {
-                                  // Was not found + updated. Must be created. I assume.
-                                  const newLocalization = await LocalizedArticle({
-                                    ...body.locales[updLoc],
-                                    articleId,
-                                  }).save();
-                                  return newLocalization._id;
-                                }
-                                return updatedLocalization._id;
-                              })
-                              .then(localeId => article.locales.push(localeId))
-                              .catch(next)
-                          )
-                        );
-                      }
-                      return { article, articleOldLocales };
-                    })
-                    .then(({ article, articleOldLocales }) =>
-                      article.save().then(async () => {
-                        // Here I want to remove unnecessary locales.
-                        // All locales which are in articleOldLocales and are not in article.locales
-                        // must be removed.
-                        await Promise.all(
-                          difference(
-                            articleOldLocales.map(l => l.toString()),
-                            article.locales.map(l => l.toString())
-                          ).map(oldLocaleId =>
-                            LocalizedArticle.findOneAndUpdate(
-                              { _id: oldLocaleId },
-                              { active: false },
-                              { new: true }
-                            ).catch(next)
-                          )
-                        );
-                        return article;
-                      })
-                    )
-                    .then(() =>
-                      Article.findOne({ _id: articleId })
-                        .populate('author', POPULATE_OPTIONS.author)
-                        .populate('brand', POPULATE_OPTIONS.brand)
-                        .populate('collectionId', POPULATE_OPTIONS.collection)
-                        .populate('locales', POPULATE_OPTIONS.locales)
-                        .then(serializeArticle)
-                        .then(sendJson(res))
-                        .catch(next)
-                    )
-                    .catch(next)
-                )
-                .catch(next)
-            )
+    const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
+    const collectionId = articleCollection && articleCollection._id;
+
+    const author = await User.findOne({ email: body.authorEmail, role: 'author' }).exec();
+    const authorId = author && author._id;
+
+    const article = Article({
+      ...omit(body, ['locales']),
+      author: authorId,
+      brand: brandId,
+      collectionId,
+    });
+
+    if (body.locales) {
+      // Proceeding with localizations (Bundled API).
+      await Promise.all(
+        Object.values(body.locales).map(localization =>
+          LocalizedArticle({
+            ...localization,
+            articleId: article._id,
+          })
+            .save()
+            .then(({ _id: locId }) => article.locales.push(locId))
             .catch(next)
         )
-        .catch(next)
-    )
-    .catch(next);
+      );
+    }
+
+    await article.save();
+
+    return Article.findOne({ _id: article._id })
+      .populate('author', POPULATE_OPTIONS.author)
+      .populate('brand', POPULATE_OPTIONS.brand)
+      .populate('collectionId', POPULATE_OPTIONS.collection)
+      .populate('locales', POPULATE_OPTIONS.locales)
+      .then(serializeArticle)
+      .then(sendJson(res))
+      .catch(next);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const update = async ({ params: { slugOrId }, body }, res, next) => {
+  try {
+    let articleId;
+    await retrieveArticleId(slugOrId)
+      .then(id => {
+        articleId = id;
+      })
+      .catch(next);
+
+    // Should I use Promise.all here? Yes, I believe.
+    const newBrand = await ArticleBrand.findOne({ slug: body.brand || body.brandSlug }).exec();
+    const newCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
+    const newAuthor = await User.findOne({ email: body.authorEmail, role: 'author' }).exec();
+
+    const updFields = omit(body, [
+      'author',
+      'authorEmail',
+      'brand',
+      'brandSlug',
+      'collectionSlug',
+      'locales',
+    ]);
+    if (newBrand) {
+      updFields.brand = newBrand._id;
+    }
+    updFields.collectionId = newCollection && newCollection._id;
+    updFields.author = newAuthor && newAuthor._id;
+
+    const article = await Article.findOne({ _id: articleId }).exec();
+    Object.entries(updFields).forEach(([key, value]) => {
+      article[key] = value;
+    });
+
+    // Proceeding with localizations (Bundled API).
+    let articleOldLocales = [];
+    if (article.locales && article.locales.length) {
+      articleOldLocales = article.locales.slice(); // Copying.
+    }
+    article.locales = [];
+    if (body.locales) {
+      await Promise.all(
+        Object.entries(body.locales).map(([locale, localeData]) =>
+          LocalizedArticle.findOneAndUpdate(
+            {
+              locale,
+              articleId,
+            },
+            localeData,
+            { new: true }
+          )
+            .then(async updatedLocalization => {
+              if (!updatedLocalization) {
+                // Was not found and updated. Must be created. I assume.
+                const newLocalization = await LocalizedArticle({
+                  ...localeData,
+                  articleId,
+                }).save();
+                return newLocalization._id;
+              }
+              return updatedLocalization._id;
+            })
+            .then(localeId => article.locales.push(localeId))
+            .catch(next)
+        )
+      );
+    }
+    await Promise.all(
+      difference(
+        articleOldLocales.map(l => l.toString()),
+        article.locales.map(l => l.toString())
+      ).map(localeId =>
+        LocalizedArticle.findOneAndUpdate(
+          { _id: localeId },
+          { active: false },
+          { new: true }
+        ).catch(next)
+      )
+    );
+
+    await article.save();
+
+    return Article.findOne({ _id: article._id })
+      .populate('author', POPULATE_OPTIONS.author)
+      .populate('brand', POPULATE_OPTIONS.brand)
+      .populate('collectionId', POPULATE_OPTIONS.collection)
+      .populate('locales', POPULATE_OPTIONS.locales)
+      .then(serializeArticle)
+      .then(sendJson(res))
+      .catch(next);
+  } catch (err) {
+    return next(err);
+  }
+};
 
 export const remove = ({ params: { slugOrId } }, res, next) =>
-  retrieveArticleId(slugOrId)
+  retrieveArticleId(slugOrId, { active: true })
     .then(articleId => Article.update({ _id: articleId }, { active: false }))
     .then(() => res.sendStatus(200))
     .catch(next);
