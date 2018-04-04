@@ -1,5 +1,6 @@
 import HttpError from 'node-http-error';
 import isEmpty from 'lodash/isEmpty';
+import set from 'lodash/set';
 import mongoose from 'mongoose';
 
 export const ValidationError = message => HttpError(400, message);
@@ -9,26 +10,22 @@ export const ValidationError = message => HttpError(400, message);
 // These are the drafts for validators.
 // TODO(uladbohdan): to refactor, to extend.
 
-// TODO(uladbohdan): to figure out nesting in errors object.
-
 const createArticleValidator = ({ body }, res, next) => {
   const errors = {};
   if (body.locales) {
-    Object.keys(body.locales).forEach(loc => {
+    Object.entries(body.locales).forEach(([locale, localeData]) => {
       ['title', 'subtitle', 'slug', 'text', 'locale'].forEach(field => {
-        if (!body.locales[loc][field]) {
-          errors[field] = 'must be presented';
+        if (!localeData[field]) {
+          set(errors, ['locales', locale, field], 'must be presented');
         }
       });
-      if (loc !== body.locales[loc].locale) {
-        errors.localeConsistency = `bad locale structuring: ${loc} vs. ${body.locales[loc].locale}`;
+      if (locale !== localeData.locale) {
+        errors.localeConsistency = `bad locale structuring: ${locale} vs. ${localeData.locale}`;
       }
     });
   }
-  if (!isEmpty(errors)) {
-    return next(new ValidationError(errors));
-  }
-  return next();
+
+  return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
 const updateArticleValidator = ({ body }, res, next) => {
@@ -39,19 +36,18 @@ const updateArticleValidator = ({ body }, res, next) => {
       errors[field] = 'you cannot remove the field';
     }
   });
+
   if (body.locales) {
-    Object.keys(body.locales).forEach(loc => {
+    Object.entries(body.locales).forEach(([locale, localeData]) => {
       ['title', 'subtitle', 'slug', 'text', 'locale'].forEach(field => {
-        if (body.locales[loc][field] === '') {
-          errors[field] = 'you cannot remove the field';
+        if (localeData[field] === '') {
+          set(errors, ['locales', locale, field], 'cannot be removed');
         }
       });
     });
   }
-  if (!isEmpty(errors)) {
-    return next(new ValidationError(errors));
-  }
-  return next();
+
+  return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
 export const precheck = {
@@ -68,22 +64,12 @@ export const requireFields = (...fields) => (req, res, next) => {
     }
   });
 
-  if (!isEmpty(errors)) {
-    return next(new ValidationError(errors));
-  }
-  return next();
+  return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
-export const checkIsFound = object => {
+export const checkIsFound = (object, code = 404) => {
   if (!object) {
-    throw new HttpError(404);
-  }
-  return object;
-};
-
-export const checkDiaryIsFound = object => {
-  if (!object) {
-    throw new HttpError(204);
+    throw new HttpError(code);
   }
   return object;
 };

@@ -47,10 +47,13 @@ export const getAll = ({ query, user }, res, next) => {
     .catch(next);
 };
 
-export const getOne = ({ params: { slugOrId }, user }, res, next) =>
+const retrieveArticleId = slugOrId =>
   LocalizedArticle.findOne({ slug: slugOrId, active: true })
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
-    .then(checkIsFound)
+    .then(checkIsFound);
+
+export const getOne = ({ params: { slugOrId }, user }, res, next) =>
+  retrieveArticleId(slugOrId)
     .then(articleId =>
       Article.findOne({ _id: articleId, active: true })
         .populate('author', POPULATE_OPTIONS.author)
@@ -67,7 +70,7 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
 export const create = ({ body }, res, next) =>
   // TODO(uladbohdan): to deprecate body.brand.
   ArticleBrand.findOne({ slug: body.brand || body.brandSlug })
-    .then(checkIsFound) // Brand is required.
+    .then(obj => checkIsFound(obj, 400)) // Brand is required.
     .then(({ _id: brandId }) =>
       ArticleCollection.findOne({ slug: body.collectionSlug })
         .then(collection => collection && collection._id) // Collection is not required.
@@ -119,9 +122,7 @@ export const create = ({ body }, res, next) =>
     .catch(next);
 
 export const update = ({ params: { slugOrId }, body }, res, next) =>
-  LocalizedArticle.findOne({ slug: slugOrId, active: true })
-    .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
-    .then(checkIsFound)
+  retrieveArticleId(slugOrId)
     .then(articleId =>
       ArticleBrand.findOne({ slug: body.brandSlug })
         .then(newBrand =>
@@ -141,18 +142,12 @@ export const update = ({ params: { slugOrId }, body }, res, next) =>
                   if (newBrand) {
                     defaultFields.brand = newBrand._id;
                   }
-                  if (newCollection) {
-                    defaultFields.collectionId = newCollection._id;
-                  }
-                  if (newAuthor) {
-                    defaultFields.author = newAuthor._id;
-                  }
-
+                  defaultFields.collectionId = newCollection && newCollection._id;
+                  defaultFields.author = newAuthor && newAuthor._id;
                   return defaultFields;
                 })
                 .then(updateFields =>
                   Article.findOneAndUpdate({ _id: articleId }, updateFields, { new: true })
-                    .then(checkIsFound)
                     .then(async article => {
                       // Here Article is properly updated. Proceeding with locales.
                       let articleOldLocales = [];
@@ -228,9 +223,7 @@ export const update = ({ params: { slugOrId }, body }, res, next) =>
     .catch(next);
 
 export const remove = ({ params: { slugOrId } }, res, next) =>
-  LocalizedArticle.findOne({ slug: slugOrId })
-    .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
-    .then(checkIsFound)
+  retrieveArticleId(slugOrId)
     .then(articleId => Article.update({ _id: articleId }, { active: false }))
     .then(() => res.sendStatus(200))
     .catch(next);

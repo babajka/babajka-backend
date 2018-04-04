@@ -1,4 +1,4 @@
-import { checkDiaryIsFound } from 'utils/validation';
+import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import dateFormat from 'dateformat';
 
@@ -7,7 +7,7 @@ import Diary from './model';
 export const getDay = ({ params: { locale, month, day } }, res, next) =>
   Diary.findOne({ locale, colloquialDate: `${month}-${day}`, active: true })
     .select('-_id -__v')
-    .then(checkDiaryIsFound)
+    .then(d => checkIsFound(d, 204))
     .then(async diary => {
       const date = new Date(`2018-${month}-${day}`);
       const prevDate = new Date(date);
@@ -21,7 +21,7 @@ export const getDay = ({ params: { locale, month, day } }, res, next) =>
             locale,
             colloquialDate: dateFormat(curDate, 'mm-dd'),
             active: true,
-          }).then(d => Boolean(d))
+          }).then(Boolean)
         )
       );
 

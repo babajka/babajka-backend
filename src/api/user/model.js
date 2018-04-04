@@ -1,8 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
+import fromPairs from 'lodash/fromPairs';
 import pick from 'lodash/pick';
 
 import config from 'config';
+import { joinNames } from 'utils/formatting';
 
 const UserSchema = new Schema({
   // For a User with a role 'author' firstName, lastName and bio map locales
@@ -39,16 +41,13 @@ const UserSchema = new Schema({
 });
 
 UserSchema.virtual('displayName').get(function get() {
-  const joinNames = (firstName, lastName) => {
-    const postfix = lastName ? ` ${lastName}` : '';
-    return `${firstName}${postfix}`;
-  };
   if (this.role === 'author') {
-    const result = {};
-    Object.keys(this.firstName).forEach(locale => {
-      result[locale] = joinNames(this.firstName[locale], this.lastName && this.lastName[locale]);
-    });
-    return result;
+    return fromPairs(
+      Object.entries(this.firstName).map(([l, firstName]) => [
+        l,
+        joinNames(firstName, this.lastName && this.lastName[l]),
+      ])
+    );
   }
   // The role is 'regular' (default).
   return joinNames(this.firstName, this.lastName);
