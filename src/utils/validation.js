@@ -7,9 +7,6 @@ export const ValidationError = message => HttpError(400, message);
 
 // TODO(uladbohdan): to replace messages with error codes.
 
-// These are the drafts for validators.
-// TODO(uladbohdan): to refactor, to extend.
-
 const createArticleValidator = ({ body }, res, next) => {
   const errors = {};
   if (body.locales) {
@@ -20,7 +17,7 @@ const createArticleValidator = ({ body }, res, next) => {
         }
       });
       if (locale !== localeData.locale) {
-        errors.localeConsistency = `bad locale structuring: ${locale} vs. ${localeData.locale}`;
+        errors.localeConsistency = `bad locale consistency: ${locale} vs. ${localeData.locale}`;
       }
     });
   }
@@ -33,7 +30,7 @@ const updateArticleValidator = ({ body }, res, next) => {
 
   ['brandSlug', 'type'].forEach(field => {
     if (body[field] === '') {
-      errors[field] = 'you cannot remove the field';
+      errors[field] = 'forbidden to remove';
     }
   });
 
@@ -41,9 +38,12 @@ const updateArticleValidator = ({ body }, res, next) => {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
       ['title', 'subtitle', 'slug', 'text', 'locale'].forEach(field => {
         if (localeData[field] === '') {
-          set(errors, ['locales', locale, field], 'cannot be removed');
+          set(errors, ['locales', locale, field], 'forbidden to remove');
         }
       });
+      if (localeData.locale && localeData.locale !== locale) {
+        errors.localeConsistency = `bad locale consistency: ${locale} vs. ${localeData.locale}`;
+      }
     });
   }
 

@@ -520,6 +520,13 @@ describe('Articles Bundled API', () => {
       .send({ type: '' })
       .expect(400));
 
+  it('should fail to remove article type', () =>
+    request
+      .put('/api/articles/new-en-slug')
+      .set('Cookie', sessionCookie)
+      .send({ type: '' })
+      .expect(400));
+
   it('should fail to remove localization title', () =>
     request
       .put('/api/articles/new-en-slug')

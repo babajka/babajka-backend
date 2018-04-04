@@ -128,10 +128,21 @@ export const update = async ({ params: { slugOrId }, body }, res, next) => {
       })
       .catch(next);
 
-    // Should I use Promise.all here? Yes, I believe.
-    const newBrand = await ArticleBrand.findOne({ slug: body.brand || body.brandSlug }).exec();
-    const newCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
-    const newAuthor = await User.findOne({ email: body.authorEmail, role: 'author' }).exec();
+    let newBrand;
+    let newCollection;
+    let newAuthor;
+    await Promise.all([
+      // TODO(uladbohdan): to deprecate body.brand.
+      ArticleBrand.findOne({ slug: body.brand || body.brandSlug }).then(brand => {
+        newBrand = brand;
+      }),
+      ArticleCollection.findOne({ slug: body.collectionSlug }).then(collection => {
+        newCollection = collection;
+      }),
+      User.findOne({ email: body.authorEmail, role: 'author' }).then(author => {
+        newAuthor = author;
+      }),
+    ]);
 
     const updFields = omit(body, [
       'author',
@@ -171,7 +182,7 @@ export const update = async ({ params: { slugOrId }, body }, res, next) => {
           )
             .then(async updatedLocalization => {
               if (!updatedLocalization) {
-                // Was not found and updated. Must be created. I assume.
+                // Was not found and updated; creating a new one.
                 const newLocalization = await LocalizedArticle({
                   ...localeData,
                   articleId,
