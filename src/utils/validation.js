@@ -81,8 +81,12 @@ export const slugValidator = {
   message: 'failed to match regexp',
 };
 
-export const colloquialDateValidator = {
-  // Colloquial Date has MM-DD format.
-  validator: v => /\d{2}-\d{2}/.test(v),
+export const colloquialDateHashValidator = {
+  // Colloquial Date Hash has MMDD format.
+  validator: v => {
+    const month = parseInt(v, 10) / 100;
+    const day = parseInt(v, 10) % 100;
+    return month >= 0 && month <= 12 && day >= 0 && day <= 31;
+  },
   message: 'failed to match regexp',
 };

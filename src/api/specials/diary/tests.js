@@ -16,20 +16,20 @@ describe('Diary API', () => {
       Diary({
         author: 'Author1',
         text: 'Diary02-27',
-        colloquialDate: '02-27',
+        colloquialDateHash: '0227',
         locale: 'be',
       }).save(),
       Diary({
         author: 'Author2',
         text: 'Diary02-28',
-        colloquialDate: '02-28',
+        colloquialDateHash: '0228',
         locale: 'be',
         year: '2018',
       }).save(),
       Diary({
         author: 'Author3',
         text: 'Diary03-01',
-        colloquialDate: '03-01',
+        colloquialDateHash: '0301',
         locale: 'be',
       }).save(),
     ]);
@@ -45,31 +45,74 @@ describe('Diary API', () => {
         .expect(({ body: { data, prev, next } }) => {
           expect(data.author).to.equal('Author2');
           expect(data.year).to.equal('2018');
-          expect(data.colloquialDate).to.equal('02-28');
-          expect(prev).to.equal(true);
-          expect(next).to.equal(true);
+          expect(data.month).to.equal('02');
+          expect(data.day).to.equal('28');
+          expect(prev.month).to.equal('02');
+          expect(prev.day).to.equal('27');
+          expect(next.month).to.equal('03');
+          expect(next.day).to.equal('01');
         }));
 
-    it('get a diary with next only', () =>
+    it('get the first diary of the year', () =>
       request
         .get('/api/specials/diary/be/02/27')
         .expect(200)
         .expect(({ body: { data, prev, next } }) => {
           expect(data.author).to.equal('Author1');
-          expect(prev).to.equal(false);
-          expect(next).to.equal(true);
+          expect(prev.month).to.equal('03');
+          expect(prev.day).to.equal('01');
+          expect(next.month).to.equal('02');
+          expect(next.day).to.equal('28');
         }));
 
-    it('get a diary with prev only', () =>
+    it('get the last diary of the year', () =>
       request
         .get('/api/specials/diary/be/03/01')
         .expect(200)
         .expect(({ body: { data, prev, next } }) => {
           expect(data.author).to.equal('Author3');
-          expect(prev).to.equal(true);
-          expect(next).to.equal(false);
+          expect(prev.month).to.equal('02');
+          expect(prev.day).to.equal('28');
+          expect(next.month).to.equal('02');
+          expect(next.day).to.equal('27');
         }));
 
-    it('request unexisting diary', () => request.get('/api/specials/diary/be/02/15').expect(204));
+    it('request unexisting diary', () =>
+      request
+        .get('/api/specials/diary/be/01/15')
+        .expect(200)
+        .expect(({ body: { data, prev, next } }) => {
+          // eslint-disable-next-line no-unused-expressions
+          expect(data).to.be.empty;
+          expect(prev.month).to.equal('03');
+          expect(next.month).to.equal('02');
+        }));
   });
+});
+
+describe('Diary API with no data', () => {
+  it('should get no data', () => request.get('/api/specials/diary/be/03/10').expect(204));
+});
+
+describe('Diary API with lack of data', () => {
+  before(async () => {
+    await Diary({
+      author: 'Author1',
+      text: 'Diary10-27',
+      colloquialDateHash: '1027',
+      locale: 'be',
+    }).save();
+  });
+
+  after(dropData);
+
+  it('all three diaries should be the same', () =>
+    request
+      .get('/api/specials/diary/be/10/27')
+      .expect(200)
+      .expect(({ body: { data, prev, next } }) => {
+        expect(data.month).to.equal('10');
+        expect(prev.month).to.equal('10');
+        expect(next.month).to.equal('10');
+      }));
 });

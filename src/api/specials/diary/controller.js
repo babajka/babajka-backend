@@ -1,37 +1,58 @@
-import { checkIsFound } from 'utils/validation';
+import HttpError from 'node-http-error';
+
 import { sendJson } from 'utils/api';
-import dateFormat from 'dateformat';
 
-import Diary from './model';
+import { Diary, buildColloquialDateHash, serializeDiary } from './model';
 
-export const getDay = ({ params: { locale, month, day } }, res, next) =>
-  Diary.findOne({ locale, colloquialDate: `${month}-${day}`, active: true })
-    .select('-_id -__v')
-    .then(d => checkIsFound(d, 204))
-    .then(async diary => {
-      const date = new Date(`2018-${month}-${day}`);
-      const prevDate = new Date(date);
-      prevDate.setDate(date.getDate() - 1);
-      const nextDate = new Date(date);
-      nextDate.setDate(date.getDate() + 1);
+export const getDay = async ({ params: { locale, month, day } }, res, next) => {
+  try {
+    const today = buildColloquialDateHash(month, day);
+    const diary = await Diary.findOne({ locale, colloquialDateHash: today, active: true }).exec();
 
-      const [prevExists, nextExists] = await Promise.all(
-        [prevDate, nextDate].map(curDate =>
-          Diary.findOne({
-            locale,
-            colloquialDate: dateFormat(curDate, 'mm-dd'),
-            active: true,
-          }).then(Boolean)
-        )
-      );
+    let [bestPrev] = await Diary.find({ locale, colloquialDateHash: { $lt: today } })
+      .sort({
+        colloquialDateHash: 'desc',
+      })
+      .limit(1)
+      .exec();
+    if (!bestPrev) {
+      // The very beginning of the year might be requested.
+      [bestPrev] = await Diary.find({ locale })
+        .sort({ colloquialDateHash: 'desc' })
+        .limit(1)
+        .exec();
+      if (!bestPrev) {
+        // We have no diaries at all.
+        throw new HttpError(204, 'no diaries exist');
+      }
+    }
 
-      return {
-        data: diary,
-        prev: prevExists,
-        next: nextExists,
-      };
-    })
-    .then(sendJson(res))
-    .catch(next);
+    let [bestNext] = await Diary.find({ locale, colloquialDateHash: { $gt: today } })
+      .sort({ colloquialDateHash: 'asc' })
+      .limit(1)
+      .exec();
+    if (!bestNext) {
+      // The very end of the year might be requested.
+      [bestNext] = await Diary.find({ locale })
+        .sort({ colloquialDate: 'asc' })
+        .limit(1)
+        .exec();
+    }
+
+    return sendJson(res)({
+      data: serializeDiary(diary),
+      prev: Boolean(bestPrev) && {
+        month: bestPrev.month,
+        day: bestPrev.day,
+      },
+      next: Boolean(bestNext) && {
+        month: bestNext.month,
+        day: bestNext.day,
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 export default getDay;
