@@ -1,10 +1,18 @@
 import mongoose, { Schema } from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
+import fromPairs from 'lodash/fromPairs';
 import pick from 'lodash/pick';
 
 import config from 'config';
+import { joinNames } from 'utils/formatting';
 
 const UserSchema = new Schema({
+  // For a User with a role 'author' firstName, lastName and bio map locales
+  // to the values. A set of locales must be the same for all of the fields mentioned.
+  // For a User with a role 'regular' firstName, lastName and bio are Strings;
+  // the language of these strings is undefined.
+  // TODO(uladbohdan): to implement validator to verify the set of locales is the same
+  // for all the fields.
   firstName: {
     type: Schema.Types.Mixed,
     required: true,
@@ -32,8 +40,17 @@ const UserSchema = new Schema({
   imageUrl: String,
 });
 
-UserSchema.virtual('name').get(function get() {
-  return `${this.firstName} ${this.lastName}`;
+UserSchema.virtual('displayName').get(function get() {
+  if (this.role === 'author') {
+    return fromPairs(
+      Object.entries(this.firstName).map(([l, firstName]) => [
+        l,
+        joinNames(firstName, this.lastName && this.lastName[l]),
+      ])
+    );
+  }
+  // The role is 'regular' (default).
+  return joinNames(this.firstName, this.lastName);
 });
 
 UserSchema.virtual('password').get(function get() {
@@ -55,7 +72,16 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-const basicFields = ['firstName', 'lastName', 'email', 'role', 'active', 'bio', 'imageUrl'];
+const basicFields = [
+  'firstName',
+  'lastName',
+  'displayName',
+  'email',
+  'role',
+  'active',
+  'bio',
+  'imageUrl',
+];
 
 export const serializeUser = object => pick(object, [...basicFields, 'permissions']);
 

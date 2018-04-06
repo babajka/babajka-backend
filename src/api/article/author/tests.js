@@ -6,12 +6,15 @@ import 'db/connect';
 
 import { dropData } from 'utils/testing';
 
+import ArticleBrand from 'api/article/brand/model';
 import User from 'api/user/model';
 
 const request = supertest.agent(app.listen());
 
 describe('Authors API', () => {
   before(async () => {
+    await new ArticleBrand({ slug: 'wir' }).save();
+
     await Promise.all([
       User({ firstName: 'Name', email: 'author1@wir.by', role: 'author' }).save(),
       User({ firstName: 'Name', email: 'author2@wir.by', role: 'author' }).save(),
@@ -86,7 +89,7 @@ describe('Authors API', () => {
       it('should create an article with Author', () =>
         request
           .post('/api/articles')
-          .send({ type: 'video', brand: 'wir', authorEmail: 'generated-author-11@wir.by' })
+          .send({ type: 'video', brandSlug: 'wir', authorEmail: 'generated-author-11@wir.by' })
           .set('Cookie', sessionCookie)
           .expect(200)
           .expect(res => {
