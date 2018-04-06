@@ -46,6 +46,9 @@ DiarySchema.virtual('day').get(function get() {
     .padStart(2, '0');
 });
 
+DiarySchema.set('toObject', { virtuals: true });
+DiarySchema.set('toJSON', { virtuals: true });
+
 export const buildColloquialDateHash = (month, day) =>
   parseInt(month, 10) * 100 + parseInt(day, 10);
 

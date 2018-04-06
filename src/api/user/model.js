@@ -57,6 +57,9 @@ UserSchema.virtual('password').get(function get() {
   return this.passwordHash;
 });
 
+UserSchema.set('toObject', { virtuals: true });
+UserSchema.set('toJSON', { virtuals: true });
+
 UserSchema.methods.setPassword = async function set(password) {
   this.passwordHash = await this.generateHash(password);
 };
