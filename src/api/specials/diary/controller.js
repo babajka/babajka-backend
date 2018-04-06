@@ -41,11 +41,11 @@ export const getDay = async ({ params: { locale, month, day } }, res, next) => {
 
     return sendJson(res)({
       data: serializeDiary(diary),
-      prev: Boolean(bestPrev) && {
+      prev: !!bestPrev && {
         month: bestPrev.month,
         day: bestPrev.day,
       },
-      next: Boolean(bestNext) && {
+      next: !!bestNext && {
         month: bestNext.month,
         day: bestNext.day,
       },

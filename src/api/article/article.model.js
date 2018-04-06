@@ -5,48 +5,53 @@ import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 
-const ArticleSchema = new Schema({
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  locales: [
-    {
+const ArticleSchema = new Schema(
+  {
+    author: {
       type: Schema.Types.ObjectId,
-      ref: 'LocalizedArticle',
+      ref: 'User',
     },
-  ],
-  collectionId: {
-    type: Schema.Types.ObjectId,
-    ref: 'ArticleCollection',
+    locales: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'LocalizedArticle',
+      },
+    ],
+    collectionId: {
+      type: Schema.Types.ObjectId,
+      ref: 'ArticleCollection',
+    },
+    brand: {
+      // May be e.g. 'wir' or 'kurilka'.
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'ArticleBrand',
+    },
+    type: {
+      type: String,
+      enum: ['text', 'video'],
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    publishAt: {
+      type: Date,
+      default: Date.now,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    imageUrl: String,
+    // This is a YouTube video ID. Ignored unless Article type is video.
+    videoId: String,
   },
-  brand: {
-    // May be e.g. 'wir' or 'kurilka'.
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'ArticleBrand',
-  },
-  type: {
-    type: String,
-    enum: ['text', 'video'],
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  publishAt: {
-    type: Date,
-    default: Date.now,
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-  imageUrl: String,
-  // This is a YouTube video ID. Ignored unless Article type is video.
-  videoId: String,
-});
+  {
+    usePushEach: true,
+  }
+);
 
 const Article = mongoose.model('Article', ArticleSchema);
 

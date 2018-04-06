@@ -1,4 +1,3 @@
-import difference from 'lodash/difference';
 import omit from 'lodash/omit';
 
 import { checkIsFound, isValidId } from 'utils/validation';
@@ -52,15 +51,16 @@ const retrieveArticleId = (slugOrId, options) =>
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound);
 
+const getArticleById = articleId =>
+  Article.findOne({ _id: articleId, active: true })
+    .populate('author', POPULATE_OPTIONS.author)
+    .populate('brand', POPULATE_OPTIONS.brand)
+    .populate('collectionId', POPULATE_OPTIONS.collection)
+    .populate('locales', POPULATE_OPTIONS.locales);
+
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
-    .then(articleId =>
-      Article.findOne({ _id: articleId, active: true })
-        .populate('author', POPULATE_OPTIONS.author)
-        .populate('brand', POPULATE_OPTIONS.brand)
-        .populate('collectionId', POPULATE_OPTIONS.collection)
-        .populate('locales', POPULATE_OPTIONS.locales)
-    )
+    .then(getArticleById)
     .then(checkIsFound)
     .then(article => checkIsPublished(article, user))
     .then(serializeArticle)
@@ -91,14 +91,14 @@ export const create = async ({ body }, res, next) => {
 
     if (body.locales) {
       // Proceeding with localizations (Bundled API).
-      await Promise.all(
+      article.locales = await Promise.all(
         Object.values(body.locales).map(localization =>
           LocalizedArticle({
             ...localization,
             articleId: article._id,
           })
             .save()
-            .then(({ _id: locId }) => article.locales.push(locId))
+            .then(({ _id }) => _id)
             .catch(next)
         )
       );
@@ -106,11 +106,7 @@ export const create = async ({ body }, res, next) => {
 
     await article.save();
 
-    return Article.findOne({ _id: article._id })
-      .populate('author', POPULATE_OPTIONS.author)
-      .populate('brand', POPULATE_OPTIONS.brand)
-      .populate('collectionId', POPULATE_OPTIONS.collection)
-      .populate('locales', POPULATE_OPTIONS.locales)
+    return getArticleById(article._id)
       .then(serializeArticle)
       .then(sendJson(res))
       .catch(next);
@@ -121,27 +117,12 @@ export const create = async ({ body }, res, next) => {
 
 export const update = async ({ params: { slugOrId }, body }, res, next) => {
   try {
-    let articleId;
-    await retrieveArticleId(slugOrId)
-      .then(id => {
-        articleId = id;
-      })
-      .catch(next);
-
-    let newBrand;
-    let newCollection;
-    let newAuthor;
-    await Promise.all([
+    const articleId = await retrieveArticleId(slugOrId).catch(next);
+    const [newBrand, newCollection, newAuthor] = await Promise.all([
       // TODO(uladbohdan): to deprecate body.brand.
-      ArticleBrand.findOne({ slug: body.brand || body.brandSlug }).then(brand => {
-        newBrand = brand;
-      }),
-      ArticleCollection.findOne({ slug: body.collectionSlug }).then(collection => {
-        newCollection = collection;
-      }),
-      User.findOne({ email: body.authorEmail, role: 'author' }).then(author => {
-        newAuthor = author;
-      }),
+      ArticleBrand.findOne({ slug: body.brand || body.brandSlug }).exec(),
+      ArticleCollection.findOne({ slug: body.collectionSlug }).exec(),
+      User.findOne({ email: body.authorEmail, role: 'author' }).exec(),
     ]);
 
     const updFields = omit(body, [
@@ -165,12 +146,11 @@ export const update = async ({ params: { slugOrId }, body }, res, next) => {
 
     // Proceeding with localizations (Bundled API).
     let articleOldLocales = [];
-    if (article.locales && article.locales.length) {
+    if (article.locales) {
       articleOldLocales = article.locales.slice(); // Copying.
     }
-    article.locales = [];
     if (body.locales) {
-      await Promise.all(
+      article.locales = await Promise.all(
         Object.entries(body.locales).map(([locale, localeData]) =>
           LocalizedArticle.findOneAndUpdate(
             {
@@ -180,42 +160,24 @@ export const update = async ({ params: { slugOrId }, body }, res, next) => {
             localeData,
             { new: true }
           )
-            .then(async updatedLocalization => {
-              if (!updatedLocalization) {
-                // Was not found and updated; creating a new one.
-                const newLocalization = await LocalizedArticle({
-                  ...localeData,
-                  articleId,
-                }).save();
-                return newLocalization._id;
-              }
-              return updatedLocalization._id;
-            })
-            .then(localeId => article.locales.push(localeId))
+            // unless found, create a new one.
+            .then(loc => loc || LocalizedArticle({ ...localeData, articleId }).save())
+            .then(({ _id }) => _id)
             .catch(next)
         )
       );
     }
+    const newLocales = article.locales.map(l => l.toString());
+    const localesToUpdate = articleOldLocales.filter(l => !newLocales.includes(l.toString()));
     await Promise.all(
-      difference(
-        articleOldLocales.map(l => l.toString()),
-        article.locales.map(l => l.toString())
-      ).map(localeId =>
-        LocalizedArticle.findOneAndUpdate(
-          { _id: localeId },
-          { active: false },
-          { new: true }
-        ).catch(next)
+      localesToUpdate.map(_id =>
+        LocalizedArticle.findOneAndUpdate({ _id }, { active: false }).catch(next)
       )
     );
 
     await article.save();
 
-    return Article.findOne({ _id: article._id })
-      .populate('author', POPULATE_OPTIONS.author)
-      .populate('brand', POPULATE_OPTIONS.brand)
-      .populate('collectionId', POPULATE_OPTIONS.collection)
-      .populate('locales', POPULATE_OPTIONS.locales)
+    return getArticleById(article._id)
       .then(serializeArticle)
       .then(sendJson(res))
       .catch(next);
