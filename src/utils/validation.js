@@ -11,12 +11,12 @@ const createArticleValidator = ({ body }, res, next) => {
   const errors = {};
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
-      ['title', 'subtitle', 'slug', 'text', 'locale'].forEach(field => {
+      ['title', 'subtitle', 'slug', 'text'].forEach(field => {
         if (!localeData[field]) {
           set(errors, ['locales', locale, field], 'must be presented');
         }
       });
-      if (locale !== localeData.locale) {
+      if (localeData.locale && locale !== localeData.locale) {
         errors.localeConsistency = `bad locale consistency: ${locale} vs. ${localeData.locale}`;
       }
     });

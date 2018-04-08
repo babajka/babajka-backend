@@ -346,7 +346,7 @@ describe('Articles Bundled API', () => {
       })
       .expect(400));
 
-  it('should fail to create an article with unsynced locale', () =>
+  it('should fail to create an article with inconsistent locale', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
@@ -382,7 +382,6 @@ describe('Articles Bundled API', () => {
             subtitle: 'be-subtitle',
             text: 'some-be-text',
             slug: 'be-slug',
-            locale: 'be',
           },
         },
       })

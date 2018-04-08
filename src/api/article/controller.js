@@ -92,10 +92,11 @@ export const create = async ({ body }, res, next) => {
     if (body.locales) {
       // Proceeding with localizations (Bundled API).
       article.locales = await Promise.all(
-        Object.values(body.locales).map(localization =>
+        Object.entries(body.locales).map(([locale, localeData]) =>
           LocalizedArticle({
-            ...localization,
+            ...localeData,
             articleId: article._id,
+            locale,
           })
             .save()
             .then(({ _id }) => _id)
