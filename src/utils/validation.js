@@ -28,7 +28,7 @@ const createArticleValidator = ({ body }, res, next) => {
 const updateArticleValidator = ({ body }, res, next) => {
   const errors = {};
 
-  ['brandSlug', 'type'].forEach(field => {
+  ['brandSlug', 'type', 'imageUrl'].forEach(field => {
     if (body[field] === '') {
       errors[field] = 'forbidden to remove';
     }

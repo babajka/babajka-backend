@@ -28,7 +28,7 @@ router.post(
   '/',
   requireAuth,
   verifyPermission('canCreateArticle'),
-  requireFields('brandSlug', 'type'),
+  requireFields('brandSlug', 'type', 'imageUrl'),
   precheck.createArticle,
   controller.create
 );

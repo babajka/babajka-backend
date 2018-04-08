@@ -27,6 +27,7 @@ describe('Articles API', () => {
         new Article({
           brand: articleBrandId,
           type: 'text',
+          imageUrl: 'image-url',
           createdAt: date,
           publishAt: date,
         })
@@ -41,6 +42,7 @@ describe('Articles API', () => {
       new Article({
         brand: articleBrandId,
         type: 'text',
+        imageUrl: 'image-url',
         publishAt: new Date('2025-01-01T18:25:43.511Z'),
       })
         .save()
@@ -174,6 +176,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .send({
           brandSlug,
+          imageUrl: 'image-url',
           type: 'text',
         })
         .expect(200)
@@ -332,6 +335,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         brandSlug: 'wir',
+        imageUrl: 'image-url',
         type: 'text',
         locales: {
           be: {
@@ -348,6 +352,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         brandSlug: 'wir',
+        imageUrl: 'image-url',
         type: 'text',
         locales: {
           be: {
@@ -520,11 +525,18 @@ describe('Articles Bundled API', () => {
       .send({ type: '' })
       .expect(400));
 
-  it('should fail to remove article type', () =>
+  it('should fail to remove article brand', () =>
     request
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
-      .send({ type: '' })
+      .send({ brandSlug: '' })
+      .expect(400));
+
+  it('should fail to remove article imageUrl', () =>
+    request
+      .put('/api/articles/new-en-slug')
+      .set('Cookie', sessionCookie)
+      .send({ imageUrl: '' })
       .expect(400));
 
   it('should fail to remove localization title', () =>

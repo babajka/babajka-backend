@@ -22,10 +22,8 @@ describe('Collections API', () => {
     for (let i = 1; i <= 5; i++) {
       articlePromises.push(
         new Article({
-          slug: `article-${i}`,
-          title: 'title',
-          subtitle: 'subtitle',
           type: 'text',
+          imageUrl: 'image-url',
           brand: brand._id,
         }).save()
       );
