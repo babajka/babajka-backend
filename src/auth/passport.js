@@ -53,7 +53,7 @@ passport.use(
       passwordField: 'password',
       passReqToCallback: true,
     },
-    ({ body: { firstName } }, email, password, done) => {
+    ({ body: { firstName, lastName, bio, imageUrl } }, email, password, done) => {
       let user;
       User.findOne({ email })
         .then(result => {
@@ -61,7 +61,7 @@ passport.use(
             throw new ValidationError({ email: 'auth.usedEmail' });
           }
 
-          user = new User({ email, firstName });
+          user = new User({ email, firstName, lastName, bio, imageUrl });
           return user.setPassword(password);
         })
         .then(() => user.save())
