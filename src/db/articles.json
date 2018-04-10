@@ -37,7 +37,8 @@
       }
     },
     "authorEmail": "curie@wir.by",
-    "videoId": "SPauxWv1Rnk"
+    "videoId": "SPauxWv1Rnk",
+    "imageUrl": "/test/images/einstein.jpeg"
   },
   {
     "type": "video",
@@ -57,7 +58,8 @@
       }
     },
     "authorEmail": "albert@wir.by",
-    "videoId": "SPauxWv1Rnk"
+    "videoId": "SPauxWv1Rnk",
+    "imageUrl": "/test/images/einstein.jpeg"
   },
   {
     "type": "text",
@@ -76,7 +78,8 @@
         "slug": "slug3-en"
       }
     },
-    "authorEmail": "curie@wir.by"
+    "authorEmail": "curie@wir.by",
+    "imageUrl": "/test/images/einstein.jpeg"
   },
   {
     "type": "video",
@@ -94,7 +97,8 @@
         "text": "Hello! :)",
         "slug": "slug4-en"
       }
-    }
+    },
+    "imageUrl": "/test/images/einstein.jpeg"
   },
   {
     "type": "text",
@@ -113,6 +117,7 @@
         "text": "Hello! :)",
         "slug": "slug5-en"
       }
-    }
+    },
+    "imageUrl": "/test/images/einstein.jpeg"
   }
 ]

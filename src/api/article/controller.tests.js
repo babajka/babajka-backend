@@ -346,6 +346,30 @@ describe('Articles Bundled API', () => {
       })
       .expect(400));
 
+  it('should fail to create an article with bad locale slug', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brandSlug: 'wir',
+        imageUrl: 'image-url',
+        type: 'text',
+        locales: {
+          be: {
+            title: 'xx',
+            subtitle: 'yy',
+            text: 'some text',
+            slug: 'bad$%symbols',
+          },
+        },
+      })
+      .expect(400)
+      .expect(res => {
+        // eslint-disable-next-line no-unused-expressions
+        expect(res.body.error).not.empty;
+        expect(res.body.error.locales.be.slug).to.include('match');
+      }));
+
   it('should fail to create an article with inconsistent locale', () =>
     request
       .post('/api/articles')
@@ -401,7 +425,11 @@ describe('Articles Bundled API', () => {
         expect(res.body.imageUrl).to.equal('some-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.title).to.equal('be-title');
+        expect(res.body.locales.be.slug).to.equal('be-slug');
       }));
+
+  // TODO(uladbohdan): to find a way to test duplication of slugs. The problem
+  // is mongo slow in indexing unique fields which is crucial for tests.
 
   it('should update an article with localization', () =>
     request

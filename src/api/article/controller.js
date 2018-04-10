@@ -1,6 +1,7 @@
 import omit from 'lodash/omit';
+import set from 'lodash/set';
 
-import { checkIsFound, isValidId } from 'utils/validation';
+import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
 import { User, checkPermissions } from 'api/user';
@@ -67,6 +68,19 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
+const handleArticleLocalizationError = locale => err => {
+  if (err.code === 11000) {
+    // This is a duplication error. For some reasons it has a slightly different
+    // structure which makes us to distinguish it as a special case.
+    throw new ValidationError(set({}, ['locales', locale, 'slug'], 'duplication'));
+  }
+  const msg = {};
+  Object.values(err.errors).forEach(({ path, message }) => {
+    set(msg, ['locales', locale, path], message);
+  });
+  throw new ValidationError(msg);
+};
+
 export const create = async ({ body }, res, next) => {
   try {
     const articleBrand = await ArticleBrand.findOne({
@@ -100,9 +114,9 @@ export const create = async ({ body }, res, next) => {
           })
             .save()
             .then(({ _id }) => _id)
-            .catch(next)
+            .catch(handleArticleLocalizationError(locale))
         )
-      );
+      ).catch(next);
     }
 
     await article.save();
@@ -162,11 +176,11 @@ export const update = async ({ params: { slugOrId }, body }, res, next) => {
             { new: true }
           )
             // unless found, create a new one.
-            .then(loc => loc || LocalizedArticle({ ...localeData, articleId }).save())
+            .then(loc => loc || LocalizedArticle({ ...localeData, articleId, locale }).save())
             .then(({ _id }) => _id)
-            .catch(next)
+            .catch(handleArticleLocalizationError(locale))
         )
-      );
+      ).catch(next);
     }
     const newLocales = article.locales.map(l => l.toString());
     const localesToUpdate = articleOldLocales.filter(l => !newLocales.includes(l.toString()));
