@@ -27,7 +27,7 @@ passport.use(
       User.findOne({ email, role: 'regular' })
         .then(result => {
           if (!result) {
-            throw new ValidationError({ email: 'auth.badEmail' });
+            throw new ValidationError({ email: 'auth.wrongEmail' });
           }
 
           user = result;
