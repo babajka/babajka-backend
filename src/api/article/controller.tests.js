@@ -367,7 +367,7 @@ describe('Articles Bundled API', () => {
       .expect(res => {
         // eslint-disable-next-line no-unused-expressions
         expect(res.body.error).not.empty;
-        expect(res.body.error.locales.be.slug).to.include('match');
+        expect(res.body.error.locales.be.slug).to.include('failedMatchRegex');
       }));
 
   it('should fail to create an article with inconsistent locale', () =>

@@ -72,7 +72,7 @@ const handleArticleLocalizationError = locale => err => {
   if (err.code === 11000) {
     // This is a duplication error. For some reasons it has a slightly different
     // structure which makes us to distinguish it as a special case.
-    throw new ValidationError(set({}, ['locales', locale, 'slug'], 'duplication'));
+    throw new ValidationError(set({}, ['locales', locale, 'slug'], 'errors.valueDuplication'));
   }
   const msg = {};
   Object.values(err.errors).forEach(({ path, message }) => {

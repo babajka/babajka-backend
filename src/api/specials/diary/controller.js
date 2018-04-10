@@ -23,7 +23,7 @@ export const getDay = async ({ params: { locale, month, day } }, res, next) => {
         .exec();
       if (!bestPrev) {
         // We have no diaries at all.
-        throw new HttpError(204, 'no diaries exist');
+        throw new HttpError(204, 'errors.diariesMissing');
       }
     }
 

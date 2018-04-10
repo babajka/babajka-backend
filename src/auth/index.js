@@ -20,7 +20,7 @@ router.post('/register', requireFields('email', 'password', 'firstName'), (req, 
   const { password } = req.body;
 
   if (password.length < 7) {
-    return next(new ValidationError({ password: 'Пароль павінен змяшчаць хаця б 7 сімвалаў' }));
+    return next(new ValidationError({ password: 'auth.badPassword' }));
   }
 
   return local
