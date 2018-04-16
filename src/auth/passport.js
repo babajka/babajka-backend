@@ -6,7 +6,6 @@ import { User } from 'api/user';
 import { ValidationError } from 'utils/validation';
 import { cutUrlParams } from 'utils/formatting';
 import config from 'config';
-import dictionary from 'constants/dictionary';
 
 passport.serializeUser((user, done) => done(null, user.id));
 
@@ -28,7 +27,7 @@ passport.use(
       User.findOne({ email, role: 'regular' })
         .then(result => {
           if (!result) {
-            throw new ValidationError({ email: dictionary.be.badEmail });
+            throw new ValidationError({ email: 'auth.wrongEmail' });
           }
 
           user = result;
@@ -36,7 +35,7 @@ passport.use(
         })
         .then(isAuthenticated => {
           if (!isAuthenticated) {
-            throw new ValidationError({ password: dictionary.be.badPassword });
+            throw new ValidationError({ password: 'auth.wrongPassword' });
           }
 
           return done(null, user);
@@ -54,15 +53,15 @@ passport.use(
       passwordField: 'password',
       passReqToCallback: true,
     },
-    ({ body: { firstName } }, email, password, done) => {
+    ({ body: { firstName, lastName, bio, imageUrl } }, email, password, done) => {
       let user;
       User.findOne({ email })
         .then(result => {
           if (result) {
-            throw new ValidationError({ email: dictionary.be.usedEmail });
+            throw new ValidationError({ email: 'auth.usedEmail' });
           }
 
-          user = new User({ email, firstName });
+          user = new User({ email, firstName, lastName, bio, imageUrl });
           return user.setPassword(password);
         })
         .then(() => user.save())

@@ -89,7 +89,12 @@ describe('Authors API', () => {
       it('should create an article with Author', () =>
         request
           .post('/api/articles')
-          .send({ type: 'video', brandSlug: 'wir', authorEmail: 'generated-author-11@wir.by' })
+          .send({
+            brandSlug: 'wir',
+            imageUrl: 'image-url',
+            type: 'video',
+            authorEmail: 'generated-author-11@wir.by',
+          })
           .set('Cookie', sessionCookie)
           .expect(200)
           .expect(res => {

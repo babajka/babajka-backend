@@ -27,6 +27,7 @@ describe('Articles API', () => {
         new Article({
           brand: articleBrandId,
           type: 'text',
+          imageUrl: 'image-url',
           createdAt: date,
           publishAt: date,
         })
@@ -41,6 +42,7 @@ describe('Articles API', () => {
       new Article({
         brand: articleBrandId,
         type: 'text',
+        imageUrl: 'image-url',
         publishAt: new Date('2025-01-01T18:25:43.511Z'),
       })
         .save()
@@ -174,6 +176,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .send({
           brandSlug,
+          imageUrl: 'image-url',
           type: 'text',
         })
         .expect(200)
@@ -332,6 +335,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         brandSlug: 'wir',
+        imageUrl: 'image-url',
         type: 'text',
         locales: {
           be: {
@@ -342,12 +346,37 @@ describe('Articles Bundled API', () => {
       })
       .expect(400));
 
-  it('should fail to create an article with unsynced locale', () =>
+  it('should fail to create an article with bad locale slug', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
         brandSlug: 'wir',
+        imageUrl: 'image-url',
+        type: 'text',
+        locales: {
+          be: {
+            title: 'xx',
+            subtitle: 'yy',
+            text: 'some text',
+            slug: 'bad$%symbols',
+          },
+        },
+      })
+      .expect(400)
+      .expect(res => {
+        // eslint-disable-next-line no-unused-expressions
+        expect(res.body.error).not.empty;
+        expect(res.body.error.locales.be.slug).to.include('failedMatchRegex');
+      }));
+
+  it('should fail to create an article with inconsistent locale', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brandSlug: 'wir',
+        imageUrl: 'image-url',
         type: 'text',
         locales: {
           be: {
@@ -377,7 +406,6 @@ describe('Articles Bundled API', () => {
             subtitle: 'be-subtitle',
             text: 'some-be-text',
             slug: 'be-slug',
-            locale: 'be',
           },
         },
       })
@@ -397,7 +425,11 @@ describe('Articles Bundled API', () => {
         expect(res.body.imageUrl).to.equal('some-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.title).to.equal('be-title');
+        expect(res.body.locales.be.slug).to.equal('be-slug');
       }));
+
+  // TODO(uladbohdan): to find a way to test duplication of slugs. The problem
+  // is mongo slow in indexing unique fields which is crucial for tests.
 
   it('should update an article with localization', () =>
     request
@@ -520,11 +552,18 @@ describe('Articles Bundled API', () => {
       .send({ type: '' })
       .expect(400));
 
-  it('should fail to remove article type', () =>
+  it('should fail to remove article brand', () =>
     request
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
-      .send({ type: '' })
+      .send({ brandSlug: '' })
+      .expect(400));
+
+  it('should fail to remove article imageUrl', () =>
+    request
+      .put('/api/articles/new-en-slug')
+      .set('Cookie', sessionCookie)
+      .send({ imageUrl: '' })
       .expect(400));
 
   it('should fail to remove localization title', () =>

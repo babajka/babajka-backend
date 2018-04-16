@@ -11,7 +11,7 @@ export const create = async ({ params: { articleId }, body }, res, next) => {
     const article = await Article.findOne({ _id: articleId }).populate('locales', 'locale');
     checkIsFound(article);
     if (article.locales.map(({ locale }) => locale).includes(body.locale)) {
-      throw new HttpError(400, 'Locale exists already, should be updated instead of recreation.');
+      throw new HttpError(400, 'errors.localeExists');
     }
     const localized = await LocalizedArticle({ ...body, articleId: article._id }).save();
     article.locales.push(localized._id);

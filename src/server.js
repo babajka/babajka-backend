@@ -13,6 +13,14 @@ import { sendJson } from 'utils/api';
 export const publicPath = path.resolve(`${__dirname}/../`, config.publicPath);
 const app = express();
 
+process.on('uncaughtException', err => {
+  console.error('Uncaught Exception: ', err);
+});
+
+process.on('unhandledRejection', (reason, p) => {
+  console.error('Unhandled Rejection: Promise:', p, 'Reason:', reason);
+});
+
 app.set('trust proxy', config.trustProxy);
 app.use(cors());
 app.use(getLogger());

@@ -44,7 +44,10 @@ const ArticleSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    imageUrl: String,
+    imageUrl: {
+      type: String,
+      required: true,
+    },
     // This is a YouTube video ID. Ignored unless Article type is video.
     videoId: String,
   },
