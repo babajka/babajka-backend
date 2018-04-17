@@ -90,23 +90,27 @@ describe('Articles API', () => {
       request
         .get('/api/articles?page=0&pageSize=4')
         .expect(200)
-        .expect(res => {
-          expect(res.body.data).has.length(4);
-          expect(res.body.data[0].locales.be.slug).to.equal('article-8-be');
-          expect(res.body.data[0].locales.en.slug).to.equal('article-8-en');
-          expect(res.body.data[3].locales.be.slug).to.equal('article-5-be');
-          expect(res.body.data[3].locales.en.slug).to.equal('article-5-en');
+        .expect(({ body: { data, next } }) => {
+          expect(data).has.length(4);
+          expect(data[0].locales.be.slug).to.equal('article-8-be');
+          expect(data[0].locales.en.slug).to.equal('article-8-en');
+          expect(data[3].locales.be.slug).to.equal('article-5-be');
+          expect(data[3].locales.en.slug).to.equal('article-5-en');
+          expect(next.page).to.equal(1);
+          expect(next.pageSize).to.equal(4);
         }));
 
     it('should return 8 published articles and skip 1 unpublished', () =>
       request
         .get('/api/articles')
         .expect(200)
-        .expect(res => {
-          expect(res.body.data).has.length(8);
-          expect(res.body.data.map(({ locales }) => locales.en.slug)).not.includes(
+        .expect(({ body: { data, next } }) => {
+          expect(data).has.length(8);
+          expect(data.map(({ locales }) => locales.en.slug)).not.includes(
             'postpublished-article-en'
           );
+          // eslint-disable-next-line no-unused-expressions
+          expect(next).to.be.false;
         }));
 
     it('should return an article by slug', () =>

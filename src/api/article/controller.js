@@ -34,7 +34,7 @@ export const getAll = ({ query, user }, res, next) => {
     .then(articles => articles.map(serializeArticle))
     .then(articles => {
       data = articles;
-      return Article.count();
+      return Article.find(articlesQuery).count();
     })
     .then(count => ({
       data,
