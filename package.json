@@ -84,5 +84,8 @@
   },
   "moduleRoots": [
     "./src"
-  ]
+  ],
+  "nodemonConfig": {
+    "ignore": ["*tests.js"]
+  }
 }
