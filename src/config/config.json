@@ -8,14 +8,15 @@
   "auth": {
     "saltRounds": 8
   },
-  "trustProxy": 1,
   "session": {
     "secret": "MUST BE SET IN $BABAJKA_SECRET",
     "resave": false,
     "saveUninitialized": false,
     "cookie": {
-      "secure": "false"
-    }
+      "maxAge": 3600000,
+      "secure": false
+    },
+    "name": "csid"
   },
   "logger": {
     "mode": "dev",
