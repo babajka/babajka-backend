@@ -4,11 +4,10 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
-import { dropData } from 'utils/testing';
+import { dropData, loginDefaultAdmin } from 'utils/testing';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
-import User from 'api/user/model';
 
 const request = supertest.agent(app.listen());
 
@@ -25,14 +24,11 @@ describe('Locales API', () => {
     }).save();
 
     articleId = article._id;
+  });
 
-    const user = new User({
-      firstName: 'Name',
-      email: 'admin1@babajka.io',
-      permissions: { canCreateArticle: true, canManageArticles: true },
-    });
-    await user.setPassword('password');
-    await user.save();
+  let sessionCookie;
+  before(async () => {
+    sessionCookie = await loginDefaultAdmin();
   });
 
   after(dropData);
@@ -40,20 +36,6 @@ describe('Locales API', () => {
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>
       request.post(`/api/articles/localize/${articleId}`).expect(403));
-
-    let sessionCookie;
-
-    it('should login as admin successfully', () =>
-      request
-        .post('/auth/login')
-        .send({ email: 'admin1@babajka.io', password: 'password' })
-        .expect(200)
-        .then(res => {
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.headers['set-cookie']).not.empty;
-          [sessionCookie] = res.headers['set-cookie'];
-          expect(res.body.email).equal('admin1@babajka.io');
-        }));
 
     it('should add EN locale into the article', () =>
       request

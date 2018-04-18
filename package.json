@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon -w index.js -w . --exec babel-node index.js",
     "start-prod": "npm run build && node build/index.js",
-    "build": "babel . -d build --copy-files --ignore node_modules,postman,build,*tests.js",
+    "build": "babel . -d build --copy-files --ignore node_modules,postman,build,*tests.js,*testing.js",
     "init-db": "babel-node src/db/init.js",
     "lint": "npm run prettify && eslint index.js src/ --fix",
     "precommit": "lint-staged",
@@ -86,6 +86,6 @@
     "./src"
   ],
   "nodemonConfig": {
-    "ignore": ["*tests.js"]
+    "ignore": ["*tests.js", "*testing.js"]
   }
 }
