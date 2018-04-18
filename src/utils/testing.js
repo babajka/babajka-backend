@@ -20,7 +20,7 @@ const defaultAdminData = {
   permissions: { canCreateArticle: true, canManageArticles: true },
 };
 
-const createAdmin = async () => {
+export const createAdmin = async () => {
   const user = new User(defaultAdminData);
   await user.setPassword(defaultAdminData.password);
   await user.save();

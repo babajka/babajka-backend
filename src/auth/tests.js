@@ -5,16 +5,15 @@ import app from 'server';
 import 'db/connect';
 import { requireAuth } from 'auth';
 
-import { dropData, loginDefaultAdmin } from 'utils/testing';
+import { dropData, createAdmin } from 'utils/testing';
 
 const request = supertest.agent(app.listen());
 
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth API', () => {
-  let sessionCookie;
   before(async () => {
-    sessionCookie = await loginDefaultAdmin();
+    await createAdmin();
   });
 
   after(dropData);
@@ -32,6 +31,21 @@ describe('Auth API', () => {
       }));
 
   it('should fail to logout without authorization', () => request.get('/auth/logout').expect(403));
+
+  let sessionCookie;
+
+  it('should login successfully as admin', () =>
+    request
+      .post('/auth/login')
+      .send({ email: 'admin@babajka.io', password: 'password' })
+      .expect(200)
+      .then(res => {
+        expect(res.body.email).to.equal('admin@babajka.io');
+        // eslint-disable-next-line no-unused-expressions
+        expect(res.headers['set-cookie']).not.empty;
+        sessionCookie = res.headers['set-cookie'];
+        expect(Object.keys(res.body.permissions)).to.have.length(2);
+      }));
 
   it('should access protected resource', () =>
     request
@@ -60,5 +74,9 @@ describe('Auth API', () => {
       .expect(({ body }) => {
         expect(body.displayName).to.equal('Name Last');
         expect(body.email).to.equal('test2@babajka.io');
+        // eslint-disable-next-line no-unused-expressions
+        expect(body.permissions).to.be.not.undefined;
+        // eslint-disable-next-line no-unused-expressions
+        expect(body.permissions).to.be.empty;
       }));
 });
