@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 
-import { dropData } from 'utils/testing';
+import { dropData, loginDefaultAdmin } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -73,14 +73,11 @@ describe('Articles API', () => {
       }
     });
     await Promise.all(promises);
+  });
 
-    const user = new User({
-      firstName: 'Name',
-      email: 'admin1@babajka.io',
-      permissions: { canCreateArticle: true, canManageArticles: true },
-    });
-    await user.setPassword('password');
-    await user.save();
+  let sessionCookie;
+  before(async () => {
+    sessionCookie = await loginDefaultAdmin();
   });
 
   after(dropData);
@@ -135,20 +132,6 @@ describe('Articles API', () => {
 
     it('should fail to remove an article due to lack of permissions', () =>
       request.delete('/api/articles/article-1').expect(403));
-
-    let sessionCookie;
-
-    it('should login as admin successfully', () =>
-      request
-        .post('/auth/login')
-        .send({ email: 'admin1@babajka.io', password: 'password' })
-        .expect(200)
-        .then(res => {
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.headers['set-cookie']).not.empty;
-          [sessionCookie] = res.headers['set-cookie'];
-          expect(res.body.email).equal('admin1@babajka.io');
-        }));
 
     it('should return 9 articles (published and unpublished)', () =>
       request
@@ -296,31 +279,14 @@ describe('Articles Bundled API', () => {
       email: authorEmail,
       role: 'author',
     }).save();
-
-    const user = new User({
-      firstName: 'Name',
-      email: 'admin1@babajka.io',
-      permissions: { canCreateArticle: true, canManageArticles: true },
-    });
-    await user.setPassword('password');
-    await user.save();
   });
 
   after(dropData);
 
   let sessionCookie;
-
-  it('should login as admin successfully', () =>
-    request
-      .post('/auth/login')
-      .send({ email: 'admin1@babajka.io', password: 'password' })
-      .expect(200)
-      .then(res => {
-        // eslint-disable-next-line no-unused-expressions
-        expect(res.headers['set-cookie']).not.empty;
-        [sessionCookie] = res.headers['set-cookie'];
-        expect(res.body.email).equal('admin1@babajka.io');
-      }));
+  before(async () => {
+    sessionCookie = await loginDefaultAdmin();
+  });
 
   let articleId;
 

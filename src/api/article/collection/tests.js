@@ -4,11 +4,10 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
-import { dropData } from 'utils/testing';
+import { dropData, loginDefaultAdmin } from 'utils/testing';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
-import User from 'api/user/model';
 
 import ArticleCollection from './model';
 
@@ -48,14 +47,11 @@ describe('Collections API', () => {
       );
     }
     await Promise.all(promises);
+  });
 
-    const user = new User({
-      firstName: 'Name',
-      email: 'test2@babajka.io',
-      permissions: { canCreateArticle: true },
-    });
-    await user.setPassword('password');
-    await user.save();
+  let sessionCookie;
+  before(async () => {
+    sessionCookie = await loginDefaultAdmin();
   });
 
   after(dropData);
@@ -99,20 +95,6 @@ describe('Collections API', () => {
 
     it('should fail to remove a collection due to lack of permissions', () =>
       request.delete('/api/articles/collections/collection-1').expect(403));
-
-    let sessionCookie;
-
-    it('should login with proper permissions', () =>
-      request
-        .post('/auth/login')
-        .send({ email: 'test2@babajka.io', password: 'password' })
-        .expect(200)
-        .then(res => {
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.headers['set-cookie']).not.empty;
-          [sessionCookie] = res.headers['set-cookie'];
-          expect(res.body.email).equal('test2@babajka.io');
-        }));
 
     it('should create a new collection', () =>
       request

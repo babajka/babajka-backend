@@ -21,16 +21,6 @@ const config = secret ? merge(defaultConfig, secret) : defaultConfig;
 config.port = process.env.PORT || config.port;
 config.session.store = new MongoStore({ mongooseConnection: mongoose.connection });
 
-if (process.env.NODE_ENV === 'production') {
-  // TODO(uladbohdan): to move the values into a secret-prod.json file.
-  config.trustProxy = 1;
-  config.session.cookie.secure = true;
-  config.session.cookie.maxAge = 60 * 60 * 1000;
-
-  config.logger.writeToFile = true;
-  config.logger.mode = 'combined';
-}
-
 if (process.env.NODE_ENV === 'testing') {
   config.mongodb.url = 'mongodb://localhost/babajka-test';
 }

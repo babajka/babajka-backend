@@ -86,7 +86,13 @@ const basicFields = [
   'imageUrl',
 ];
 
-export const serializeUser = object => pick(object, [...basicFields, 'permissions']);
+export const serializeUser = object => {
+  const obj = pick(object, [...basicFields, 'permissions']);
+  if (!obj.permissions) {
+    obj.permissions = {};
+  }
+  return obj;
+};
 
 export const serializeAuthor = object => pick(object, basicFields);
 

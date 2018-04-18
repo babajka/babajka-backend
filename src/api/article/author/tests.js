@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
-import { dropData } from 'utils/testing';
+import { dropData, loginDefaultAdmin } from 'utils/testing';
 
 import ArticleBrand from 'api/article/brand/model';
 import User from 'api/user/model';
@@ -26,19 +26,14 @@ describe('Authors API', () => {
       }).save(),
       User({ firstName: 'Name', email: 'regular-user@wir.by' }).save(),
     ]);
+  });
 
-    const user = new User({
-      firstName: 'Name',
-      email: 'test2@babajka.io',
-      permissions: { canCreateArticle: true },
-    });
-    await user.setPassword('password');
-    await user.save();
+  let sessionCookie;
+  before(async () => {
+    sessionCookie = await loginDefaultAdmin();
   });
 
   after(dropData);
-
-  let sessionCookie;
 
   describe('# Authors basic API', () => {
     it('should return all authors available', () =>
@@ -54,18 +49,6 @@ describe('Authors API', () => {
         .post('/api/articles/authors')
         .send({ bio: 'new bio' })
         .expect(403));
-
-    it('should login with proper permissions', () =>
-      request
-        .post('/auth/login')
-        .send({ email: 'test2@babajka.io', password: 'password' })
-        .expect(200)
-        .then(res => {
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.headers['set-cookie']).not.empty;
-          [sessionCookie] = res.headers['set-cookie'];
-          expect(res.body.email).equal('test2@babajka.io');
-        }));
 
     const generateAuthor = i => {
       it(`should generate an author ${i}`, () =>
