@@ -1,17 +1,31 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import ArticleCollection from './model';
+import { ArticleCollection, serializeCollection } from './model';
 
 export const getAll = (req, res, next) =>
   ArticleCollection.find({ active: true })
+    .populate({
+      path: 'articles',
+      populate: {
+        path: 'locales',
+      },
+    })
     .then(checkIsFound)
+    .then(collections => collections.map(serializeCollection))
     .then(sendJson(res))
     .catch(next);
 
 export const getOne = ({ params: { slug } }, res, next) =>
   ArticleCollection.findOne({ slug, active: true })
+    .populate({
+      path: 'articles',
+      populate: {
+        path: 'locales',
+      },
+    })
     .then(checkIsFound)
+    .then(serializeCollection)
     .then(sendJson(res))
     .catch(next);
 

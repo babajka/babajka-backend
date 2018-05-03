@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import omit from 'lodash/omit';
 
 import { slugValidator } from 'utils/validation';
 
@@ -32,5 +33,10 @@ const ArticleCollectionSchema = new Schema({
 });
 
 export const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionSchema);
+
+export const serializeCollection = collection => ({
+  ...omit(collection.toObject(), ['__v']),
+  articles: collection.articles.map(article => omit(article.toObject(), ['__v', 'collectionId'])),
+});
 
 export default ArticleCollection;
