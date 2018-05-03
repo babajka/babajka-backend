@@ -88,9 +88,11 @@ const initArticles = (articleBrandsDict, authorsDict) =>
 // Returns a mapping of slugs to id-s.
 const getArticlesDict = async () => {
   const articlesDict = {};
-  const articles = await Article.find().exec();
+  const articles = await Article.find().populate('locales', ['slug']);
   await articles.forEach(item => {
-    articlesDict[item.slug] = item._id;
+    item.locales.forEach(localization => {
+      articlesDict[localization.slug] = item._id;
+    });
   });
   return articlesDict;
 };
@@ -100,11 +102,11 @@ const initArticleCollections = articlesDict => {
     const subDict = pick(articlesDict, collectionData.articleSlugs);
     const body = { ...collectionData, articles: Object.values(subDict) };
     const collection = await new ArticleCollection(body).save();
-
-    const articles = Object.keys(subDict).map(slug =>
-      Article.findOneAndUpdate({ slug }, { collectionId: collection._id })
+    await Promise.all(
+      Object.values(subDict).map(id =>
+        Article.findOneAndUpdate({ _id: id }, { collectionId: collection._id }).exec()
+      )
     );
-    Promise.all(articles);
   };
 
   return Promise.all(articleCollectionsData.map(createCollection));
