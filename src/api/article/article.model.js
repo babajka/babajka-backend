@@ -58,10 +58,38 @@ const ArticleSchema = new Schema(
 
 const Article = mongoose.model('Article', ArticleSchema);
 
-export const serializeArticle = article => ({
-  ...omit(article.toObject(), ['__v']),
-  locales: keyBy(article.locales, 'locale'),
-});
+export const serializeArticle = article => {
+  const collectionNavigation = {};
+  if (article.collectionId) {
+    collectionNavigation.collectionPrev = null;
+    collectionNavigation.collectionNext = null;
+
+    const articles = article.collectionId.articles;
+    const idx = articles.map(a => a._id.toString()).indexOf(article._id.toString());
+
+    if (idx > 0) {
+      const a = articles[idx - 1].toObject();
+      collectionNavigation.collectionPrev = {
+        ...omit(a, ['locales']),
+        locales: keyBy(a.locales, 'locale'),
+      };
+    }
+
+    if (idx !== articles.length - 1) {
+      const a = articles[idx + 1].toObject();
+      collectionNavigation.collectionNext = {
+        ...omit(a, ['locales']),
+        locales: keyBy(a.locales, 'locale'),
+      };
+    }
+  }
+  return {
+    ...omit(article.toObject(), ['__v', 'collectionId']),
+    collection: article.collectionId && omit(article.collectionId.toObject(), ['articles']),
+    ...collectionNavigation,
+    locales: keyBy(article.locales, 'locale'),
+  };
+};
 
 export const checkIsPublished = (article, user) => {
   if (checkPermissions(user, ['canCreateArticle'])) {
@@ -79,7 +107,15 @@ export const POPULATE_OPTIONS = {
   // TODO(uladbohdan): to merge with User basicFields.
   author: '-_id firstName lastName email role active bio imageUrl displayName',
   brand: '-_id slug names imageUrl imageUrlSmall',
-  collection: '-_id name slug description imageUrl',
+  collection: {
+    path: 'collectionId',
+    select: '-_id name slug description imageUrl articles',
+    populate: {
+      path: 'articles',
+      select: ['_id'],
+      populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
+    },
+  },
   locales: '-_id -__v',
 };
 
