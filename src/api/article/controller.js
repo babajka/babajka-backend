@@ -26,7 +26,7 @@ export const getAll = ({ query, user }, res, next) => {
   return Article.find(articlesQuery)
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection)
+    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, ['canManageArticles'])))
     .populate('locales', POPULATE_OPTIONS.locales)
     .sort({ publishAt: 'desc' })
     .skip(skip)
@@ -52,16 +52,16 @@ const retrieveArticleId = (slugOrId, options) =>
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound);
 
-const getArticleById = articleId =>
+const getArticleById = (articleId, user) =>
   Article.findOne({ _id: articleId, active: true })
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection)
+    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, ['canManageArticles'])))
     .populate('locales', POPULATE_OPTIONS.locales);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
-    .then(getArticleById)
+    .then(artId => getArticleById(artId, user))
     .then(checkIsFound)
     .then(article => checkIsPublished(article, user))
     .then(serializeArticle)
@@ -81,7 +81,7 @@ const handleArticleLocalizationError = locale => err => {
   throw new ValidationError(msg);
 };
 
-export const create = async ({ body }, res, next) => {
+export const create = async ({ body, user }, res, next) => {
   try {
     const articleBrand = await ArticleBrand.findOne({
       // TODO(uladbohdan): to deprecate body.brand.
@@ -121,7 +121,12 @@ export const create = async ({ body }, res, next) => {
 
     await article.save();
 
-    return getArticleById(article._id)
+    if (articleCollection) {
+      articleCollection.articles.push(article._id);
+      await articleCollection.save();
+    }
+
+    return getArticleById(article._id, user)
       .then(serializeArticle)
       .then(sendJson(res))
       .catch(next);
@@ -130,7 +135,7 @@ export const create = async ({ body }, res, next) => {
   }
 };
 
-export const update = async ({ params: { slugOrId }, body }, res, next) => {
+export const update = async ({ params: { slugOrId }, body, user }, res, next) => {
   try {
     const articleId = await retrieveArticleId(slugOrId).catch(next);
     const [newBrand, newCollection, newAuthor] = await Promise.all([
@@ -155,6 +160,7 @@ export const update = async ({ params: { slugOrId }, body }, res, next) => {
     updFields.author = newAuthor && newAuthor._id;
 
     const article = await Article.findOne({ _id: articleId }).exec();
+    const oldArticleCollectionId = article.collectionId;
     Object.entries(updFields).forEach(([key, value]) => {
       article[key] = value;
     });
@@ -192,7 +198,21 @@ export const update = async ({ params: { slugOrId }, body }, res, next) => {
 
     await article.save();
 
-    return getArticleById(article._id)
+    if (oldArticleCollectionId !== article.collectionId) {
+      // We must update both an old collection and a new collection.
+      await Promise.all([
+        ArticleCollection.update(
+          { _id: oldArticleCollectionId },
+          { $pull: { articles: article._id } }
+        ).exec(),
+        ArticleCollection.update(
+          { _id: article.collectionId },
+          { $push: { articles: article._id } }
+        ).exec(),
+      ]);
+    }
+
+    return getArticleById(article._id, user)
       .then(serializeArticle)
       .then(sendJson(res))
       .catch(next);

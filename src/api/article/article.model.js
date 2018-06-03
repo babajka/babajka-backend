@@ -58,9 +58,11 @@ const ArticleSchema = new Schema(
 
 const Article = mongoose.model('Article', ArticleSchema);
 
-export const serializeArticle = article => {
+// includeCollection flag here is to be able to avoid including collections
+// in case we're serializing an article into the ArticleCollection object..
+export const serializeArticle = (article, includeCollection = true) => {
   const collectionNavigation = {};
-  if (article.collectionId) {
+  if (includeCollection && article.collectionId) {
     collectionNavigation.collectionPrev = null;
     collectionNavigation.collectionNext = null;
 
@@ -85,7 +87,9 @@ export const serializeArticle = article => {
   }
   return {
     ...omit(article.toObject(), ['__v', 'collectionId']),
-    collection: article.collectionId && omit(article.collectionId.toObject(), ['articles']),
+    collection: includeCollection
+      ? article.collectionId && omit(article.collectionId.toObject(), ['articles'])
+      : undefined,
     ...collectionNavigation,
     locales: keyBy(article.locales, 'locale'),
   };
@@ -107,15 +111,16 @@ export const POPULATE_OPTIONS = {
   // TODO(uladbohdan): to merge with User basicFields.
   author: '-_id firstName lastName email role active bio imageUrl displayName',
   brand: '-_id slug names imageUrl imageUrlSmall',
-  collection: {
+  collection: publishedOnly => ({
     path: 'collectionId',
     select: '-_id name slug description imageUrl articles',
     populate: {
       path: 'articles',
+      match: publishedOnly ? { publishAt: { $lt: Date.now() } } : undefined,
       select: ['_id'],
       populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
     },
-  },
+  }),
   locales: '-_id -__v',
 };
 

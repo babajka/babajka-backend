@@ -3,6 +3,8 @@ import omit from 'lodash/omit';
 
 import { slugValidator } from 'utils/validation';
 
+import { serializeArticle } from 'api/article/article.model';
+
 const ArticleCollectionSchema = new Schema({
   // name and description (below) map locales (be, ru, ...) to strings.
   // Once amount of localized data increases implementation of LocalizedArticleCollection
@@ -36,7 +38,17 @@ export const ArticleCollection = mongoose.model('ArticleCollection', ArticleColl
 
 export const serializeCollection = collection => ({
   ...omit(collection.toObject(), ['__v']),
-  articles: collection.articles.map(article => omit(article.toObject(), ['__v', 'collectionId'])),
+  articles: collection.articles.map(article => serializeArticle(article, false)),
 });
+
+export const COLLECTION_POPULATE_OPTIONS = {
+  articles: publishedOnly => ({
+    path: 'articles',
+    match: publishedOnly ? { publishAt: { $lt: Date.now() } } : undefined,
+    populate: {
+      path: 'locales',
+    },
+  }),
+};
 
 export default ArticleCollection;
