@@ -66,7 +66,7 @@ export const serializeArticle = (article, includeCollection = true) => {
     collectionNavigation.collectionPrev = null;
     collectionNavigation.collectionNext = null;
 
-    const articles = article.collectionId.articles;
+    const { articles } = article.collectionId;
     const idx = articles.map(a => a._id.toString()).indexOf(article._id.toString());
 
     if (idx > 0) {
