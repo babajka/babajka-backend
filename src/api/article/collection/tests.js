@@ -29,11 +29,8 @@ describe('Collections API', () => {
     }
     await Promise.all(articlePromises);
 
-    const articlesList = [];
     const articles = await Article.find().exec();
-    articles.forEach(item => {
-      articlesList.push(item._id);
-    });
+    const articlesList = articles.map(({ _id }) => _id);
 
     const promises = [];
     for (let i = 1; i <= 5; i++) {

@@ -60,8 +60,9 @@ const Article = mongoose.model('Article', ArticleSchema);
 
 // includeCollection flag here is to be able to avoid including collections
 // in case we're serializing an article into the ArticleCollection object..
-export const serializeArticle = (article, includeCollection = true) => {
+export const serializeArticle = (article, { includeCollection } = { includeCollection: true }) => {
   const collectionNavigation = {};
+
   if (includeCollection && article.collectionId) {
     collectionNavigation.collectionPrev = null;
     collectionNavigation.collectionNext = null;
@@ -85,18 +86,22 @@ export const serializeArticle = (article, includeCollection = true) => {
       };
     }
   }
-  return {
+
+  const result = {
     ...omit(article.toObject(), ['__v', 'collectionId']),
-    collection: includeCollection
-      ? article.collectionId && omit(article.collectionId.toObject(), ['articles'])
-      : undefined,
     ...collectionNavigation,
     locales: keyBy(article.locales, 'locale'),
   };
+
+  if (includeCollection) {
+    result.collection = article.collectionId && omit(article.collectionId.toObject(), ['articles']);
+  }
+
+  return result;
 };
 
 export const checkIsPublished = (article, user) => {
-  if (checkPermissions(user, ['canCreateArticle'])) {
+  if (checkPermissions(user, 'canCreateArticle')) {
     return article;
   }
 

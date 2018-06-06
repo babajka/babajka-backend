@@ -96,7 +96,13 @@ export const serializeUser = object => {
 
 export const serializeAuthor = object => pick(object, basicFields);
 
-export const checkPermissions = (user, list) => user && list.every(perm => user.permissions[perm]);
+export const checkPermissions = (user, permissions) => {
+  let list = permissions;
+  if (typeof permissions === 'string') {
+    list = [permissions];
+  }
+  return user && list.every(perm => user.permissions[perm]);
+};
 
 export const GENERATED_EMAIL_RGXP = /^generated-author-(\d+)@wir.by$/;
 

@@ -7,7 +7,7 @@ import { ArticleCollection, serializeCollection, COLLECTION_POPULATE_OPTIONS } f
 
 export const getAll = ({ user }, res, next) =>
   ArticleCollection.find({ active: true })
-    .populate(COLLECTION_POPULATE_OPTIONS.articles(!checkPermissions(user, ['canManageArticles'])))
+    .populate(COLLECTION_POPULATE_OPTIONS.articles(!checkPermissions(user, 'canManageArticles')))
     .then(checkIsFound)
     .then(collections => collections.map(serializeCollection))
     .then(sendJson(res))
@@ -15,7 +15,7 @@ export const getAll = ({ user }, res, next) =>
 
 export const getOne = ({ params: { slug }, user }, res, next) =>
   ArticleCollection.findOne({ slug, active: true })
-    .populate(COLLECTION_POPULATE_OPTIONS.articles(!checkPermissions(user, ['canManageArticles'])))
+    .populate(COLLECTION_POPULATE_OPTIONS.articles(!checkPermissions(user, 'canManageArticles')))
     .then(checkIsFound)
     .then(serializeCollection)
     .then(sendJson(res))

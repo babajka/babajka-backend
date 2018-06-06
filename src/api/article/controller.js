@@ -17,7 +17,7 @@ export const getAll = ({ query, user }, res, next) => {
   let data;
   const articlesQuery = { active: true };
 
-  if (!checkPermissions(user, ['canManageArticles'])) {
+  if (!checkPermissions(user, 'canManageArticles')) {
     articlesQuery.publishAt = {
       $lt: Date.now(),
     };
@@ -26,7 +26,7 @@ export const getAll = ({ query, user }, res, next) => {
   return Article.find(articlesQuery)
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, ['canManageArticles'])))
+    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, 'canManageArticles')))
     .populate('locales', POPULATE_OPTIONS.locales)
     .sort({ publishAt: 'desc' })
     .skip(skip)
@@ -56,7 +56,7 @@ const getArticleById = (articleId, user) =>
   Article.findOne({ _id: articleId, active: true })
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, ['canManageArticles'])))
+    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, 'canManageArticles')))
     .populate('locales', POPULATE_OPTIONS.locales);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>

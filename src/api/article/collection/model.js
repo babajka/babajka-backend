@@ -38,7 +38,9 @@ export const ArticleCollection = mongoose.model('ArticleCollection', ArticleColl
 
 export const serializeCollection = collection => ({
   ...omit(collection.toObject(), ['__v']),
-  articles: collection.articles.map(article => serializeArticle(article, false)),
+  articles: collection.articles.map(article =>
+    serializeArticle(article, { includeCollection: false })
+  ),
 });
 
 export const COLLECTION_POPULATE_OPTIONS = {
