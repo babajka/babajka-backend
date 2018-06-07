@@ -60,7 +60,7 @@ const Article = mongoose.model('Article', ArticleSchema);
 
 // includeCollection flag here is to be able to avoid including collections
 // in case we're serializing an article into the ArticleCollection object..
-export const serializeArticle = (article, { includeCollection } = { includeCollection: true }) => {
+export const serializeArticle = (article, { includeCollection = true } = {}) => {
   const collectionNavigation = {};
 
   if (includeCollection && article.collectionId) {

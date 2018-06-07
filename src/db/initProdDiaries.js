@@ -13,11 +13,18 @@ const doc = new GoogleSpreadsheet('1ZZ5vdgF_OgSKQWy_uY2rw37aydibdNWNOM_W7xi3rd4'
 
 const months = {
   студзень: '01',
+  люты: '02',
+  сакавік: '03',
+  красавік: '04',
+  травень: '05',
   чэрвень: '06',
+  ліпень: '07',
+  жнівень: '08',
+  верасень: '09',
+  кастрычнік: '10',
+  лістапад: '11',
+  снежань: '12',
 };
-
-let diariesPushed = 0;
-const diariesFailed = 0;
 
 const fieldsRequired = ['day', 'locale', 'author', 'text', 'active'];
 const fieldsOptional = ['year'];
@@ -30,58 +37,61 @@ const fieldsOptional = ['year'];
       await mongoose.connection.db.dropCollection('diaries');
     } catch (e) {
       if (e.code === 26) {
-        console.log('namespace %s not found DIARY');
+        console.log('Diaries were not dropped due to the absense of the collection');
       } else {
         throw e;
       }
     }
 
-    console.log('All previous diaries dropped.');
+    console.log('DB is free of any diaries');
 
-    await new Promise(globalResolve => {
-      doc.getInfo((err, info) => {
-        const sheets = pick(keyBy(info.worksheets, 'title'), Object.keys(months));
-        console.log('OLOLO');
+    doc.getInfo((err, info) => {
+      const sheets = pick(keyBy(info.worksheets, 'title'), Object.keys(months));
 
-        Promise.all(
-          Object.values(sheets).map(
-            sheet =>
-              new Promise(resolve => {
-                console.log('111');
-                const month = sheet.title;
-                console.log('MONTH', month);
-                const promises = [];
-                sheet.getRows({}, (error, rows) => {
-                  rows.forEach(async row => {
-                    const diaryData = pick(row, [...fieldsRequired, ...fieldsOptional]);
-                    console.log('ONE DIARY', diaryData);
-                    // TODO: to check fieldsRequired
+      let diariesPushed = 0;
+      let diariesFailed = 0;
 
-                    diaryData.colloquialDateHash = months[month] + diaryData.day;
+      Promise.all(
+        Object.values(sheets).map(
+          sheet =>
+            new Promise(resolve => {
+              const month = sheet.title;
+              const promises = [];
+              sheet.getRows({}, (error, rows) => {
+                rows.forEach(async row => {
+                  const diaryData = pick(row, [...fieldsRequired, ...fieldsOptional]);
+                  const ok = fieldsRequired.every(key => !!diaryData[key]);
+                  if (!ok) {
+                    diariesFailed += 1;
+                    return;
+                  }
 
-                    promises.push(new Diary(diaryData).save());
+                  diaryData.colloquialDateHash = months[month] + diaryData.day;
+                  diaryData.active = diaryData.active !== 'no';
 
-                    diariesPushed += 1;
-                  });
-                  resolve(Promise.all(promises));
+                  diaryData.text = diaryData.text.replace('\n', '<br/>');
+
+                  promises.push(new Diary(diaryData).save());
+
+                  diariesPushed += 1;
                 });
-              })
-          )
-        ).then(() => {
-          console.log('=== DIARIES INITIALIZED ===');
-          console.log('successfully: ', diariesPushed);
-          console.log('failed:       ', diariesFailed);
-        });
-      });
-      globalResolve();
-    });
+                resolve(Promise.all(promises));
+              });
+            })
+        )
+      ).then(async () => {
+        const diariesCount = await Diary.count();
 
-    const diariesCount = await Diary.count();
-    console.log(`Mongoose: insert ${diariesCount} diaries`);
+        console.log(
+          `====== DIARIES SUMMARY ======\nsuccessfully: ${diariesPushed}\n` +
+            `failed: ${diariesFailed}\ndb.count(): ${diariesCount}\n=============================`
+        );
+
+        process.exit();
+      });
+    });
   } catch (err) {
-    console.log('Mongoose: error during database init');
-    console.error(err);
+    console.error(`Init of Prod Diaries failed: ${err}`);
     process.exit();
   }
-  process.exit();
 })();
