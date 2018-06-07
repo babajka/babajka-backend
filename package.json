@@ -7,6 +7,7 @@
     "start-prod": "npm run build && node build/index.js",
     "build": "babel . -d build --copy-files --ignore node_modules,postman,build,*tests.js,*testing.js",
     "init-db": "babel-node src/db/init.js",
+    "init-prod-diaries": "babel-node src/db/initProdDiaries.js",
     "lint": "npm run prettify && eslint index.js src/ --fix",
     "precommit": "lint-staged",
     "prettier": "prettier --config .prettierrc --write",
@@ -34,6 +35,7 @@
     "cors": "^2.8.3",
     "express": "^4.15.3",
     "express-session": "^1.15.4",
+    "google-spreadsheet": "^2.0.4",
     "lodash": "^4.17.4",
     "mongoose": "^4.13.8",
     "morgan": "^1.8.2",
@@ -86,6 +88,9 @@
     "./src"
   ],
   "nodemonConfig": {
-    "ignore": ["*tests.js", "*testing.js"]
+    "ignore": [
+      "*tests.js",
+      "*testing.js"
+    ]
   }
 }

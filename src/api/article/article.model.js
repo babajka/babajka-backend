@@ -64,15 +64,15 @@ export const serializeArticle = (article, { includeCollection } = { includeColle
   const collectionNavigation = {};
 
   if (includeCollection && article.collectionId) {
-    collectionNavigation.collectionPrev = null;
-    collectionNavigation.collectionNext = null;
+    collectionNavigation.prev = null;
+    collectionNavigation.next = null;
 
     const { articles } = article.collectionId;
     const idx = articles.map(a => a._id.toString()).indexOf(article._id.toString());
 
     if (idx > 0) {
       const a = articles[idx - 1].toObject();
-      collectionNavigation.collectionPrev = {
+      collectionNavigation.prev = {
         ...omit(a, ['locales']),
         locales: keyBy(a.locales, 'locale'),
       };
@@ -80,7 +80,7 @@ export const serializeArticle = (article, { includeCollection } = { includeColle
 
     if (idx !== articles.length - 1) {
       const a = articles[idx + 1].toObject();
-      collectionNavigation.collectionNext = {
+      collectionNavigation.next = {
         ...omit(a, ['locales']),
         locales: keyBy(a.locales, 'locale'),
       };
@@ -89,12 +89,14 @@ export const serializeArticle = (article, { includeCollection } = { includeColle
 
   const result = {
     ...omit(article.toObject(), ['__v', 'collectionId']),
-    ...collectionNavigation,
     locales: keyBy(article.locales, 'locale'),
   };
 
   if (includeCollection) {
-    result.collection = article.collectionId && omit(article.collectionId.toObject(), ['articles']);
+    result.collection = article.collectionId && {
+      ...omit(article.collectionId.toObject(), ['articles']),
+      ...collectionNavigation,
+    };
   }
 
   return result;

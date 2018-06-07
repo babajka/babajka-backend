@@ -185,7 +185,7 @@ describe('Collections API', () => {
           expect(res.body.articles[0].imageUrl).equals('ololo');
         }));
 
-    it('should return collectionNext when querying with permissions', () =>
+    it('should return collection.next when querying with permissions', () =>
       request
         .get('/api/articles/slug-new1-be')
         .set('Cookie', sessionCookie)
@@ -193,19 +193,19 @@ describe('Collections API', () => {
         .expect(res => {
           expect(res.body.locales.be.slug).equals('slug-new1-be');
           expect(res.body.collection.slug).equals('collection-6');
-          expect(res.body.collectionNext.locales.be.slug).equals('slug-new2-be');
+          expect(res.body.collection.next.locales.be.slug).equals('slug-new2-be');
         }));
 
-    it('should not return collectionNext when querying without permissions', () =>
+    it('should not return collection.next when querying without permissions', () =>
       request
         .get('/api/articles/slug-new1-be')
         .expect(200)
         .expect(res => {
           // eslint-disable-next-line no-unused-expressions
-          expect(res.body.collectionNext).to.be.null;
+          expect(res.body.collection.next).to.be.null;
         }));
 
-    it('should return collectionPrev when querying with permissions', () =>
+    it('should return collection.prev when querying with permissions', () =>
       request
         .get('/api/articles/slug-new2-be')
         .set('Cookie', sessionCookie)
@@ -213,7 +213,7 @@ describe('Collections API', () => {
         .expect(res => {
           expect(res.body.locales.be.slug).equals('slug-new2-be');
           expect(res.body.collection.slug).equals('collection-6');
-          expect(res.body.collectionPrev.locales.be.slug).equals('slug-new1-be');
+          expect(res.body.collection.prev.locales.be.slug).equals('slug-new1-be');
         }));
 
     it('should remove a collection', () =>
