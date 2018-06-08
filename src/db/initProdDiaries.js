@@ -26,8 +26,8 @@ const months = {
   снежань: '12',
 };
 
-const fieldsRequired = ['day', 'locale', 'author', 'text', 'active'];
-const fieldsOptional = ['year'];
+const fieldsRequired = ['day', 'locale', 'author', 'text'];
+const fieldsOptional = ['active', 'year'];
 
 (async () => {
   try {
