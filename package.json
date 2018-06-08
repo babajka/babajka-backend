@@ -12,7 +12,7 @@
     "prettier": "prettier --config .prettierrc --write",
     "prettify": "npm run prettier 'src/**/*.{js,md}' '*.js' '*.md'",
     "watch": "onchange '**/*.{js,md}' -- npm run prettier {{changed}}",
-    "mocha": "(export BABAJKA_SECRET=''; cross-env NODE_ENV=testing find ./src -name '*tests.js' | cross-env NODE_ENV=testing xargs mocha --require babel-register)",
+    "mocha": "(export BABAJKA_SECRET=''; cross-env NODE_ENV=testing find ./src -name '*tests.js' | cross-env NODE_ENV=testing xargs mocha --exit --require babel-register)",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "test": "cross-env NODE_ENV=testing nyc npm run mocha && npm run coverage"
   },
