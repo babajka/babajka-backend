@@ -1,17 +1,23 @@
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import ArticleCollection from './model';
+import { checkPermissions } from 'api/user';
 
-export const getAll = (req, res, next) =>
+import { ArticleCollection, serializeCollection, COLLECTION_POPULATE_OPTIONS } from './model';
+
+export const getAll = ({ user }, res, next) =>
   ArticleCollection.find({ active: true })
+    .populate(COLLECTION_POPULATE_OPTIONS.articles(!checkPermissions(user, 'canManageArticles')))
     .then(checkIsFound)
+    .then(collections => collections.map(serializeCollection))
     .then(sendJson(res))
     .catch(next);
 
-export const getOne = ({ params: { slug } }, res, next) =>
+export const getOne = ({ params: { slug }, user }, res, next) =>
   ArticleCollection.findOne({ slug, active: true })
+    .populate(COLLECTION_POPULATE_OPTIONS.articles(!checkPermissions(user, 'canManageArticles')))
     .then(checkIsFound)
+    .then(serializeCollection)
     .then(sendJson(res))
     .catch(next);
 

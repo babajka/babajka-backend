@@ -11,7 +11,7 @@
       "en": "The description of the very first collection"
     },
     "slug": "collection0",
-    "articleSlugs": ["slug0", "slug1"],
+    "articleSlugs": ["slug0-en", "slug1-be", "slug5-be"],
     "imageUrl": "/images/collection-folder-image.jpg"
   }
 ]

@@ -58,13 +58,52 @@ const ArticleSchema = new Schema(
 
 const Article = mongoose.model('Article', ArticleSchema);
 
-export const serializeArticle = article => ({
-  ...omit(article.toObject(), ['__v']),
-  locales: keyBy(article.locales, 'locale'),
-});
+// includeCollection flag here is to be able to avoid including collections
+// in case we're serializing an article into the ArticleCollection object..
+export const serializeArticle = (article, { includeCollection = true } = {}) => {
+  const collectionNavigation = {};
+
+  if (includeCollection && article.collectionId) {
+    collectionNavigation.prev = null;
+    collectionNavigation.next = null;
+
+    const { articles } = article.collectionId;
+    const idx = articles.map(a => a._id.toString()).indexOf(article._id.toString());
+
+    if (idx > 0) {
+      const a = articles[idx - 1].toObject();
+      collectionNavigation.prev = {
+        ...omit(a, ['locales']),
+        locales: keyBy(a.locales, 'locale'),
+      };
+    }
+
+    if (idx !== articles.length - 1) {
+      const a = articles[idx + 1].toObject();
+      collectionNavigation.next = {
+        ...omit(a, ['locales']),
+        locales: keyBy(a.locales, 'locale'),
+      };
+    }
+  }
+
+  const result = {
+    ...omit(article.toObject(), ['__v', 'collectionId']),
+    locales: keyBy(article.locales, 'locale'),
+  };
+
+  if (includeCollection) {
+    result.collection = article.collectionId && {
+      ...omit(article.collectionId.toObject(), ['articles']),
+      ...collectionNavigation,
+    };
+  }
+
+  return result;
+};
 
 export const checkIsPublished = (article, user) => {
-  if (checkPermissions(user, ['canCreateArticle'])) {
+  if (checkPermissions(user, 'canCreateArticle')) {
     return article;
   }
 
@@ -79,7 +118,16 @@ export const POPULATE_OPTIONS = {
   // TODO(uladbohdan): to merge with User basicFields.
   author: '-_id firstName lastName email role active bio imageUrl displayName',
   brand: '-_id slug names imageUrl imageUrlSmall',
-  collection: '-_id name slug description imageUrl',
+  collection: publishedOnly => ({
+    path: 'collectionId',
+    select: '-_id name slug description imageUrl articles',
+    populate: {
+      path: 'articles',
+      match: publishedOnly ? { publishAt: { $lt: Date.now() } } : undefined,
+      select: ['_id'],
+      populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
+    },
+  }),
   locales: '-_id -__v',
 };
 
