@@ -24,7 +24,10 @@ const UserSchema = new Schema({
     required: true,
   },
   passwordHash: String,
-  permissions: Schema.Types.Mixed,
+  permissions: {
+    type: Schema.Types.Mixed,
+    default: {},
+  },
   createdAt: { type: Date, default: Date.now },
   active: {
     type: Boolean,
@@ -101,7 +104,7 @@ export const checkPermissions = (user, permissions) => {
   if (typeof permissions === 'string') {
     list = [permissions];
   }
-  return user && list.every(perm => user.permissions[perm]);
+  return user && user.permissions && list.every(perm => user.permissions[perm]);
 };
 
 export const GENERATED_EMAIL_RGXP = /^generated-author-(\d+)@wir.by$/;
