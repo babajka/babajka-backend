@@ -8,8 +8,7 @@ import path from 'path';
 import defaultConfig from './config.json';
 
 const MongoStore = connectMongo(session);
-const secretPath =
-  process.argv[2] || process.env.BABAJKA_SECRET || path.join(__dirname, 'secret.json');
+const secretPath = process.argv[2] || path.join(__dirname, 'secret.json');
 let secret = null;
 
 try {

@@ -9,7 +9,7 @@
     "saltRounds": 8
   },
   "session": {
-    "secret": "MUST BE SET IN $BABAJKA_SECRET",
+    "secret": "MUST BE SET IN BABAJKA SECRET CONFIG",
     "resave": false,
     "saveUninitialized": false,
     "cookie": {
@@ -25,8 +25,8 @@
   },
   "social": {
     "google": {
-      "clientId": "MUST BE SET IN $BABAJKA_SECRET",
-      "clientSecret": "MUST BE SET IN $BABAJKA_SECRET"
+      "clientId": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "clientSecret": "MUST BE SET IN BABAJKA SECRET CONFIG"
     }
   }
 }
