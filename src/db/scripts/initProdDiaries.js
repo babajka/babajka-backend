@@ -37,7 +37,7 @@ const fieldsOptional = ['active', 'year'];
       await mongoose.connection.db.dropCollection('diaries');
     } catch (e) {
       if (e.code === 26) {
-        console.log('Diaries were not dropped due to the absense of the collection');
+        console.log('Diaries were not dropped due to the absence of the collection');
       } else {
         throw e;
       }
