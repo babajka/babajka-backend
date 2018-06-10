@@ -1,11 +1,11 @@
 {
   "apps": [{
-    "name": "backend",
+    "name": "backend-staging",
     "script": "npm",
     "args": "run start-prod -- /home/wir-dev/secret-staging.json"
   },{
     "name": "backend-production",
     "script": "npm",
-    "args": "run start-prod -- /home/wir-dev/secret-production.json"
+    "args": "run start-prod -- /home/wir-prod/secret-production.json"
   }]
 }
