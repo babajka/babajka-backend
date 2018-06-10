@@ -127,7 +127,7 @@ describe('Collections API', () => {
             be: {
               title: 'title',
               subtitle: 'subtitle',
-              text: 'text',
+              content: 'text',
               slug: 'slug-new1-be',
             },
           },
@@ -152,7 +152,7 @@ describe('Collections API', () => {
             be: {
               title: 'title',
               subtitle: 'subtitle',
-              text: 'text',
+              content: 'text',
               slug: 'slug-new2-be',
             },
           },

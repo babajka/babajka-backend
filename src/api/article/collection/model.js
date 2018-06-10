@@ -5,34 +5,39 @@ import { slugValidator } from 'utils/validation';
 
 import { serializeArticle } from 'api/article/article.model';
 
-const ArticleCollectionSchema = new Schema({
-  // name and description (below) map locales (be, ru, ...) to strings.
-  // Once amount of localized data increases implementation of LocalizedArticleCollection
-  // model might be considered.
-  name: {
-    type: Schema.Types.Mixed,
-    required: true,
-  },
-  description: Schema.Types.Mixed,
-  // The order of articles below is essential and defines the structure of the collection.
-  articles: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Article',
+const ArticleCollectionSchema = new Schema(
+  {
+    // name and description (below) map locales (be, ru, ...) to strings.
+    // Once amount of localized data increases implementation of LocalizedArticleCollection
+    // model might be considered.
+    name: {
+      type: Schema.Types.Mixed,
+      required: true,
     },
-  ],
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-    validate: slugValidator,
+    description: Schema.Types.Mixed,
+    // The order of articles below is essential and defines the structure of the collection.
+    articles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Article',
+      },
+    ],
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: slugValidator,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    imageUrl: String,
   },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-  imageUrl: String,
-});
+  {
+    usePushEach: true,
+  }
+);
 
 export const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionSchema);
 

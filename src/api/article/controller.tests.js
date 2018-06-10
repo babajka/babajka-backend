@@ -328,7 +328,7 @@ describe('Articles Bundled API', () => {
           be: {
             title: 'xx',
             subtitle: 'yy',
-            text: 'some text',
+            content: 'some text',
             slug: 'bad$%symbols',
           },
         },
@@ -352,7 +352,7 @@ describe('Articles Bundled API', () => {
           be: {
             title: 'xx',
             subtitle: 'yy',
-            text: 'text',
+            content: 'text',
             slug: 'slug',
             locale: 'en',
           },
@@ -374,7 +374,7 @@ describe('Articles Bundled API', () => {
           be: {
             title: 'be-title',
             subtitle: 'be-subtitle',
-            text: 'some-be-text',
+            content: 'some-be-text',
             slug: 'be-slug',
           },
         },
@@ -442,7 +442,7 @@ describe('Articles Bundled API', () => {
           en: {
             title: 'en-title',
             subtitle: 'en-subtitle',
-            text: 'some en text',
+            content: 'some en text',
             slug: 'en-slug',
             locale: 'en',
           },
@@ -492,14 +492,14 @@ describe('Articles Bundled API', () => {
             title: 'title-fr',
             subtitle: 'subtitle-fr',
             slug: 'slug-fr',
-            text: 'some-text',
+            content: 'some-text',
             locale: 'fr',
           },
           de: {
             title: 'title-de',
             subtitle: 'subtitle-de',
             slug: 'slug-de',
-            text: 'some-text',
+            content: 'some-text',
             locale: 'de',
           },
           en: {

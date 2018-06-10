@@ -16,6 +16,38 @@ import articleCollectionsData from './articleCollections.json';
 import articlesData from './articles.json';
 import diariesData from './diary.json';
 
+const TEXT_BY_LOCALE = {
+  be: 'Здароў!',
+  ru: 'Приветик!',
+  en: 'Hello!',
+};
+
+const getArticleContent = locale => ({
+  entityMap: {
+    '0': { type: 'LINK', mutability: 'MUTABLE', data: { url: 'http://wir.by/' } },
+  },
+  blocks: [
+    {
+      key: '761n6',
+      text: TEXT_BY_LOCALE[locale],
+      type: 'header-one',
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {},
+    },
+    {
+      key: 'cuvud',
+      text: 'link to wir by',
+      type: 'blockquote',
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [{ offset: 0, length: 14, key: 0 }],
+      data: {},
+    },
+  ],
+});
+
 const initUsers = () =>
   Promise.all(
     usersData.map(async userData => {
@@ -76,6 +108,7 @@ const initArticles = (articleBrandsDict, authorsDict) =>
             ...articleLocales[locale],
             locale,
             articleId: article._id,
+            content: getArticleContent(locale),
           });
           article.locales.push(data._id);
           return data.save();
