@@ -7,7 +7,7 @@
 // * canManageUsers - the one with this permission can create, edit and remove
 //    and view the full list of users existing.
 
-export const user = [];
-export const author = [...user, 'canCreateArticle'];
-export const contentManager = [...author, 'canManageArticles'];
-export const admin = [...contentManager, 'canManageUsers'];
+export const user = {};
+export const author = { ...user, canCreateArticle: true };
+export const contentManager = { ...author, canManageArticles: true };
+export const admin = { ...contentManager, canManageUsers: true };

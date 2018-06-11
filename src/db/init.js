@@ -54,10 +54,7 @@ const initUsers = () =>
       const permPreset = userData.permissionsPreset || 'user';
 
       const user = new User(userData);
-      user.permissions = {};
-      permissions[permPreset].forEach(perm => {
-        user.permissions[perm] = true;
-      });
+      user.permissions = permissions[permPreset];
 
       if (userData.role !== 'author') {
         await user.setPassword(userData.password);

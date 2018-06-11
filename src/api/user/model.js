@@ -5,6 +5,7 @@ import pick from 'lodash/pick';
 
 import config from 'config';
 import { joinNames } from 'utils/formatting';
+import { permissionsObjectValidator } from 'utils/validation';
 
 const UserSchema = new Schema({
   // For a User with a role 'author' firstName, lastName and bio map locales
@@ -27,6 +28,8 @@ const UserSchema = new Schema({
   permissions: {
     type: Schema.Types.Mixed,
     default: {},
+    validate: permissionsObjectValidator,
+    required: true,
   },
   createdAt: { type: Date, default: Date.now },
   active: {

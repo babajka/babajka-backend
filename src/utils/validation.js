@@ -88,3 +88,13 @@ export const colloquialDateHashValidator = {
   },
   message: 'errors.failedMatchRegex',
 };
+
+export const permissionsObjectValidator = {
+  validator: v => {
+    if (v instanceof Array || typeof v !== 'object') {
+      return false;
+    }
+    return Object.values(v).every(val => typeof val === 'boolean');
+  },
+  message: 'errors.badPermissions',
+};
