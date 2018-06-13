@@ -5,7 +5,7 @@ import pick from 'lodash/pick';
 
 import config from 'config';
 import { joinNames } from 'utils/formatting';
-import { permissionsObjectValidator } from 'utils/validation';
+import { permissionsObjectValidator, validatePassword } from 'utils/validation';
 
 const UserSchema = new Schema({
   // For a User with a role 'author' firstName, lastName and bio map locales
@@ -71,6 +71,7 @@ UserSchema.set('toObject', { virtuals: true });
 UserSchema.set('toJSON', { virtuals: true });
 
 UserSchema.methods.setPassword = async function set(password) {
+  validatePassword(password);
   this.passwordHash = await this.generateHash(password);
 };
 

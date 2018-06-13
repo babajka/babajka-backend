@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { serializeUser } from 'api/user';
-import { requireFields, ValidationError } from 'utils/validation';
+import { requireFields, validatePassword } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
 import passport, { social, local } from './passport';
@@ -19,9 +19,7 @@ router.post('/login', requireFields('email', 'password'), (req, res, next) =>
 router.post('/register', requireFields('email', 'password', 'firstName'), (req, res, next) => {
   const { password } = req.body;
 
-  if (password.length < 7) {
-    return next(new ValidationError({ password: 'auth.badPassword' }));
-  }
+  validatePassword(password);
 
   return local
     .register(req, res, next)

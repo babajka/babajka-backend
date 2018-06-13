@@ -5,6 +5,12 @@ import mongoose from 'mongoose';
 
 export const ValidationError = message => HttpError(400, message);
 
+export const validatePassword = password => {
+  if (password.length < 7) {
+    throw new ValidationError({ password: 'auth.badPassword' });
+  }
+};
+
 const createArticleValidator = ({ body }, res, next) => {
   const errors = {};
   if (body.locales) {
