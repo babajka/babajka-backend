@@ -16,6 +16,11 @@ const ArticleBrandSchema = new Schema({
   imageUrl: String,
   // imageUrlSmall is a small, resized image for i.e. article tiles preview.
   imageUrlSmall: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
 });
 
 export const ArticleBrand = mongoose.model('ArticleBrand', ArticleBrandSchema);

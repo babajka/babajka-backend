@@ -4,8 +4,14 @@ import set from 'lodash/set';
 import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import { User, checkPermissions } from 'api/user';
-import Article, { serializeArticle, checkIsPublished, POPULATE_OPTIONS } from './article.model';
+import { User } from 'api/user';
+import Article, {
+  serializeArticle,
+  checkIsPublished,
+  queryUnpublished,
+  // eslint-disable-next-line comma-dangle
+  POPULATE_OPTIONS,
+} from './article.model';
 import ArticleBrand from './brand/model';
 import ArticleCollection from './collection/model';
 import LocalizedArticle from './localized/model';
@@ -15,18 +21,12 @@ export const getAll = ({ query, user }, res, next) => {
   const pageSize = parseInt(query.pageSize) || 10; // eslint-disable-line radix
   const skip = page * pageSize;
   let data;
-  const articlesQuery = { active: true };
-
-  if (!checkPermissions(user, 'canManageArticles')) {
-    articlesQuery.publishAt = {
-      $lt: Date.now(),
-    };
-  }
+  const articlesQuery = { $and: [{ active: true }, queryUnpublished(user)] };
 
   return Article.find(articlesQuery)
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, 'canManageArticles')))
+    .populate(POPULATE_OPTIONS.collection(user))
     .populate('locales', POPULATE_OPTIONS.locales)
     .sort({ publishAt: 'desc' })
     .skip(skip)
@@ -56,7 +56,7 @@ const getArticleById = (articleId, user) =>
   Article.findOne({ _id: articleId, active: true })
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection(!checkPermissions(user, 'canManageArticles')))
+    .populate(POPULATE_OPTIONS.collection(user))
     .populate('locales', POPULATE_OPTIONS.locales);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>

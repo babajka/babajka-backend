@@ -3,7 +3,7 @@ import omit from 'lodash/omit';
 
 import { slugValidator } from 'utils/validation';
 
-import { serializeArticle } from 'api/article/article.model';
+import { serializeArticle, queryUnpublished } from 'api/article/article.model';
 
 const ArticleCollectionSchema = new Schema(
   {
@@ -33,6 +33,11 @@ const ArticleCollectionSchema = new Schema(
       default: true,
     },
     imageUrl: String,
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      required: true,
+    },
   },
   {
     usePushEach: true,
@@ -49,9 +54,9 @@ export const serializeCollection = collection => ({
 });
 
 export const COLLECTION_POPULATE_OPTIONS = {
-  articles: publishedOnly => ({
+  articles: user => ({
     path: 'articles',
-    match: publishedOnly ? { publishAt: { $lt: Date.now() } } : undefined,
+    match: queryUnpublished(user),
     populate: {
       path: 'locales',
     },

@@ -31,7 +31,11 @@ const UserSchema = new Schema({
     validate: permissionsObjectValidator,
     required: true,
   },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
   active: {
     type: Boolean,
     default: true,
