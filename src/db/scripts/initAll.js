@@ -10,11 +10,11 @@ import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/
 import { Diary } from 'api/specials';
 import * as permissions from 'constants/permissions';
 
-import usersData from './users.json';
-import articleBrandsData from './articleBrands.json';
-import articleCollectionsData from './articleCollections.json';
-import articlesData from './articles.json';
-import diariesData from './diary.json';
+import usersData from 'db/data/users.json';
+import articleBrandsData from 'db/data/articleBrands.json';
+import articleCollectionsData from 'db/data/articleCollections.json';
+import articlesData from 'db/data/articles.json';
+import diariesData from 'db/data/diary.json';
 
 const TEXT_BY_LOCALE = {
   be: 'Здароў!',
@@ -152,28 +152,28 @@ const initDiaries = () =>
     console.log('Mongoose: drop database');
 
     await initUsers();
-    const users = await User.count();
-    console.log(`Mongoose: insert ${users} users`);
+    const usersCount = await User.count();
+    console.log(`Mongoose: insert ${usersCount} user(s)`);
 
     await initArticleBrands();
-    const articleBrands = await ArticleBrand.count();
-    console.log(`Mongoose: insert ${articleBrands} article brand(s)`);
+    const articleBrandsCount = await ArticleBrand.count();
+    console.log(`Mongoose: insert ${articleBrandsCount} article brand(s)`);
 
     const articleBrandsDict = await getArticleBrandsDict();
     const authorsDict = await getAuthorsDict();
 
     await initArticles(articleBrandsDict, authorsDict);
-    const articles = await Article.count();
-    console.log(`Mongoose: insert ${articles} articles`);
+    const articlesCount = await Article.count();
+    console.log(`Mongoose: insert ${articlesCount} article(s)`);
     const articleDict = await getArticlesDict();
 
     await initArticleCollections(articleDict);
-    const articleCollections = await ArticleCollection.count();
-    console.log(`Mongoose: insert ${articleCollections} article collection(s)`);
+    const articleCollectionsCount = await ArticleCollection.count();
+    console.log(`Mongoose: insert ${articleCollectionsCount} article collection(s)`);
 
     await initDiaries();
     const diariesCount = await Diary.count();
-    console.log(`Mongoose: insert ${diariesCount} diaries`);
+    console.log(`Mongoose: insert ${diariesCount} diary(es)`);
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);
