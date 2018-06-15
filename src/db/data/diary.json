@@ -2,21 +2,21 @@
   {
     "author": "Author1",
     "text": "Diary text 1",
-    "locale": "en",
+    "locale": "be",
     "colloquialDateHash": "0213",
     "year": "2018"
   },
   {
     "author": "Author2",
     "text": "Diary text 2",
-    "locale": "en",
+    "locale": "be",
     "colloquialDateHash": "0214",
     "year": "2001"
   },
   {
     "author": "Author3",
     "text": "Diary text 3",
-    "locale": "en",
+    "locale": "be",
     "colloquialDateHash": "0215",
     "year": "1985"
   }
