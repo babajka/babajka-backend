@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
-import { dropData, loginDefaultAdmin } from 'utils/testing';
+import { dropData, loginTestAdmin } from 'utils/testing';
 
 import ArticleBrand from 'api/article/brand/model';
 import User from 'api/user/model';
@@ -30,7 +30,7 @@ describe('Authors API', () => {
 
   let sessionCookie;
   before(async () => {
-    sessionCookie = await loginDefaultAdmin();
+    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);

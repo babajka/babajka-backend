@@ -35,10 +35,19 @@ const ArticleSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
+      required: true,
     },
     publishAt: {
+      // publishAt contains date and time for the article to be published.
+      // Two possible values of the field are:
+      // * null - makes an article a 'draft'. That means article will never be
+      //    published unless the field in updated. 'null' is a default value
+      //    which makes behavior safe: one must explicitly set the date in order
+      //    to make article discoverable.
+      // * date value - specifies the date after which the article is available
+      //    for any user. Must be set explicitly.
       type: Date,
-      default: Date.now,
+      default: null,
     },
     active: {
       type: Boolean,
@@ -103,27 +112,49 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
 };
 
 export const checkIsPublished = (article, user) => {
-  if (checkPermissions(user, 'canCreateArticle')) {
+  if (article.publishAt && new Date(article.publishAt) < Date.now()) {
+    // Article is already published for everybody.
+    return article;
+  }
+  if (checkPermissions(user, 'canManageArticles')) {
+    // canManageArticles permissions gives access to all articles including drafts.
     return article;
   }
 
-  if (article.publishAt && new Date(article.publishAt) > Date.now()) {
-    throw new HttpError(404);
-  }
+  // TODO(uladbohdan): to uncomment following code in order to make unpublished
+  // article discoverable by their authors. This can be done once users with
+  // role 'author' are allowed to login.
+  // if (checkPermissions(user, 'canCreateArticle') && article.author === user._id) {
+  //   return article;
+  // }
 
-  return article;
+  throw new HttpError(404);
+};
+
+export const queryUnpublished = user => {
+  if (!checkPermissions(user, 'canManageArticles')) {
+    return { publishAt: { $lt: Date.now() } };
+
+    // TODO(uladbohdan): to uncomment following code in order to make unpublished
+    // article discoverable by their authors. This can be done once users with
+    // role 'author' are allowed to login.
+    // return checkPermissions(user, 'canCreateArticle')
+    //   ? { $or: [{ publishAt: { $lt: Date.now() } }, { author: user._id }] }
+    //   : { publishAt: { $lt: Date.now() } };
+  }
+  return {};
 };
 
 export const POPULATE_OPTIONS = {
   // TODO(uladbohdan): to merge with User basicFields.
   author: '-_id firstName lastName email role active bio imageUrl displayName',
   brand: '-_id slug names imageUrl imageUrlSmall',
-  collection: publishedOnly => ({
+  collection: user => ({
     path: 'collectionId',
     select: '-_id name slug description imageUrl articles',
     populate: {
       path: 'articles',
-      match: publishedOnly ? { publishAt: { $lt: Date.now() } } : undefined,
+      match: queryUnpublished(user),
       select: ['_id'],
       populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
     },

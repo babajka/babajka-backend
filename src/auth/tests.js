@@ -5,7 +5,7 @@ import app from 'server';
 import 'db/connect';
 import { requireAuth } from 'auth';
 
-import { dropData, createAdmin } from 'utils/testing';
+import { dropData, addUser, testData } from 'utils/testing';
 
 const request = supertest.agent(app.listen());
 
@@ -13,7 +13,7 @@ app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth API', () => {
   before(async () => {
-    await createAdmin();
+    await addUser(testData.admin);
   });
 
   after(dropData);
@@ -44,7 +44,7 @@ describe('Auth API', () => {
         // eslint-disable-next-line no-unused-expressions
         expect(res.headers['set-cookie']).not.empty;
         sessionCookie = res.headers['set-cookie'];
-        expect(Object.keys(res.body.permissions)).to.have.length(2);
+        expect(Object.keys(res.body.permissions)).to.have.length(3);
       }));
 
   it('should access protected resource', () =>

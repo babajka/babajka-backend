@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
-import { dropData, loginDefaultAdmin } from 'utils/testing';
+import { dropData, loginTestAdmin } from 'utils/testing';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
@@ -21,6 +21,7 @@ describe('Locales API', () => {
       brand: brand._id,
       imageUrl: 'image-url',
       type: 'text',
+      publishAt: Date.now(),
     }).save();
 
     articleId = article._id;
@@ -28,7 +29,7 @@ describe('Locales API', () => {
 
   let sessionCookie;
   before(async () => {
-    sessionCookie = await loginDefaultAdmin();
+    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);

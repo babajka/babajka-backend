@@ -5,11 +5,17 @@ import mongoose from 'mongoose';
 
 export const ValidationError = message => HttpError(400, message);
 
+export const validatePassword = password => {
+  if (password.length < 7) {
+    throw new ValidationError({ password: 'auth.badPassword' });
+  }
+};
+
 const createArticleValidator = ({ body }, res, next) => {
   const errors = {};
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
-      ['title', 'subtitle', 'slug', 'text'].forEach(field => {
+      ['title', 'subtitle', 'slug', 'content'].forEach(field => {
         if (!localeData[field]) {
           set(errors, ['locales', locale, field], 'errors.fieldRequired');
         }
@@ -34,7 +40,7 @@ const updateArticleValidator = ({ body }, res, next) => {
 
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
-      ['title', 'subtitle', 'slug', 'text', 'locale'].forEach(field => {
+      ['title', 'subtitle', 'slug', 'content', 'locale'].forEach(field => {
         if (localeData[field] === '') {
           set(errors, ['locales', locale, field], 'errors.fieldUnremovable');
         }
@@ -87,4 +93,14 @@ export const colloquialDateHashValidator = {
     return month >= 0 && month <= 12 && day >= 0 && day <= 31;
   },
   message: 'errors.failedMatchRegex',
+};
+
+export const permissionsObjectValidator = {
+  validator: v => {
+    if (v instanceof Array || typeof v !== 'object') {
+      return false;
+    }
+    return Object.values(v).every(val => typeof val === 'boolean');
+  },
+  message: 'errors.badPermissions',
 };

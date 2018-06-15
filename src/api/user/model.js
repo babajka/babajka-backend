@@ -5,6 +5,7 @@ import pick from 'lodash/pick';
 
 import config from 'config';
 import { joinNames } from 'utils/formatting';
+import { permissionsObjectValidator, validatePassword } from 'utils/validation';
 
 const UserSchema = new Schema({
   // For a User with a role 'author' firstName, lastName and bio map locales
@@ -27,8 +28,14 @@ const UserSchema = new Schema({
   permissions: {
     type: Schema.Types.Mixed,
     default: {},
+    validate: permissionsObjectValidator,
+    required: true,
   },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
   active: {
     type: Boolean,
     default: true,
@@ -64,6 +71,7 @@ UserSchema.set('toObject', { virtuals: true });
 UserSchema.set('toJSON', { virtuals: true });
 
 UserSchema.methods.setPassword = async function set(password) {
+  validatePassword(password);
   this.passwordHash = await this.generateHash(password);
 };
 

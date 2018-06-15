@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 
-import { dropData, loginDefaultAdmin } from 'utils/testing';
+import { dropData, loginTestAdmin } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -77,7 +77,7 @@ describe('Articles API', () => {
 
   let sessionCookie;
   before(async () => {
-    sessionCookie = await loginDefaultAdmin();
+    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);
@@ -157,7 +157,7 @@ describe('Articles API', () => {
 
     let newArticleId;
 
-    it('should create an article', () =>
+    it('should create an article as a draft', () =>
       request
         .post('/api/articles')
         .set('Cookie', sessionCookie)
@@ -168,17 +168,33 @@ describe('Articles API', () => {
         })
         .expect(200)
         .expect(res => {
+          // eslint-disable-next-line no-unused-expressions
+          expect(res.body.publishAt).to.be.null;
+          // eslint-disable-next-line no-unused-expressions
+          expect(res.body.createdAt).to.be.not.null;
           newArticleId = res.body._id;
         }));
 
-    it('should contain a newly created article', () =>
+    it('should contain a newly created article if querying with permissions', () =>
       request
         .get('/api/articles')
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
+          // console.log('WITH:', res.body);
           expect(res.body.data).has.length(10);
           expect(res.body.data.map(({ _id }) => _id)).includes(newArticleId);
+        }));
+
+    it('should not contain a newly created article if querying with no permissions', () =>
+      request
+        .get('/api/articles')
+        .expect(200)
+        .expect(res => {
+          // console.log('WITHOUT:', res.body);
+          expect(res.body.data).has.length(8);
+          expect(res.body.data.map(({ _id }) => _id)).not.includes(newArticleId);
+          expect(res.body.data.map(({ _id }) => _id)).not.includes(articleIDs[8]);
         }));
 
     it('should create a localization and assign to the article', () =>
@@ -209,9 +225,13 @@ describe('Articles API', () => {
           expect(res.body.locales.en.title).to.equal('title-new');
         }));
 
-    it('should get an article by ID', () =>
+    it('should not get an article by ID', () =>
+      request.get(`/api/articles/${articleId}`).expect(404));
+
+    it('should get an article by ID with permissions', () =>
       request
         .get(`/api/articles/${articleId}`)
+        .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
           expect(res.body.imageUrl).equal('new-image-url');
@@ -244,6 +264,7 @@ describe('Articles API', () => {
     it('should get an article by slug', () =>
       request
         .get(`/api/articles/article-new`)
+        .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
           expect(res.body.locales.en.slug).to.equal('article-new');
@@ -285,7 +306,7 @@ describe('Articles Bundled API', () => {
 
   let sessionCookie;
   before(async () => {
-    sessionCookie = await loginDefaultAdmin();
+    sessionCookie = await loginTestAdmin();
   });
 
   let articleId;
@@ -328,7 +349,7 @@ describe('Articles Bundled API', () => {
           be: {
             title: 'xx',
             subtitle: 'yy',
-            text: 'some text',
+            content: 'some text',
             slug: 'bad$%symbols',
           },
         },
@@ -352,7 +373,7 @@ describe('Articles Bundled API', () => {
           be: {
             title: 'xx',
             subtitle: 'yy',
-            text: 'text',
+            content: 'text',
             slug: 'slug',
             locale: 'en',
           },
@@ -370,11 +391,12 @@ describe('Articles Bundled API', () => {
         type: 'text',
         imageUrl: 'some-image-url',
         authorEmail,
+        publishAt: Date.now(),
         locales: {
           be: {
             title: 'be-title',
             subtitle: 'be-subtitle',
-            text: 'some-be-text',
+            content: 'some-be-text',
             slug: 'be-slug',
           },
         },
@@ -442,7 +464,7 @@ describe('Articles Bundled API', () => {
           en: {
             title: 'en-title',
             subtitle: 'en-subtitle',
-            text: 'some en text',
+            content: 'some en text',
             slug: 'en-slug',
             locale: 'en',
           },
@@ -492,14 +514,14 @@ describe('Articles Bundled API', () => {
             title: 'title-fr',
             subtitle: 'subtitle-fr',
             slug: 'slug-fr',
-            text: 'some-text',
+            content: 'some-text',
             locale: 'fr',
           },
           de: {
             title: 'title-de',
             subtitle: 'subtitle-de',
             slug: 'slug-de',
-            text: 'some-text',
+            content: 'some-text',
             locale: 'de',
           },
           en: {

@@ -6,7 +6,7 @@ import 'db/connect';
 import User from './model';
 
 describe('User model', () => {
-  const userData = { firstName: 'Name', email: 'test@test.test', password: 'secret' };
+  const userData = { firstName: 'Name', email: 'test@test.test', password: 'longsecret' };
   const { firstName, email, password } = userData;
   const user = new User(userData);
 

@@ -1,5 +1,11 @@
 /* eslint-disable no-console */
 
+// Example of a run:
+//   npm run init-prod-diaries -- path-to-secret-file
+// 'path-to-secret-file' defines which database is about to be modified.
+// To work locally run:
+//   npm run init-prod-diaries
+
 import mongoose from 'mongoose';
 import connectDb from 'db';
 import { Diary } from 'api/specials';

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import app from 'server';
 import 'db/connect';
 
-import { dropData, loginDefaultAdmin } from 'utils/testing';
+import { dropData, loginTestAdmin } from 'utils/testing';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
@@ -48,7 +48,7 @@ describe('Collections API', () => {
 
   let sessionCookie;
   before(async () => {
-    sessionCookie = await loginDefaultAdmin();
+    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);
@@ -122,12 +122,13 @@ describe('Collections API', () => {
           brandSlug: 'wir',
           type: 'text',
           imageUrl: 'ololo',
+          publishAt: Date.now(),
           collectionSlug: 'collection-6',
           locales: {
             be: {
               title: 'title',
               subtitle: 'subtitle',
-              text: 'text',
+              content: 'text',
               slug: 'slug-new1-be',
             },
           },
@@ -152,7 +153,7 @@ describe('Collections API', () => {
             be: {
               title: 'title',
               subtitle: 'subtitle',
-              text: 'text',
+              content: 'text',
               slug: 'slug-new2-be',
             },
           },
