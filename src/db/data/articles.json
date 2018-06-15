@@ -41,7 +41,7 @@
     "authorEmail": "curie@wir.by",
     "videoId": "SPauxWv1Rnk",
     "imagePreviewUrl": "/test/images/gradient-2.png",
-    "imageFolderUrl": "/test/images/gradient-1.jpg"
+    "imageFolderUrl": "/test/images/seattle.jpg"
   },
   {
     "type": "video",
@@ -64,7 +64,7 @@
     "authorEmail": "albert@wir.by",
     "videoId": "SPauxWv1Rnk",
     "imagePreviewUrl": "/test/images/gradient-3.png",
-    "imageFolderUrl": "/test/images/gradient-1.jpg"
+    "imageFolderUrl": "/test/images/seattle.jpg"
   },
   {
     "type": "text",
@@ -85,8 +85,8 @@
       }
     },
     "authorEmail": "curie@wir.by",
-    "imagePreviewUrl": "/test/images/gradient-4.png",
-    "imageFolderUrl": "/test/images/gradient-1.jpg"
+    "imagePreviewUrl": "/test/images/seattle.jpg",
+    "imageFolderUrl": "/test/images/seattle.jpg"
   },
   {
     "type": "video",
