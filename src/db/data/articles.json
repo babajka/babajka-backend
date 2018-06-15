@@ -17,7 +17,8 @@
       }
     },
     "authorEmail": "albert@wir.by",
-    "imageUrl": "/test/images/gradient-1.jpg"
+    "imagePreviewUrl": "/test/images/gradient-1.jpg",
+    "imageFolderUrl": "/test/images/gradient-1.jpg"
   },
   {
     "type": "video",
@@ -39,7 +40,8 @@
     },
     "authorEmail": "curie@wir.by",
     "videoId": "SPauxWv1Rnk",
-    "imageUrl": "/test/images/gradient-2.png"
+    "imagePreviewUrl": "/test/images/gradient-2.png",
+    "imageFolderUrl": "/test/images/gradient-1.jpg"
   },
   {
     "type": "video",
@@ -61,7 +63,8 @@
     },
     "authorEmail": "albert@wir.by",
     "videoId": "SPauxWv1Rnk",
-    "imageUrl": "/test/images/gradient-3.png"
+    "imagePreviewUrl": "/test/images/gradient-3.png",
+    "imageFolderUrl": "/test/images/gradient-1.jpg"
   },
   {
     "type": "text",
@@ -82,7 +85,8 @@
       }
     },
     "authorEmail": "curie@wir.by",
-    "imageUrl": "/test/images/gradient-4.png"
+    "imagePreviewUrl": "/test/images/gradient-4.png",
+    "imageFolderUrl": "/test/images/gradient-1.jpg"
   },
   {
     "type": "video",
@@ -102,7 +106,8 @@
         "slug": "slug4-en"
       }
     },
-    "imageUrl": "/test/images/gradient-5.jpg"
+    "imagePreviewUrl": "/test/images/gradient-5.jpg",
+    "imageFolderUrl": "/test/images/gradient-1.jpg"
   },
   {
     "type": "text",
@@ -128,6 +133,6 @@
         "slug": "slug5-en"
       }
     },
-    "imageUrl": "/test/images/gradient-3.png"
+    "imagePreviewUrl": "/test/images/gradient-3.png"
   }
 ]

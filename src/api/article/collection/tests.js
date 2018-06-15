@@ -22,7 +22,7 @@ describe('Collections API', () => {
       articlePromises.push(
         new Article({
           type: 'text',
-          imageUrl: 'image-url',
+          imagePreviewUrl: 'image-url',
           brand: brand._id,
         }).save()
       );
@@ -121,7 +121,7 @@ describe('Collections API', () => {
         .send({
           brandSlug: 'wir',
           type: 'text',
-          imageUrl: 'ololo',
+          imagePreviewUrl: 'ololo',
           publishAt: Date.now(),
           collectionSlug: 'collection-6',
           locales: {
@@ -135,7 +135,7 @@ describe('Collections API', () => {
         })
         .expect(200)
         .expect(res => {
-          expect(res.body.imageUrl).equals('ololo');
+          expect(res.body.imagePreviewUrl).equals('ololo');
           expect(res.body.locales.be.slug).equals('slug-new1-be');
         }));
 
@@ -146,7 +146,7 @@ describe('Collections API', () => {
         .send({
           brandSlug: 'wir',
           type: 'text',
-          imageUrl: 'ololo2',
+          imagePreviewUrl: 'ololo2',
           publishAt: new Date('2025-01-01T18:25:43.511Z'),
           collectionSlug: 'collection-6',
           locales: {
@@ -160,7 +160,7 @@ describe('Collections API', () => {
         })
         .expect(200)
         .expect(res => {
-          expect(res.body.imageUrl).equals('ololo2');
+          expect(res.body.imagePreviewUrl).equals('ololo2');
           expect(res.body.locales.be.slug).equals('slug-new2-be');
         }));
 
@@ -172,8 +172,8 @@ describe('Collections API', () => {
         .expect(res => {
           expect(res.body.slug).equals('collection-6');
           expect(res.body.articles).has.length(2);
-          expect(res.body.articles[0].imageUrl).equals('ololo');
-          expect(res.body.articles[1].imageUrl).equals('ololo2');
+          expect(res.body.articles[0].imagePreviewUrl).equals('ololo');
+          expect(res.body.articles[1].imagePreviewUrl).equals('ololo2');
         }));
 
     it('should return only article in the collection when querying without permissions', () =>
@@ -183,7 +183,7 @@ describe('Collections API', () => {
         .expect(res => {
           expect(res.body.slug).equals('collection-6');
           expect(res.body.articles).has.length(1);
-          expect(res.body.articles[0].imageUrl).equals('ololo');
+          expect(res.body.articles[0].imagePreviewUrl).equals('ololo');
         }));
 
     it('should return collection.next when querying with permissions', () =>

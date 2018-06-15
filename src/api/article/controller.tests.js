@@ -27,7 +27,7 @@ describe('Articles API', () => {
         new Article({
           brand: articleBrandId,
           type: 'text',
-          imageUrl: 'image-url',
+          imagePreviewUrl: 'image-url',
           createdAt: date,
           publishAt: date,
         })
@@ -42,7 +42,7 @@ describe('Articles API', () => {
       new Article({
         brand: articleBrandId,
         type: 'text',
-        imageUrl: 'image-url',
+        imagePreviewUrl: 'image-url',
         publishAt: new Date('2025-01-01T18:25:43.511Z'),
       })
         .save()
@@ -163,7 +163,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .send({
           brandSlug,
-          imageUrl: 'image-url',
+          imagePreviewUrl: 'image-url',
           type: 'text',
         })
         .expect(200)
@@ -213,14 +213,14 @@ describe('Articles API', () => {
       request
         .put('/api/articles/article-new')
         .send({
-          imageUrl: 'new-image-url',
+          imagePreviewUrl: 'new-image-url',
           locales: { en: {} }, // This is for server to keep the locale.
         })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
           articleId = res.body._id;
-          expect(res.body.imageUrl).to.equal('new-image-url');
+          expect(res.body.imagePreviewUrl).to.equal('new-image-url');
           expect(res.body.active).to.equal(true);
           expect(res.body.locales.en.title).to.equal('title-new');
         }));
@@ -234,7 +234,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          expect(res.body.imageUrl).equal('new-image-url');
+          expect(res.body.imagePreviewUrl).equal('new-image-url');
           expect(res.body.locales.en.slug).to.equal('article-new');
         }));
 
@@ -257,7 +257,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          expect(res.body.imageUrl).to.equal('new-image-url');
+          expect(res.body.imagePreviewUrl).to.equal('new-image-url');
           expect(res.body.active).to.equal(true);
         }));
 
@@ -316,7 +316,7 @@ describe('Articles Bundled API', () => {
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        imageUrl: 'ololo',
+        imagePreviewUrl: 'ololo',
       })
       .expect(400));
 
@@ -326,7 +326,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         brandSlug: 'wir',
-        imageUrl: 'image-url',
+        imagePreviewUrl: 'image-url',
         type: 'text',
         locales: {
           be: {
@@ -343,7 +343,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         brandSlug: 'wir',
-        imageUrl: 'image-url',
+        imagePreviewUrl: 'image-url',
         type: 'text',
         locales: {
           be: {
@@ -367,7 +367,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         brandSlug: 'wir',
-        imageUrl: 'image-url',
+        imagePreviewUrl: 'image-url',
         type: 'text',
         locales: {
           be: {
@@ -389,7 +389,7 @@ describe('Articles Bundled API', () => {
         brandSlug,
         collectionSlug: 'precreated-collection',
         type: 'text',
-        imageUrl: 'some-image-url',
+        imagePreviewUrl: 'some-image-url',
         authorEmail,
         publishAt: Date.now(),
         locales: {
@@ -404,7 +404,7 @@ describe('Articles Bundled API', () => {
       .expect(200)
       .expect(res => {
         articleId = res.body._id;
-        expect(res.body.imageUrl).to.equal('some-image-url');
+        expect(res.body.imagePreviewUrl).to.equal('some-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.slug).to.equal('be-slug');
       }));
@@ -414,7 +414,7 @@ describe('Articles Bundled API', () => {
       .get(`/api/articles/${articleId}`)
       .expect(200)
       .expect(res => {
-        expect(res.body.imageUrl).to.equal('some-image-url');
+        expect(res.body.imagePreviewUrl).to.equal('some-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.title).to.equal('be-title');
         expect(res.body.locales.be.slug).to.equal('be-slug');
@@ -428,7 +428,7 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/be-slug')
       .set('Cookie', sessionCookie)
       .send({
-        imageUrl: 'new-image-url',
+        imagePreviewUrl: 'new-image-url',
         locales: {
           be: {
             title: 'new-be-title',
@@ -438,7 +438,7 @@ describe('Articles Bundled API', () => {
       })
       .expect(200)
       .expect(res => {
-        expect(res.body.imageUrl).to.equal('new-image-url');
+        expect(res.body.imagePreviewUrl).to.equal('new-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.title).to.equal('new-be-title');
         expect(res.body.locales.be.subtitle).to.equal('new-be-subtitle');
@@ -449,7 +449,7 @@ describe('Articles Bundled API', () => {
       .get(`/api/articles/${articleId}`)
       .expect(200)
       .expect(res => {
-        expect(res.body.imageUrl).to.equal('new-image-url');
+        expect(res.body.imagePreviewUrl).to.equal('new-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.title).to.equal('new-be-title');
       }));
@@ -482,7 +482,7 @@ describe('Articles Bundled API', () => {
       .get(`/api/articles/${articleId}`)
       .expect(200)
       .expect(res => {
-        expect(res.body.imageUrl).to.equal('new-image-url');
+        expect(res.body.imagePreviewUrl).to.equal('new-image-url');
         expect(Object.keys(res.body.locales)).has.length(2);
         expect(res.body.locales.be.title).to.equal('new-be-title');
         expect(res.body.locales.en.title).to.equal('en-title');
@@ -551,11 +551,11 @@ describe('Articles Bundled API', () => {
       .send({ brandSlug: '' })
       .expect(400));
 
-  it('should fail to remove article imageUrl', () =>
+  it('should fail to remove article imagePreviewUrl', () =>
     request
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
-      .send({ imageUrl: '' })
+      .send({ imagePreviewUrl: '' })
       .expect(400));
 
   it('should fail to remove localization title', () =>

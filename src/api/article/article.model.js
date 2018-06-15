@@ -53,12 +53,21 @@ const ArticleSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    imageUrl: {
+    imagePreviewUrl: {
+      // Image to be shown on article preview (i.e. on index page).
+      // Usually a smaller one and with fixed aspect ratio.
       type: String,
       required: true,
     },
-    // This is a YouTube video ID. Ignored unless Article type is video.
-    videoId: String,
+    imageFolderUrl: {
+      // Image to be shown on article page. Wide and not height.
+      // Optional: article may be rendered without it.
+      type: String,
+    },
+    videoId: {
+      // This is a YouTube video ID. Ignored unless Article type is video.
+      type: String,
+    },
   },
   {
     usePushEach: true,

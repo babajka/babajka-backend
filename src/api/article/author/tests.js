@@ -74,7 +74,7 @@ describe('Authors API', () => {
           .post('/api/articles')
           .send({
             brandSlug: 'wir',
-            imageUrl: 'image-url',
+            imagePreviewUrl: 'image-url',
             type: 'video',
             authorEmail: 'generated-author-11@wir.by',
           })
