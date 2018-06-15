@@ -19,7 +19,7 @@ describe('Locales API', () => {
 
     const article = await Article({
       brand: brand._id,
-      imageUrl: 'image-url',
+      imagePreviewUrl: 'image-url',
       type: 'text',
       publishAt: Date.now(),
     }).save();

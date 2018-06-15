@@ -32,7 +32,7 @@ const createArticleValidator = ({ body }, res, next) => {
 const updateArticleValidator = ({ body }, res, next) => {
   const errors = {};
 
-  ['brandSlug', 'type', 'imageUrl'].forEach(field => {
+  ['brandSlug', 'type', 'imagePreviewUrl'].forEach(field => {
     if (body[field] === '') {
       errors[field] = 'errors.fieldUnremovable.';
     }
