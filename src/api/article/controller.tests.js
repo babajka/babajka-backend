@@ -381,6 +381,29 @@ describe('Articles Bundled API', () => {
       })
       .expect(400));
 
+  it('should fail to create an article due to forbidden field', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brandSlug,
+        brand: 'xxx',
+        type: 'text',
+        imagePreviewUrl: 'some-image-url',
+        locales: {
+          be: {
+            title: 'be-title',
+            subtitle: 'be-subtitle',
+            content: 'some-be-text',
+            slug: 'be-slug',
+          },
+        },
+      })
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error.brand).to.contain('forbidden');
+      }));
+
   it('should create an article with localizations with one API call', () =>
     request
       .post('/api/articles')
@@ -550,6 +573,16 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({ brandSlug: '' })
       .expect(400));
+
+  it('should fail to remove article collection due to forbidden collection field', () =>
+    request
+      .put('/api/articles/new-en-slug')
+      .set('Cookie', sessionCookie)
+      .send({ collection: 'ololo', collectionSlug: '' })
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error.collection).to.include('forbidden');
+      }));
 
   it('should fail to remove article imagePreviewUrl', () =>
     request

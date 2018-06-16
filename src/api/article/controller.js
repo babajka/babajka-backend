@@ -84,8 +84,7 @@ const handleArticleLocalizationError = locale => err => {
 export const create = async ({ body, user }, res, next) => {
   try {
     const articleBrand = await ArticleBrand.findOne({
-      // TODO(uladbohdan): to deprecate body.brand.
-      slug: body.brand || body.brandSlug,
+      slug: body.brandSlug,
     }).exec();
     checkIsFound(articleBrand, 400); // Brand is required.
     const brandId = articleBrand._id;
@@ -139,8 +138,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
   try {
     const articleId = await retrieveArticleId(slugOrId).catch(next);
     const [newBrand, newCollection, newAuthor] = await Promise.all([
-      // TODO(uladbohdan): to deprecate body.brand.
-      ArticleBrand.findOne({ slug: body.brand || body.brandSlug }).exec(),
+      ArticleBrand.findOne({ slug: body.brandSlug }).exec(),
       ArticleCollection.findOne({ slug: body.collectionSlug }).exec(),
       User.findOne({ email: body.authorEmail, role: 'author' }).exec(),
     ]);
@@ -148,7 +146,6 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
     const updFields = omit(body, [
       'author',
       'authorEmail',
-      'brand',
       'brandSlug',
       'collectionSlug',
       'locales',

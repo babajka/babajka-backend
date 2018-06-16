@@ -13,6 +13,13 @@ export const validatePassword = password => {
 
 const createArticleValidator = ({ body }, res, next) => {
   const errors = {};
+
+  ['brand', 'collection'].forEach(field => {
+    if (Object.prototype.hasOwnProperty.call(body, field)) {
+      errors[field] = 'frontend is forbidden to send this field to backend';
+    }
+  });
+
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
       ['title', 'subtitle', 'slug', 'content'].forEach(field => {
@@ -32,9 +39,15 @@ const createArticleValidator = ({ body }, res, next) => {
 const updateArticleValidator = ({ body }, res, next) => {
   const errors = {};
 
+  ['brand', 'collection'].forEach(field => {
+    if (Object.prototype.hasOwnProperty.call(body, field)) {
+      errors[field] = 'frontend is forbidden to send this field to backend';
+    }
+  });
+
   ['brandSlug', 'type', 'imagePreviewUrl'].forEach(field => {
     if (body[field] === '') {
-      errors[field] = 'errors.fieldUnremovable.';
+      errors[field] = 'errors.fieldUnremovable';
     }
   });
 
