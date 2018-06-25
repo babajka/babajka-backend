@@ -3,6 +3,7 @@ import set from 'lodash/set';
 
 import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
+import { parseVideoUrl } from 'utils/networks';
 
 import { User } from 'api/user';
 import Article, {
@@ -96,11 +97,15 @@ export const create = async ({ body, user }, res, next) => {
     const authorId = author && author._id;
 
     const article = Article({
-      ...omit(body, ['locales']),
+      ...omit(body, ['locales', 'videoUrl']),
       author: authorId,
       brand: brandId,
       collectionId,
     });
+
+    if (body.type === 'video') {
+      article.video = parseVideoUrl(body.videoUrl);
+    }
 
     if (body.locales) {
       // Proceeding with localizations (Bundled API).
@@ -149,6 +154,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
       'brandSlug',
       'collectionSlug',
       'locales',
+      'videoUrl',
     ]);
     if (newBrand) {
       updFields.brand = newBrand._id;
@@ -161,6 +167,13 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
     Object.entries(updFields).forEach(([key, value]) => {
       article[key] = value;
     });
+
+    if (article.type === 'video' && body.videoUrl) {
+      article.video = parseVideoUrl(body.videoUrl);
+    }
+    if (article.type === 'text') {
+      article.video = undefined;
+    }
 
     // Proceeding with localizations (Bundled API).
     let articleOldLocales = [];

@@ -90,13 +90,20 @@ const initArticles = (articleBrandsDict, authorsDict) =>
   Promise.all(
     articlesData.map(async rawArticleData => {
       const articleLocales = rawArticleData.locales;
-      const articleData = omit(rawArticleData, ['locales']);
+      const articleData = omit(rawArticleData, ['locales', 'videoId']);
       articleData.brand = articleBrandsDict[articleData.brand];
       if (articleData.authorEmail) {
         articleData.author = authorsDict[articleData.authorEmail];
       }
       if (articleData.publishAt) {
         articleData.publishAt = new Date(articleData.publishAt);
+      }
+      if (articleData.type === 'video') {
+        articleData.video = {
+          platform: 'youtube',
+          videoId: rawArticleData.videoId,
+          videoUrl: `https://www.youtube.com/watch?v=${rawArticleData.videoId}`,
+        };
       }
       const article = new Article(articleData);
       Promise.all(

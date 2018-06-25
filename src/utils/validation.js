@@ -33,6 +33,10 @@ const createArticleValidator = ({ body }, res, next) => {
     });
   }
 
+  if (body.type === 'text' && body.videoUrl) {
+    errors.video = 'errors.forbiddenForTypeText';
+  }
+
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
 

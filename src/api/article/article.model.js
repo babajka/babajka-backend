@@ -1,9 +1,25 @@
 import HttpError from 'node-http-error';
 import mongoose, { Schema } from 'mongoose';
+import get from 'lodash/get';
 import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
+import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
+import { ValidationError } from 'utils/validation';
+
+const VideoReferenceSchema = new Schema({
+  platform: {
+    type: String,
+  },
+  videoId: {
+    type: String,
+  },
+  videoUrl: {
+    // Url of the video as it was put by the author/admin.
+    type: String,
+  },
+});
 
 const ArticleSchema = new Schema(
   {
@@ -64,15 +80,35 @@ const ArticleSchema = new Schema(
       // Optional: article may be rendered without it.
       type: String,
     },
-    videoId: {
-      // This is a YouTube video ID. Ignored unless Article type is video.
-      type: String,
+    video: {
+      // Can only be present when Article type is video.
+      type: VideoReferenceSchema,
     },
   },
   {
     usePushEach: true,
   }
 );
+
+ArticleSchema.pre('validate', function validateArticleType(next) {
+  if (this.type === 'video') {
+    ['video.platform', 'video.videoId'].forEach(path => {
+      if (!get(this, path)) {
+        next(new ValidationError(`Missing ${path} field for Video Article type`));
+      }
+    });
+    if (!VIDEO_PLATFORMS_LIST.includes(this.video.platform)) {
+      next(new ValidationError('video platform is not supported'));
+    }
+    if (!VIDEO_PLATFORMS[this.video.platform](this.video.videoId)) {
+      next(new ValidationError('bad videoId for selected platform'));
+    }
+  }
+  if (this.type === 'text' && this.video) {
+    next(new ValidationError('video must be absent if article type is text'));
+  }
+  next();
+});
 
 const Article = mongoose.model('Article', ArticleSchema);
 
@@ -106,7 +142,7 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
   }
 
   const result = {
-    ...omit(article.toObject(), ['__v', 'collectionId']),
+    ...omit(article.toObject(), ['__v', 'collectionId', 'video._id']),
     locales: keyBy(article.locales, 'locale'),
   };
 
