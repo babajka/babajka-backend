@@ -41,6 +41,7 @@ const LocalizedArticleSchema = new Schema(
   },
   {
     usePushEach: true,
+    minimize: false,
   }
 );
 
