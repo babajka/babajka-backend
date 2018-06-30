@@ -291,6 +291,11 @@ describe('Articles Bundled API', () => {
   const brandSlug = 'wir';
   const authorEmail = 'the-best-author-ever@wir.by';
 
+  const validYoutubeID = 'ABCABCABCAB';
+  const validYoutubeLink = `https://www.youtube.com/watch?v=${validYoutubeID}`;
+  const badYoutubeLink = 'https://www.youtube.com/watch?v=BAD-ID';
+  const validVimeoLink = 'https://vimeo.com/197700533';
+
   before(async () => {
     await new ArticleBrand({ slug: brandSlug }).save();
 
@@ -412,7 +417,7 @@ describe('Articles Bundled API', () => {
         brandSlug,
         type: 'text',
         imagePreviewUrl: 'abc',
-        videoUrl: 'https://www.youtube.com/watch?v=1234567890x',
+        videoUrl: validYoutubeLink,
       })
       .expect(400)
       .expect(res => {
@@ -429,7 +434,7 @@ describe('Articles Bundled API', () => {
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
-      .send({ ...articleBase, videoUrl: 'https://vimeo.com/197700533' })
+      .send({ ...articleBase, videoUrl: validVimeoLink })
       .expect(400)
       .expect(res => {
         expect(res.body.error).to.contain('badVideoUrl');
@@ -439,7 +444,7 @@ describe('Articles Bundled API', () => {
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
-      .send({ ...articleBase, videoUrl: 'https://www.youtube.com/watch?v=BAD-ID' })
+      .send({ ...articleBase, videoUrl: badYoutubeLink })
       .expect(400)
       .expect(res => {
         expect(res.body.error).to.contain('badVideoUrl');
@@ -456,7 +461,7 @@ describe('Articles Bundled API', () => {
         imagePreviewUrl: 'some-image-url',
         authorEmail,
         publishAt: Date.now(),
-        videoUrl: 'https://www.youtube.com/watch?v=1234567890x',
+        videoUrl: validYoutubeLink,
         locales: {
           be: {
             title: 'be-title',
@@ -473,8 +478,8 @@ describe('Articles Bundled API', () => {
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.slug).to.equal('be-slug');
         expect(res.body.video.platform).to.equal('youtube');
-        expect(res.body.video.videoId).to.equal('1234567890x');
-        expect(res.body.video.videoUrl).to.equal('https://www.youtube.com/watch?v=1234567890x');
+        expect(res.body.video.videoId).to.equal(validYoutubeID);
+        expect(res.body.video.videoUrl).to.equal(validYoutubeLink);
       }));
 
   it('should return an article again by ID', () =>
@@ -493,13 +498,13 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/be-slug')
       .set('Cookie', sessionCookie)
       .send({
-        videoUrl: 'https://www.youtube.com/watch?v=ABCABCABCAB',
+        videoUrl: validYoutubeLink,
       })
       .expect(200)
       .expect(res => {
         expect(res.body.video.platform).to.equal('youtube');
-        expect(res.body.video.videoId).to.equal('ABCABCABCAB');
-        expect(res.body.video.videoUrl).to.equal('https://www.youtube.com/watch?v=ABCABCABCAB');
+        expect(res.body.video.videoId).to.equal(validYoutubeID);
+        expect(res.body.video.videoUrl).to.equal(validYoutubeLink);
       }));
 
   it('should change article type to text', () =>

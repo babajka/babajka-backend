@@ -11,7 +11,7 @@ export const validatePassword = password => {
   }
 };
 
-const createArticleValidator = ({ body }, res, next) => {
+const checkForbiddenFields = body => {
   const errors = {};
 
   ['brand', 'collection'].forEach(field => {
@@ -19,6 +19,12 @@ const createArticleValidator = ({ body }, res, next) => {
       errors[field] = 'frontend is forbidden to send this field to backend';
     }
   });
+
+  return errors;
+};
+
+const createArticleValidator = ({ body }, res, next) => {
+  const errors = checkForbiddenFields(body);
 
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
@@ -41,13 +47,7 @@ const createArticleValidator = ({ body }, res, next) => {
 };
 
 const updateArticleValidator = ({ body }, res, next) => {
-  const errors = {};
-
-  ['brand', 'collection'].forEach(field => {
-    if (Object.prototype.hasOwnProperty.call(body, field)) {
-      errors[field] = 'frontend is forbidden to send this field to backend';
-    }
-  });
+  const errors = checkForbiddenFields(body);
 
   ['brandSlug', 'type', 'imagePreviewUrl'].forEach(field => {
     if (body[field] === '') {
