@@ -77,6 +77,7 @@ describe('Authors API', () => {
             imagePreviewUrl: 'image-url',
             type: 'video',
             authorEmail: 'generated-author-11@wir.by',
+            videoUrl: 'https://www.youtube.com/watch?v=1234567890x',
           })
           .set('Cookie', sessionCookie)
           .expect(200)
@@ -85,6 +86,8 @@ describe('Authors API', () => {
             expect(res.body.brand.slug).equal('wir');
             expect(res.body.author.email).equal('generated-author-11@wir.by');
             expect(res.body.author.firstName).equal('Name 11');
+            expect(res.body.video.platform).equal('youtube');
+            expect(res.body.video.videoId).equal('1234567890x');
           }));
     });
   });

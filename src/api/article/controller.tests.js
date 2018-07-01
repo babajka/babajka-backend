@@ -291,6 +291,11 @@ describe('Articles Bundled API', () => {
   const brandSlug = 'wir';
   const authorEmail = 'the-best-author-ever@wir.by';
 
+  const validYoutubeID = 'ABCABCABCAB';
+  const validYoutubeLink = `https://www.youtube.com/watch?v=${validYoutubeID}`;
+  const badYoutubeLink = 'https://www.youtube.com/watch?v=BAD-ID';
+  const validVimeoLink = 'https://vimeo.com/197700533';
+
   before(async () => {
     await new ArticleBrand({ slug: brandSlug }).save();
 
@@ -381,17 +386,82 @@ describe('Articles Bundled API', () => {
       })
       .expect(400));
 
-  it('should create an article with localizations with one API call', () =>
+  it('should fail to create an article due to forbidden field', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brandSlug,
+        brand: 'xxx',
+        type: 'text',
+        imagePreviewUrl: 'some-image-url',
+        locales: {
+          be: {
+            title: 'be-title',
+            subtitle: 'be-subtitle',
+            content: 'some-be-text',
+            slug: 'be-slug',
+          },
+        },
+      })
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error.brand).to.contain('forbidden');
+      }));
+
+  it('should fail to create a text article with video reference', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({
+        brandSlug,
+        type: 'text',
+        imagePreviewUrl: 'abc',
+        videoUrl: validYoutubeLink,
+      })
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error.video).to.contain('forbiddenForTypeText');
+      }));
+
+  const articleBase = {
+    brandSlug,
+    type: 'video',
+    imagePreviewUrl: 'abc',
+  };
+
+  it('should fail to create an article with unsupported video platform', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({ ...articleBase, videoUrl: validVimeoLink })
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error).to.contain('badVideoUrl');
+      }));
+
+  it('should fail to create an article with bad video ID', () =>
+    request
+      .post('/api/articles')
+      .set('Cookie', sessionCookie)
+      .send({ ...articleBase, videoUrl: badYoutubeLink })
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error).to.contain('badVideoUrl');
+      }));
+
+  it('should create a video article with localizations with one API call', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
         brandSlug,
         collectionSlug: 'precreated-collection',
-        type: 'text',
+        type: 'video',
         imagePreviewUrl: 'some-image-url',
         authorEmail,
         publishAt: Date.now(),
+        videoUrl: validYoutubeLink,
         locales: {
           be: {
             title: 'be-title',
@@ -407,6 +477,9 @@ describe('Articles Bundled API', () => {
         expect(res.body.imagePreviewUrl).to.equal('some-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.slug).to.equal('be-slug');
+        expect(res.body.video.platform).to.equal('youtube');
+        expect(res.body.video.videoId).to.equal(validYoutubeID);
+        expect(res.body.video.videoUrl).to.equal(validYoutubeLink);
       }));
 
   it('should return an article again by ID', () =>
@@ -418,6 +491,34 @@ describe('Articles Bundled API', () => {
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.be.title).to.equal('be-title');
         expect(res.body.locales.be.slug).to.equal('be-slug');
+      }));
+
+  it('should update article video reference', () =>
+    request
+      .put('/api/articles/be-slug')
+      .set('Cookie', sessionCookie)
+      .send({
+        videoUrl: validYoutubeLink,
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.video.platform).to.equal('youtube');
+        expect(res.body.video.videoId).to.equal(validYoutubeID);
+        expect(res.body.video.videoUrl).to.equal(validYoutubeLink);
+      }));
+
+  it('should change article type to text', () =>
+    request
+      .put('/api/articles/be-slug')
+      .set('Cookie', sessionCookie)
+      .send({
+        type: 'text',
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.type).to.equal('text');
+        // eslint-disable-next-line no-unused-expressions
+        expect(res.body.video).to.be.undefined;
       }));
 
   // TODO(uladbohdan): to find a way to test duplication of slugs. The problem
@@ -550,6 +651,16 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({ brandSlug: '' })
       .expect(400));
+
+  it('should fail to remove article collection due to forbidden collection field', () =>
+    request
+      .put('/api/articles/new-en-slug')
+      .set('Cookie', sessionCookie)
+      .send({ collection: 'ololo', collectionSlug: '' })
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error.collection).to.include('forbidden');
+      }));
 
   it('should fail to remove article imagePreviewUrl', () =>
     request
