@@ -120,7 +120,7 @@ export const create = async ({ body, user }, res, next) => {
             .then(({ _id }) => _id)
             .catch(handleArticleLocalizationError(locale))
         )
-      ).catch(next);
+      );
     }
 
     await article.save();
@@ -196,7 +196,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
             .then(({ _id }) => _id)
             .catch(handleArticleLocalizationError(locale))
         )
-      ).catch(next);
+      );
     }
     const newLocales = article.locales.map(l => l.toString());
     const localesToUpdate = articleOldLocales.filter(l => !newLocales.includes(l.toString()));
