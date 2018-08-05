@@ -1,6 +1,8 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 
 import { slugValidator } from 'utils/validation';
+
+const { Schema } = mongoose;
 
 const ArticleBrandSchema = new Schema({
   slug: {

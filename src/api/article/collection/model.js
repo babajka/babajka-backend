@@ -1,9 +1,11 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 
 import { slugValidator } from 'utils/validation';
 
 import { serializeArticle, queryUnpublished } from 'api/article/article.model';
+
+const { Schema } = mongoose;
 
 const ArticleCollectionSchema = new Schema(
   {

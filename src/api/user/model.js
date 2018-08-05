@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
 import fromPairs from 'lodash/fromPairs';
 import pick from 'lodash/pick';
@@ -6,6 +6,8 @@ import pick from 'lodash/pick';
 import config from 'config';
 import { joinNames } from 'utils/formatting';
 import { permissionsObjectValidator, validatePassword } from 'utils/validation';
+
+const { Schema } = mongoose;
 
 const UserSchema = new Schema({
   // For a User with a role 'author' firstName, lastName and bio map locales

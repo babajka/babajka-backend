@@ -1,7 +1,9 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import pick from 'lodash/pick';
 
 import { colloquialDateHashValidator } from 'utils/validation';
+
+const { Schema } = mongoose;
 
 const DiarySchema = new Schema({
   locale: {

@@ -1,9 +1,11 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import { expect } from 'chai';
 
 import { dropData } from 'utils/testing';
 
 import 'db/connect';
+
+const { Schema } = mongoose;
 
 describe('Mongoose', () => {
   const catSchema = new Schema({ name: String });
