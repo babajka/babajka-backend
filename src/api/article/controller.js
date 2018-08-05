@@ -22,7 +22,17 @@ export const getAll = ({ query, user }, res, next) => {
   const pageSize = parseInt(query.pageSize) || 10; // eslint-disable-line radix
   const skip = page * pageSize;
   let data;
-  const articlesQuery = { $and: [{ active: true }, queryUnpublished(user)] };
+  const articlesQuery = {
+    $and: [
+      {
+        active: true,
+        // TODO(uladbohdan): investigate how it was saved to db
+        // https://trello.com/c/uLai119m/265-empty-locales-slug-duplication-bug
+        locales: { $exists: true },
+      },
+      queryUnpublished(user),
+    ],
+  };
 
   return Article.find(articlesQuery)
     .populate('author', POPULATE_OPTIONS.author)
