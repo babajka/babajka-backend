@@ -1,6 +1,5 @@
-import { checkIsFound } from 'utils/validation';
+import { checkIsFound, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
-import HttpError from 'node-http-error';
 
 import Article from 'api/article/article.model';
 
@@ -12,12 +11,12 @@ export const create = async ({ params: { articleId }, body }, res, next) => {
 
     checkIsFound(article);
     if (article.locales.map(({ locale }) => locale).includes(body.locale)) {
-      throw new HttpError(400, 'errors.localeExists');
+      throw new ValidationError('errors.localeExists');
     }
 
     const localeWithProvidedSlug = await LocalizedArticle.findOne({ slug: body.slug });
     if (localeWithProvidedSlug) {
-      throw new HttpError(400, 'errors.slugExists');
+      throw new ValidationError('errors.slugExists');
     }
 
     const localized = await LocalizedArticle({ ...body, articleId: article._id }).save();

@@ -3,7 +3,9 @@ import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 import mongoose from 'mongoose';
 
-export const ValidationError = message => HttpError(400, message);
+export function ValidationError(message) {
+  return HttpError(400, message);
+}
 
 export const validatePassword = password => {
   if (password.length < 7) {
