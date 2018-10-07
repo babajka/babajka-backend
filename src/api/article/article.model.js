@@ -1,5 +1,5 @@
 import HttpError from 'node-http-error';
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import get from 'lodash/get';
 import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
@@ -7,6 +7,8 @@ import omit from 'lodash/omit';
 import { checkPermissions } from 'api/user';
 import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
 import { ValidationError } from 'utils/validation';
+
+const { Schema } = mongoose;
 
 const VideoReferenceSchema = new Schema({
   platform: {
