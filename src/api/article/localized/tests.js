@@ -1,10 +1,7 @@
-import supertest from 'supertest';
-import { expect } from 'chai';
+import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
-
-import { dropData, loginTestAdmin } from 'utils/testing';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';

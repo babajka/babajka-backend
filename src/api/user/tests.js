@@ -1,6 +1,4 @@
-import { expect } from 'chai';
-
-import { dropData } from 'utils/testing';
+import { expect, dropData } from 'utils/testing';
 
 import 'db/connect';
 import User from './model';
@@ -47,7 +45,7 @@ describe('User model', () => {
   it('should remove user', async () => {
     await User.remove({ email });
     const result = await User.findOne({ email });
-    expect(result).to.be.null; // eslint-disable-line no-unused-expressions
+    expect(result).to.be.null();
   });
 });
 

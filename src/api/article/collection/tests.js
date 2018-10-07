@@ -1,10 +1,7 @@
-import supertest from 'supertest';
-import { expect } from 'chai';
+import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
-
-import { dropData, loginTestAdmin } from 'utils/testing';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
@@ -18,7 +15,7 @@ describe('Collections API', () => {
     const brand = await new ArticleBrand({ slug: 'wir' }).save();
     // Populating DB with Collections.
     const articlePromises = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 5; i += 1) {
       articlePromises.push(
         new Article({
           type: 'text',
@@ -33,7 +30,7 @@ describe('Collections API', () => {
     const articlesList = articles.map(({ _id }) => _id);
 
     const promises = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 5; i += 1) {
       promises.push(
         new ArticleCollection({
           name: { en: `Collection ${i}` },
@@ -202,8 +199,7 @@ describe('Collections API', () => {
         .get('/api/articles/slug-new1-be')
         .expect(200)
         .expect(res => {
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.body.collection.next).to.be.null;
+          expect(res.body.collection.next).to.be.null();
         }));
 
     it('should return collection.prev when querying with permissions', () =>

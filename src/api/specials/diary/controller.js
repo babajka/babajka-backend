@@ -2,7 +2,7 @@ import HttpError from 'node-http-error';
 
 import { sendJson } from 'utils/api';
 
-import { Diary, buildColloquialDateHash, serializeDiary } from './model';
+import Diary, { buildColloquialDateHash, serializeDiary } from './model';
 
 export const getDay = async ({ params: { locale, month, day } }, res, next) => {
   try {

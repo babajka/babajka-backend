@@ -1,7 +1,4 @@
-import supertest from 'supertest';
-import { expect } from 'chai';
-
-import { dropData, loginTestAdmin } from 'utils/testing';
+import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -21,7 +18,7 @@ describe('Articles API', () => {
     const { _id: articleBrandId } = await new ArticleBrand({ slug: brandSlug }).save();
 
     let promises = [];
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 8; i += 1) {
       const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
       promises.push(
         new Article({
@@ -54,7 +51,7 @@ describe('Articles API', () => {
 
     promises = [];
     ['en', 'be'].forEach(loc => {
-      for (let i = 1; i <= 9; i++) {
+      for (let i = 1; i <= 9; i += 1) {
         promises.push(
           new LocalizedArticle({
             locale: `${loc}`,
@@ -106,8 +103,7 @@ describe('Articles API', () => {
           expect(data.map(({ locales }) => locales.en.slug)).not.includes(
             'postpublished-article-en'
           );
-          // eslint-disable-next-line no-unused-expressions
-          expect(next).to.be.false;
+          expect(next).to.be.false();
         }));
 
     it('should return an article by slug', () =>
@@ -168,10 +164,8 @@ describe('Articles API', () => {
         })
         .expect(200)
         .expect(res => {
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.body.publishAt).to.be.null;
-          // eslint-disable-next-line no-unused-expressions
-          expect(res.body.createdAt).to.be.not.null;
+          expect(res.body.publishAt).to.be.null();
+          expect(res.body.createdAt).to.be.not.null();
           newArticleId = res.body._id;
         }));
 
@@ -181,7 +175,6 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          // console.log('WITH:', res.body);
           expect(res.body.data).has.length(10);
           expect(res.body.data.map(({ _id }) => _id)).includes(newArticleId);
         }));
@@ -191,7 +184,6 @@ describe('Articles API', () => {
         .get('/api/articles')
         .expect(200)
         .expect(res => {
-          // console.log('WITHOUT:', res.body);
           expect(res.body.data).has.length(8);
           expect(res.body.data.map(({ _id }) => _id)).not.includes(newArticleId);
           expect(res.body.data.map(({ _id }) => _id)).not.includes(articleIDs[8]);
@@ -361,8 +353,7 @@ describe('Articles Bundled API', () => {
       })
       .expect(400)
       .expect(res => {
-        // eslint-disable-next-line no-unused-expressions
-        expect(res.body.error).not.empty;
+        expect(res.body.error).not.empty();
         expect(res.body.error.locales.be.slug).to.include('failedMatchRegex');
       }));
 
@@ -517,8 +508,7 @@ describe('Articles Bundled API', () => {
       .expect(200)
       .expect(res => {
         expect(res.body.type).to.equal('text');
-        // eslint-disable-next-line no-unused-expressions
-        expect(res.body.video).to.be.undefined;
+        expect(res.body.video).to.be.undefined();
       }));
 
   // TODO(uladbohdan): to find a way to test duplication of slugs. The problem

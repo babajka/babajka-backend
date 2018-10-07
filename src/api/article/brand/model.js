@@ -25,6 +25,6 @@ const ArticleBrandSchema = new Schema({
   },
 });
 
-export const ArticleBrand = mongoose.model('ArticleBrand', ArticleBrandSchema);
+const ArticleBrand = mongoose.model('ArticleBrand', ArticleBrandSchema);
 
 export default ArticleBrand;

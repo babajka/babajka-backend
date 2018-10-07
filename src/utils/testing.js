@@ -1,14 +1,19 @@
+/*
+    The file is excluded from the build and must only contain utils used by testing.
+ */
+/* eslint-disable import/no-extraneous-dependencies */
+
 import mongoose from 'mongoose';
 import supertest from 'supertest';
-import { expect } from 'chai';
+import chai from 'chai';
+import dirtyChai from 'dirty-chai';
 
 import app from 'server';
-
 import User from 'api/user/model';
-
 import * as permissions from 'constants/permissions';
 
-// The file is excluded from the build and must only contain utils used by testing.
+const { expect } = chai;
+chai.use(dirtyChai);
 
 export const dropData = () => mongoose.connection.db.dropDatabase();
 
@@ -42,8 +47,7 @@ export const testLogin = ({ email, password }) =>
     .send({ email, password })
     .expect(200)
     .then(res => {
-      // eslint-disable-next-line no-unused-expressions
-      expect(res.headers['set-cookie']).not.empty;
+      expect(res.headers['set-cookie']).not.empty();
       return res.headers['set-cookie'];
     });
 
@@ -51,3 +55,5 @@ export const loginTestAdmin = async () => {
   await addUser(testData.admin);
   return testLogin(testData.admin);
 };
+
+export { expect, supertest };

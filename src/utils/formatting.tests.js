@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'utils/testing';
 
 import { cutUrlParams } from './formatting';
 

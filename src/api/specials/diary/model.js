@@ -58,6 +58,6 @@ export const buildColloquialDateHash = (month, day) =>
 export const serializeDiary = object =>
   pick(object, ['locale', 'text', 'author', 'year', 'month', 'day']);
 
-export const Diary = mongoose.model('Diary', DiarySchema);
+const Diary = mongoose.model('Diary', DiarySchema);
 
 export default Diary;

@@ -36,7 +36,10 @@ app.use('/api', api);
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  console.error(err.message);
+  if (!err.status) {
+    // log only 500 errors
+    console.error(err.message);
+  }
   sendJson(res, err.status || 500)({ error: err.message });
 });
 

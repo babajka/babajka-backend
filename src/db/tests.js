@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
-import { expect } from 'chai';
 
-import { dropData } from 'utils/testing';
-
+import { expect, dropData } from 'utils/testing';
 import 'db/connect';
 
 const { Schema } = mongoose;

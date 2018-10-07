@@ -1,10 +1,7 @@
-import supertest from 'supertest';
-import { expect } from 'chai';
+import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
-
-import { dropData, loginTestAdmin } from 'utils/testing';
 
 import ArticleBrand from 'api/article/brand/model';
 import User from 'api/user/model';
@@ -64,7 +61,7 @@ describe('Authors API', () => {
     };
 
     // This is mostly to test if creating is fine with 2-digit numbers.
-    for (let i = 0; i <= 11; i++) {
+    for (let i = 0; i <= 11; i += 1) {
       generateAuthor(i);
     }
 

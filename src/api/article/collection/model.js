@@ -46,7 +46,7 @@ const ArticleCollectionSchema = new Schema(
   }
 );
 
-export const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionSchema);
+const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionSchema);
 
 export const serializeCollection = collection => ({
   ...omit(collection.toObject(), ['__v']),

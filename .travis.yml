@@ -1,15 +1,15 @@
 language: node_js
 node_js:
-- '10'
+  - '10'
 services:
-- mongodb
+  - mongodb
 script:
-- npm run lint
-- npm run build
-- npm test
+  - npm run lint
+  - npm run build
+  - npm test
 cache:
   directories:
-  - node_modules
+    - node_modules
 notifications:
   slack:
     rooms:

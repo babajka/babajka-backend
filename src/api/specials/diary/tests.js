@@ -1,10 +1,7 @@
-import supertest from 'supertest';
-import { expect } from 'chai';
+import { supertest, expect, dropData } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
-
-import { dropData } from 'utils/testing';
 
 import Diary from './model';
 
@@ -82,8 +79,7 @@ describe('Diary API', () => {
         .get('/api/specials/diary/be/01/15')
         .expect(200)
         .expect(({ body: { data, prev, next } }) => {
-          // eslint-disable-next-line no-unused-expressions
-          expect(data).to.be.empty;
+          expect(data).to.be.empty();
           expect(prev.month).to.equal('03');
           expect(next.month).to.equal('02');
         }));

@@ -14,7 +14,7 @@ let secret = null;
 try {
   secret = JSON.parse(fs.readFileSync(secretPath, 'utf8'));
 } catch (err) {
-  console.error(`Error: ${err.message}. Used default configs as secret`); // eslint-disable-line no-console
+  console.error(`Error: ${err.message}. Used default configs as secret`);
 }
 
 const config = secret ? merge(defaultConfig, secret) : defaultConfig;

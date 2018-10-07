@@ -10,7 +10,6 @@ import Article, {
   serializeArticle,
   checkIsPublished,
   queryUnpublished,
-  // eslint-disable-next-line comma-dangle
   POPULATE_OPTIONS,
 } from './article.model';
 import ArticleBrand from './brand/model';

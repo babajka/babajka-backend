@@ -4,7 +4,9 @@ import mongoose from 'mongoose';
 import config from 'config';
 
 export default (silent = false) => {
-  const { mongodb: { url, options } } = config;
+  const {
+    mongodb: { url, options },
+  } = config;
   mongoose.Promise = global.Promise;
   mongoose.connection.on(
     'connected',
@@ -15,10 +17,14 @@ export default (silent = false) => {
     'disconnected',
     () => (silent ? null : console.log('Mongoose: disconnected'))
   );
-  return mongoose.connect(url, options, () => {
-    if (process.env.NODE_ENV === 'testing') {
-      mongoose.connection.db.dropDatabase();
-      console.log('mongoose: database was dropped (testing mode is set)');
+  return mongoose.connect(
+    url,
+    options,
+    () => {
+      if (process.env.NODE_ENV === 'testing') {
+        mongoose.connection.db.dropDatabase();
+        console.log('mongoose: database was dropped (testing mode is set)');
+      }
     }
-  });
+  );
 };

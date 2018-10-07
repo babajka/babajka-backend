@@ -41,7 +41,7 @@ import * as permissions from 'constants/permissions';
       })
     )
     .catch(err => {
-      console.log(`failed to execute: ${err}`);
+      console.error(`Failed to execute: ${err}`);
     });
   process.exit();
 })();

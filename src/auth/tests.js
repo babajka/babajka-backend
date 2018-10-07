@@ -1,11 +1,8 @@
-import supertest from 'supertest';
-import { expect } from 'chai';
+import { supertest, expect, dropData, addUser, testData } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
 import { requireAuth } from 'auth';
-
-import { dropData, addUser, testData } from 'utils/testing';
 
 const request = supertest.agent(app.listen());
 
@@ -41,8 +38,7 @@ describe('Auth API', () => {
       .expect(200)
       .then(res => {
         expect(res.body.email).to.equal('admin@babajka.io');
-        // eslint-disable-next-line no-unused-expressions
-        expect(res.headers['set-cookie']).not.empty;
+        expect(res.headers['set-cookie']).not.empty();
         sessionCookie = res.headers['set-cookie'];
         expect(Object.keys(res.body.permissions)).to.have.length(3);
       }));
@@ -74,9 +70,7 @@ describe('Auth API', () => {
       .expect(({ body }) => {
         expect(body.displayName).to.equal('Name Last');
         expect(body.email).to.equal('test2@babajka.io');
-        // eslint-disable-next-line no-unused-expressions
-        expect(body.permissions).to.be.not.undefined;
-        // eslint-disable-next-line no-unused-expressions
-        expect(body.permissions).to.be.empty;
+        expect(body.permissions).to.be.not.undefined();
+        expect(body.permissions).to.be.empty();
       }));
 });
