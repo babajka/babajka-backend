@@ -9,10 +9,17 @@ import LocalizedArticle from './model';
 export const create = async ({ params: { articleId }, body }, res, next) => {
   try {
     const article = await Article.findOne({ _id: articleId }).populate('locales', 'locale');
+
     checkIsFound(article);
     if (article.locales.map(({ locale }) => locale).includes(body.locale)) {
       throw new HttpError(400, 'errors.localeExists');
     }
+
+    const localeWithProvidedSlug = await LocalizedArticle.findOne({ slug: body.slug });
+    if (localeWithProvidedSlug) {
+      throw new HttpError(400, 'errors.slugExists');
+    }
+
     const localized = await LocalizedArticle({ ...body, articleId: article._id }).save();
     article.locales.push(localized._id);
     await article.save();
