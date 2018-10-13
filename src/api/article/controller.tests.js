@@ -12,6 +12,7 @@ const request = supertest.agent(app.listen());
 describe('Articles API', () => {
   const articleIDs = [];
   const brandSlug = 'wir';
+  let sessionCookie;
 
   before(async () => {
     // Populating DB with articles.
@@ -70,10 +71,7 @@ describe('Articles API', () => {
       }
     });
     await Promise.all(promises);
-  });
 
-  let sessionCookie;
-  before(async () => {
     sessionCookie = await loginTestAdmin();
   });
 
@@ -280,6 +278,7 @@ describe('Articles API', () => {
 });
 
 describe('Articles Bundled API', () => {
+  let sessionCookie;
   const brandSlug = 'wir';
   const authorEmail = 'the-best-author-ever@wir.by';
 
@@ -297,14 +296,11 @@ describe('Articles Bundled API', () => {
       email: authorEmail,
       role: 'author',
     }).save();
+
+    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);
-
-  let sessionCookie;
-  before(async () => {
-    sessionCookie = await loginTestAdmin();
-  });
 
   let articleId;
 
@@ -473,7 +469,7 @@ describe('Articles Bundled API', () => {
         expect(res.body.video.videoUrl).to.equal(validYoutubeLink);
       }));
 
-  it('should return an article again by ID', () =>
+  it('should return an article by ID', () =>
     request
       .get(`/api/articles/${articleId}`)
       .expect(200)
@@ -535,7 +531,7 @@ describe('Articles Bundled API', () => {
         expect(res.body.locales.be.subtitle).to.equal('new-be-subtitle');
       }));
 
-  it('should return an article again by ID', () =>
+  it('should return an article with new image & title', () =>
     request
       .get(`/api/articles/${articleId}`)
       .expect(200)

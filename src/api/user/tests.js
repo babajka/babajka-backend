@@ -73,7 +73,7 @@ describe('User model as Author', () => {
     expect(result.displayName.en).to.equal(firstName.en);
   });
 
-  it('displayName should join with lastName', async () => {
+  it('should join displayName with lastName', async () => {
     const lastName = { be: 'LastName-be', en: 'LastName-en' };
     const result = await User.findOneAndUpdate({ email }, { lastName }, { new: true }).exec();
     expect(Object.keys(result.displayName)).has.length(Object.keys(firstName).length);

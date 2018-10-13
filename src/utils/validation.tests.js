@@ -1,3 +1,5 @@
+/* eslint-disable mocha/no-synchronous-tests */
+
 import { expect } from 'utils/testing';
 
 import { slugValidator, permissionsObjectValidator } from './validation';

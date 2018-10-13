@@ -9,6 +9,7 @@ import ArticleBrand from 'api/article/brand/model';
 const request = supertest.agent(app.listen());
 
 describe('Locales API', () => {
+  let sessionCookie;
   let articleId;
 
   before(async () => {
@@ -22,10 +23,6 @@ describe('Locales API', () => {
     }).save();
 
     articleId = article._id;
-  });
-
-  let sessionCookie;
-  before(async () => {
     sessionCookie = await loginTestAdmin();
   });
 

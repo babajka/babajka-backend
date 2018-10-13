@@ -35,7 +35,7 @@ describe('Diary API', () => {
   after(dropData);
 
   describe('# Diary CRUD', () => {
-    it('get an existing diary with prev and next', () =>
+    it('should return an existing diary with prev and next', () =>
       request
         .get('/api/specials/diary/be/02/28/')
         .expect(200)
@@ -50,7 +50,7 @@ describe('Diary API', () => {
           expect(next.day).to.equal('01');
         }));
 
-    it('get the first diary of the year', () =>
+    it('should return the first diary of the year', () =>
       request
         .get('/api/specials/diary/be/02/27')
         .expect(200)
@@ -62,7 +62,7 @@ describe('Diary API', () => {
           expect(next.day).to.equal('28');
         }));
 
-    it('get the last diary of the year', () =>
+    it('should return the last diary of the year', () =>
       request
         .get('/api/specials/diary/be/03/01')
         .expect(200)
@@ -74,7 +74,7 @@ describe('Diary API', () => {
           expect(next.day).to.equal('27');
         }));
 
-    it('request unexisting diary', () =>
+    it('should return noting when request unexisting diary', () =>
       request
         .get('/api/specials/diary/be/01/15')
         .expect(200)
@@ -102,7 +102,7 @@ describe('Diary API with lack of data', () => {
 
   after(dropData);
 
-  it('all three diaries should be the same', () =>
+  it('should return one diary three times', () =>
     request
       .get('/api/specials/diary/be/10/27')
       .expect(200)

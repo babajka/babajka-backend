@@ -11,6 +11,8 @@ import ArticleCollection from './model';
 const request = supertest.agent(app.listen());
 
 describe('Collections API', () => {
+  let sessionCookie;
+
   before(async () => {
     const brand = await new ArticleBrand({ slug: 'wir' }).save();
     // Populating DB with Collections.
@@ -41,10 +43,7 @@ describe('Collections API', () => {
       );
     }
     await Promise.all(promises);
-  });
 
-  let sessionCookie;
-  before(async () => {
     sessionCookie = await loginTestAdmin();
   });
 
@@ -67,16 +66,8 @@ describe('Collections API', () => {
           expect(res.body.slug).equals('collection-2');
         }));
 
-    it('collection not found', () =>
+    it('should not found a collection', () =>
       request.get('/api/articles/collections/collection-12').expect(404));
-
-    it('should return a collection', () =>
-      request
-        .get('/api/articles/collections/collection-2')
-        .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-2');
-        }));
 
     it('should fail to create a collection due to lack of permissions', () =>
       request.post('/api/articles/collections').expect(403));

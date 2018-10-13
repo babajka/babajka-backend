@@ -9,9 +9,10 @@ import User from 'api/user/model';
 const request = supertest.agent(app.listen());
 
 describe('Authors API', () => {
+  let sessionCookie;
+
   before(async () => {
     await new ArticleBrand({ slug: 'wir' }).save();
-
     await Promise.all([
       User({ firstName: 'Name', email: 'author1@wir.by', role: 'author' }).save(),
       User({ firstName: 'Name', email: 'author2@wir.by', role: 'author' }).save(),
@@ -23,10 +24,6 @@ describe('Authors API', () => {
       }).save(),
       User({ firstName: 'Name', email: 'regular-user@wir.by' }).save(),
     ]);
-  });
-
-  let sessionCookie;
-  before(async () => {
     sessionCookie = await loginTestAdmin();
   });
 
