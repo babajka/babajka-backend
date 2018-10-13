@@ -18,7 +18,9 @@
     "prettify": "npm run prettier 'src/**/*.{js,md}' '*.js' '*.md'",
     "mocha": "find ./src -name '*tests.js' | cross-env NODE_ENV=testing xargs mocha --exit --require @babel/register",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "test": "cross-env NODE_ENV=testing nyc npm run mocha && npm run coverage"
+    "test": "cross-env NODE_ENV=testing nyc npm run mocha && npm run coverage",
+    "semantic-release": "semantic-release",
+    "travis-deploy-once": "travis-deploy-once"
   },
   "dependencies": {
     "bcrypt": "^3.0.0",
@@ -51,13 +53,15 @@
     "./src"
   ],
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.56",
-    "@babel/core": "^7.0.0-beta.56",
-    "@babel/node": "^7.0.0-beta.56",
-    "@babel/preset-env": "^7.0.0-beta.56",
-    "@babel/register": "^7.0.0-beta.56",
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/register": "^7.0.0",
     "@commitlint/cli": "^7.2.1",
     "@commitlint/config-conventional": "^7.1.2",
+    "@semantic-release/changelog": "^3.0.0",
+    "@semantic-release/git": "^7.0.4",
     "babel-eslint": "^10.0.1",
     "babel-plugin-module-resolver": "^3.1.1",
     "chai": "^4.1.1",
@@ -79,6 +83,8 @@
     "nodemon": "^1.17.5",
     "nyc": "^13.0.0",
     "prettier": "^1.14.3",
-    "supertest": "^3.0.0"
+    "semantic-release": "^15.9.17",
+    "supertest": "^3.0.0",
+    "travis-deploy-once": "^5.0.9"
   }
 }
