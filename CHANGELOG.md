@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/babajka/babajka-backend/compare/v1.0.0...v1.0.1) (2018-10-14)
+
+
+### Bug Fixes
+
+* **tools:** fix semantic package.json version update ([0ce254c](https://github.com/babajka/babajka-backend/commit/0ce254c))
+
 # 1.0.0 (2018-10-13)
 
 ### Major Update
