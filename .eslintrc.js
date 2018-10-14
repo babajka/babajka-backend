@@ -43,7 +43,9 @@ module.exports = {
   },
   settings: {
     'import/resolver': {
-      'babel-module': {},
+      node: {
+        moduleDirectory: ['node_modules', './src'],
+      },
     },
   },
 };
