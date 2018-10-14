@@ -15,6 +15,10 @@ module.exports = {
   prepare: [
     '@semantic-release/changelog',
     {
+      path: '@semantic-release/exec',
+      cmd: 'npm run prettier CHANGELOG.md',
+    },
+    {
       path: '@semantic-release/npm',
       npmPublish: false,
     },
