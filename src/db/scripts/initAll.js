@@ -159,27 +159,27 @@ const initDiaries = () =>
     console.log('Mongoose: drop database');
 
     await initUsers();
-    const usersCount = await User.count();
+    const usersCount = await User.countDocuments();
     console.log(`Mongoose: insert ${usersCount} user(s)`);
 
     await initArticleBrands();
-    const articleBrandsCount = await ArticleBrand.count();
+    const articleBrandsCount = await ArticleBrand.countDocuments();
     console.log(`Mongoose: insert ${articleBrandsCount} article brand(s)`);
 
     const articleBrandsDict = await getArticleBrandsDict();
     const authorsDict = await getAuthorsDict();
 
     await initArticles(articleBrandsDict, authorsDict);
-    const articlesCount = await Article.count();
+    const articlesCount = await Article.countDocuments();
     console.log(`Mongoose: insert ${articlesCount} article(s)`);
     const articleDict = await getArticlesDict();
 
     await initArticleCollections(articleDict);
-    const articleCollectionsCount = await ArticleCollection.count();
+    const articleCollectionsCount = await ArticleCollection.countDocuments();
     console.log(`Mongoose: insert ${articleCollectionsCount} article collection(s)`);
 
     await initDiaries();
-    const diariesCount = await Diary.count();
+    const diariesCount = await Diary.countDocuments();
     console.log(`Mongoose: insert ${diariesCount} diary(es)`);
   } catch (err) {
     console.log('Mongoose: error during database init');

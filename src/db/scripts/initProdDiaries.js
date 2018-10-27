@@ -86,11 +86,11 @@ const fieldsOptional = ['active', 'year'];
             })
         )
       ).then(async () => {
-        const diariesCount = await Diary.count();
+        const diariesCount = await Diary.countDocuments();
 
         console.log(
           `====== DIARIES SUMMARY ======\nsuccessfully: ${diariesPushed}\n` +
-            `failed: ${diariesFailed}\ndb.count(): ${diariesCount}\n=============================`
+            `failed: ${diariesFailed}\ndb.countDocuments(): ${diariesCount}\n=============================`
         );
 
         process.exit();
