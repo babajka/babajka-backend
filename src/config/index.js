@@ -22,7 +22,7 @@ config.port = process.env.PORT || config.port;
 config.session.store = new MongoStore({ mongooseConnection: mongoose.connection });
 
 if (process.env.NODE_ENV === 'testing') {
-  config.mongodb.url = 'mongodb://localhost/babajka-test';
+  config.mongodb.url = 'mongodb://127.0.0.1/babajkatest';
 }
 
 export default config;

@@ -2,8 +2,10 @@
   "port": 8080,
   "publicPath": "public",
   "mongodb": {
-    "url": "mongodb://localhost/babajka",
-    "options": {}
+    "url": "mongodb://127.0.0.1/babajka",
+    "options": {
+      "useNewUrlParser": true
+    }
   },
   "auth": {
     "saltRounds": 8
