@@ -3,9 +3,7 @@
   "publicPath": "public",
   "mongodb": {
     "url": "mongodb://127.0.0.1/babajka",
-    "options": {
-      "useNewUrlParser": true
-    }
+    "options": {}
   },
   "auth": {
     "saltRounds": 8

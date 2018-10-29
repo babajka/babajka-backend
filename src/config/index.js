@@ -1,20 +1,26 @@
+/* eslint-disable no-console */
+
 import mongoose from 'mongoose';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
 import merge from 'lodash/merge';
 import fs from 'fs';
-import path from 'path';
 
 import defaultConfig from './config.json';
 
 const MongoStore = connectMongo(session);
-const secretPath = process.argv[2] || path.join(__dirname, 'secret.json');
+
+const secretPath = process.argv[2];
 let secret = null;
 
-try {
-  secret = JSON.parse(fs.readFileSync(secretPath, 'utf8'));
-} catch (err) {
-  console.error(`Error: ${err.message}. Used default configs as secret`);
+if (secretPath) {
+  try {
+    secret = JSON.parse(fs.readFileSync(secretPath, 'utf8'));
+  } catch (err) {
+    console.error(`Failed to parse provided secret: ${err.message}. Default config will be used`);
+  }
+} else {
+  console.log('No secret file provided. Default config will be used');
 }
 
 const config = secret ? merge(defaultConfig, secret) : defaultConfig;
