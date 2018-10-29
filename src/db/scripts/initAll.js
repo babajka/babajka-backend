@@ -3,6 +3,7 @@
 import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
+import isEmpty from 'lodash/isEmpty';
 
 import connectDb from 'db';
 import { User } from 'api/user';
@@ -108,11 +109,13 @@ const initArticles = (articleBrandsDict, authorsDict) =>
       const article = new Article(articleData);
       Promise.all(
         Object.keys(articleLocales).map(locale => {
+          if (isEmpty(articleLocales[locale].content)) {
+            articleLocales[locale].content = getArticleContent(locale);
+          }
           const data = new LocalizedArticle({
             ...articleLocales[locale],
             locale,
             articleId: article._id,
-            content: getArticleContent(locale),
           });
           article.locales.push(data._id);
           return data.save();
