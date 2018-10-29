@@ -18,9 +18,9 @@ import articlesData from 'db/data/articles.json';
 import diariesData from 'db/data/diary.json';
 
 const TEXT_BY_LOCALE = {
-  be: 'Здароў!',
-  ru: 'Приветик!',
-  en: 'Hello!',
+  be: 'Гэта дэфолтны загаловак',
+  ru: 'Это дефолтный заголовок',
+  en: 'This is a default header',
 };
 
 const getArticleContent = locale => ({
@@ -39,11 +39,11 @@ const getArticleContent = locale => ({
     },
     {
       key: 'cuvud',
-      text: 'link to wir by',
+      text: 'this is a sample link to wir.by',
       type: 'blockquote',
       depth: 0,
       inlineStyleRanges: [],
-      entityRanges: [{ offset: 0, length: 14, key: 0 }],
+      entityRanges: [{ offset: 0, length: 31, key: 0 }],
       data: {},
     },
   ],
