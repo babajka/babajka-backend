@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 
 import mongoose from 'mongoose';
-import merge from 'lodash/merge';
 
 import config from 'config';
 
@@ -21,14 +20,15 @@ export default (silent = false) => {
   );
   return mongoose.connect(
     url,
-    merge(options, {
+    {
+      ...options,
       // Options below are to suppress deprecation warnings as described in
       // https://mongoosejs.com/docs/deprecations.html
       // Some deprecation warnings keep showing though (for an unknown reason).
       useNewUrlParser: true,
       useFindAndModify: false,
       useCreateIndex: true,
-    }),
+    },
     () => {
       if (process.env.NODE_ENV === 'testing') {
         mongoose.connection.db.dropDatabase();

@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import mongoose from 'mongoose';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
@@ -20,6 +18,7 @@ if (secretPath) {
     console.error(`Failed to parse provided secret: ${err.message}. Default config will be used`);
   }
 } else {
+  /* eslint-disable-next-line no-console */
   console.log('No secret file provided. Default config will be used');
 }
 
