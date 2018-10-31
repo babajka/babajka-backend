@@ -3,6 +3,7 @@
 import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
+import isEmpty from 'lodash/isEmpty';
 
 import connectDb from 'db';
 import { User } from 'api/user';
@@ -17,9 +18,9 @@ import articlesData from 'db/data/articles.json';
 import diariesData from 'db/data/diary.json';
 
 const TEXT_BY_LOCALE = {
-  be: 'Здароў!',
-  ru: 'Приветик!',
-  en: 'Hello!',
+  be: 'Гэта дэфолтны загаловак',
+  ru: 'Это дефолтный заголовок',
+  en: 'This is a default header',
 };
 
 const getArticleContent = locale => ({
@@ -38,11 +39,11 @@ const getArticleContent = locale => ({
     },
     {
       key: 'cuvud',
-      text: 'link to wir by',
+      text: 'this is a sample link to wir.by',
       type: 'blockquote',
       depth: 0,
       inlineStyleRanges: [],
-      entityRanges: [{ offset: 0, length: 14, key: 0 }],
+      entityRanges: [{ offset: 0, length: 31, key: 0 }],
       data: {},
     },
   ],
@@ -108,11 +109,13 @@ const initArticles = (articleBrandsDict, authorsDict) =>
       const article = new Article(articleData);
       Promise.all(
         Object.keys(articleLocales).map(locale => {
+          if (isEmpty(articleLocales[locale].content)) {
+            articleLocales[locale].content = getArticleContent(locale);
+          }
           const data = new LocalizedArticle({
             ...articleLocales[locale],
             locale,
             articleId: article._id,
-            content: getArticleContent(locale),
           });
           article.locales.push(data._id);
           return data.save();
@@ -159,27 +162,27 @@ const initDiaries = () =>
     console.log('Mongoose: drop database');
 
     await initUsers();
-    const usersCount = await User.count();
+    const usersCount = await User.countDocuments();
     console.log(`Mongoose: insert ${usersCount} user(s)`);
 
     await initArticleBrands();
-    const articleBrandsCount = await ArticleBrand.count();
+    const articleBrandsCount = await ArticleBrand.countDocuments();
     console.log(`Mongoose: insert ${articleBrandsCount} article brand(s)`);
 
     const articleBrandsDict = await getArticleBrandsDict();
     const authorsDict = await getAuthorsDict();
 
     await initArticles(articleBrandsDict, authorsDict);
-    const articlesCount = await Article.count();
+    const articlesCount = await Article.countDocuments();
     console.log(`Mongoose: insert ${articlesCount} article(s)`);
     const articleDict = await getArticlesDict();
 
     await initArticleCollections(articleDict);
-    const articleCollectionsCount = await ArticleCollection.count();
+    const articleCollectionsCount = await ArticleCollection.countDocuments();
     console.log(`Mongoose: insert ${articleCollectionsCount} article collection(s)`);
 
     await initDiaries();
-    const diariesCount = await Diary.count();
+    const diariesCount = await Diary.countDocuments();
     console.log(`Mongoose: insert ${diariesCount} diary(es)`);
   } catch (err) {
     console.log('Mongoose: error during database init');

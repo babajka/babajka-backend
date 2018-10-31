@@ -23,7 +23,7 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
   [`airbnb`](https://github.com/airbnb/javascript/tree/master/react) react style guide and
   [`prettier`](https://prettier.io)
 
-- `npm run lint` to just fix style with `prettier`
+- `npm run prettify` to just fix style with `prettier`
 
 - `npm run test` to test and check coverage
 

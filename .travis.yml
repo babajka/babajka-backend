@@ -8,9 +8,6 @@ script:
   - npm test
 after_success:
   - npm run travis-deploy-once "npm run semantic-release"
-cache:
-  directories:
-    - node_modules
 notifications:
   slack:
     rooms:

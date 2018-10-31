@@ -2,7 +2,7 @@
   "port": 8080,
   "publicPath": "public",
   "mongodb": {
-    "url": "mongodb://localhost/babajka",
+    "url": "mongodb://127.0.0.1/babajka",
     "options": {}
   },
   "auth": {

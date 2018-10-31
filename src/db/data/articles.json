@@ -28,7 +28,43 @@
       "be": {
         "title": "Назва 1",
         "subtitle": "Падназва 1",
-        "content": {},
+        "content": {
+          "entityMap": {
+            "0": {
+              "type": "LINK",
+              "mutability": "MUTABLE",
+              "data": {
+                "url": "http://wir.by/"
+              }
+            }
+          },
+          "blocks": [
+            {
+              "key": "761n6",
+              "text": "Вельмі кастомны загаловак.",
+              "type": "header-one",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [],
+              "data": {}
+            },
+            {
+              "key": "cuvud",
+              "text": "such a custom link to wir by",
+              "type": "blockquote",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": [
+                {
+                  "offset": 0,
+                  "length": 28,
+                  "key": 0
+                }
+              ],
+              "data": {}
+            }
+          ]
+        },
         "slug": "slug1-be"
       },
       "en": {
