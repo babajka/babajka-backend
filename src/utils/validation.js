@@ -107,8 +107,8 @@ export const slugValidator = {
 export const colloquialDateHashValidator = {
   // Colloquial Date Hash has MMDD format.
   validator: v => {
-    const month = parseInt(v, 10) / 100;
-    const day = parseInt(v, 10) % 100;
+    const month = Math.floor(parseInt(v, 10) / 100);
+    const day = Math.floor(parseInt(v, 10) % 100);
     return month >= 0 && month <= 12 && day >= 0 && day <= 31;
   },
   message: 'errors.failedMatchRegex',

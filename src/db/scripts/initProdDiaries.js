@@ -12,6 +12,9 @@ import { Diary } from 'api/specials';
 
 const keyBy = require('lodash/keyBy');
 const pick = require('lodash/pick');
+const difference = require('lodash/difference');
+const map = require('lodash/map');
+const cloneDeep = require('lodash/cloneDeep');
 
 const GoogleSpreadsheet = require('google-spreadsheet');
 
@@ -53,6 +56,17 @@ const fieldsOptional = ['active', 'year'];
 
     doc.getInfo((err, info) => {
       const sheets = pick(keyBy(info.worksheets, 'title'), Object.keys(months));
+
+      // A piece of code below is to add a diary for each day of the year,
+      // even if some months are missing in the spreadsheet.
+      // This works inaccurately with calendar e.g. it may add February 31 which does not exist.
+      // This was added for testing and presentation purposes and should not be used
+      // to prepopulate production diaries.
+      const missingMonths = difference(Object.keys(months), map(info.worksheets, 'title'));
+      missingMonths.forEach(mMonth => {
+        sheets[mMonth] = cloneDeep(sheets['жнівень']);
+        sheets[mMonth].title = mMonth;
+      });
 
       let diariesPushed = 0;
       let diariesFailed = 0;
