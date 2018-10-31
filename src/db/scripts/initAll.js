@@ -18,14 +18,18 @@ import articlesData from 'db/data/articles.json';
 import diariesData from 'db/data/diary.json';
 
 const TEXT_BY_LOCALE = {
-  be: 'Гэта дэфолтны загаловак',
-  ru: 'Это дефолтный заголовок',
-  en: 'This is a default header',
+  be: 'Гэта дэфолтны загаловак пустога артыкула',
+  ru: 'Это дефолтный заголовок пустой статьи',
+  en: 'This is a default header of an empty article',
 };
 
 const getArticleContent = locale => ({
   entityMap: {
-    '0': { type: 'LINK', mutability: 'MUTABLE', data: { url: 'http://wir.by/' } },
+    '0': {
+      type: 'LINK',
+      mutability: 'MUTABLE',
+      data: { url: 'http://dev.wir.by/be/article/dushy' },
+    },
   },
   blocks: [
     {
@@ -39,11 +43,11 @@ const getArticleContent = locale => ({
     },
     {
       key: 'cuvud',
-      text: 'this is a sample link to wir.by',
+      text: 'CLICK HERE TO CHECK A SAMPLE ARTICLE OUT.',
       type: 'blockquote',
       depth: 0,
       inlineStyleRanges: [],
-      entityRanges: [{ offset: 0, length: 31, key: 0 }],
+      entityRanges: [{ offset: 0, length: 41, key: 0 }],
       data: {},
     },
   ],
