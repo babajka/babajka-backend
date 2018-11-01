@@ -1,9 +1,25 @@
 /* eslint-disable no-console */
 
+// The script updates databases with data provided as a set of json files.
+// The script is executed as follows:
+//   npm run init-db -- path-to-secret-file path-to-data
+//
+// Examples:
+// * to populate local db with data from this repo:
+//   npm run init-db
+// * to populate remote db with data from this repo:
+//   npm run init-db -- '/home/user/secret.json'
+// * to populate local db with golden data from Google Drive:
+//   npm run init-db -- '' '${GOOGLE_DRIVE}/Wir/golden-data/'
+// * to populate remote db with golden data from Google Drive:
+//   npm run init-db -- '/home/user/secret.json' '${GOOGLE_DRIVE}/Wir/golden-data/'
+
 import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
+import fs from 'fs';
+import path from 'path';
 
 import connectDb from 'db';
 import { User } from 'api/user';
@@ -11,11 +27,45 @@ import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/
 import { Diary } from 'api/specials';
 import * as permissions from 'constants/permissions';
 
-import usersData from 'db/data/users.json';
-import articleBrandsData from 'db/data/articleBrands.json';
-import articleCollectionsData from 'db/data/articleCollections.json';
-import articlesData from 'db/data/articles.json';
-import diariesData from 'db/data/diary.json';
+const defaultDataPath = `${__dirname}/../data/`;
+const dataFilenames = {
+  users: 'users.json',
+  articleBrands: 'articleBrands.json',
+  articleCollections: 'articleCollections.json',
+  articles: 'articles.json',
+  diaries: 'diary.json',
+};
+
+const initData = {};
+
+const getData = () => {
+  const customDir = process.argv[3] || '';
+  if (customDir.length === 0) {
+    console.log('No custom directory with init data provided: using default data to init db.');
+  }
+
+  Object.entries(dataFilenames).forEach(([dataType, filename]) => {
+    let data;
+
+    if (customDir.length > 0) {
+      const customPath = path.join(customDir, filename);
+      try {
+        data = JSON.parse(fs.readFileSync(customPath, 'utf8'));
+      } catch {
+        console.log(
+          `Custom path was provided but we failed to read data from:\n  ${customPath}\nUsing default file instead.`
+        );
+      }
+    }
+
+    if (!data) {
+      const defaultPath = path.join(defaultDataPath, filename);
+      data = JSON.parse(fs.readFileSync(defaultPath, 'utf8'));
+    }
+
+    initData[dataType] = data;
+  });
+};
 
 const TEXT_BY_LOCALE = {
   be: 'Гэта дэфолтны загаловак пустога артыкула',
@@ -55,7 +105,7 @@ const getArticleContent = locale => ({
 
 const initUsers = () =>
   Promise.all(
-    usersData.map(async userData => {
+    initData.users.map(async userData => {
       const permPreset = userData.permissionsPreset || 'user';
 
       const user = new User(userData);
@@ -70,7 +120,7 @@ const initUsers = () =>
 
 const initArticleBrands = () =>
   Promise.all(
-    articleBrandsData.map(async articleBrandData => new ArticleBrand(articleBrandData).save())
+    initData.articleBrands.map(async articleBrandData => new ArticleBrand(articleBrandData).save())
   );
 
 const getArticleBrandsDict = async () => {
@@ -93,7 +143,7 @@ const getAuthorsDict = async () => {
 
 const initArticles = (articleBrandsDict, authorsDict) =>
   Promise.all(
-    articlesData.map(async rawArticleData => {
+    initData.articles.map(async rawArticleData => {
       const articleLocales = rawArticleData.locales;
       const articleData = omit(rawArticleData, ['locales', 'videoId']);
       articleData.brand = articleBrandsDict[articleData.brand];
@@ -153,14 +203,16 @@ const initArticleCollections = articlesDict => {
     );
   };
 
-  return Promise.all(articleCollectionsData.map(createCollection));
+  return Promise.all(initData.articleCollections.map(createCollection));
 };
 
 const initDiaries = () =>
-  Promise.all(diariesData.map(async diaryData => new Diary(diaryData).save()));
+  Promise.all(initData.diaries.map(async diaryData => new Diary(diaryData).save()));
 
 (async () => {
   try {
+    getData();
+
     await connectDb();
     await mongoose.connection.db.dropDatabase();
     console.log('Mongoose: drop database');

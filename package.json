@@ -10,6 +10,7 @@
     "start-prod": "node -r esm esm.js",
     "init-db": "babel-node src/db/scripts/initAll.js",
     "init-prod-diaries": "babel-node src/db/scripts/initProdDiaries.js",
+    "init-golden-data": "bash src/db/scripts/init-golden-data.sh",
     "grant-permissions": "babel-node src/db/scripts/grantPermissions.js",
     "set-password": "babel-node src/db/scripts/setPassword.js",
     "lint": "npm run prettify && eslint index.js src/ --fix",
