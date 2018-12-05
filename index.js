@@ -7,8 +7,10 @@ import connectDb from 'db';
 
 connectDb();
 
+app.set('view engine', 'ejs');
+
 app.get('*', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
+  res.render(path.join(publicPath, 'index'));
 });
 
 createServer(app).listen(config.port, () => {
