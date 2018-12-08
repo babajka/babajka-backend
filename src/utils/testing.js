@@ -56,4 +56,14 @@ export const loginTestAdmin = async () => {
   return testLogin(testData.admin);
 };
 
+export const defaultObjectMetadata = async () => {
+  const admin = await User.findOne({ email: testData.admin.email }).exec();
+  return {
+    createdAt: Date.now(),
+    createdBy: admin._id,
+    updatedAt: Date.now(),
+    updatedBy: admin._id,
+  };
+};
+
 export { expect, supertest };

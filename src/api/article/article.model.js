@@ -7,6 +7,7 @@ import omit from 'lodash/omit';
 import { checkPermissions } from 'api/user';
 import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
 import { ValidationError } from 'utils/validation';
+import { ObjectMetadata } from 'api/helpers/metadata';
 
 const { Schema } = mongoose;
 
@@ -50,20 +51,21 @@ const ArticleSchema = new Schema(
       enum: ['text', 'video'],
       required: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
+    metadata: {
+      type: ObjectMetadata.schema,
+      //  Schema.Types.ObjectId,
+      // ref: 'ObjectMetadata',
       required: true,
     },
     publishAt: {
       // publishAt contains date and time for the article to be published.
       // Two possible values of the field are:
       // * null - makes an article a 'draft'. That means article will never be
-      //    published unless the field in updated. 'null' is a default value
+      //    published unless the field is updated. 'null' is a default value
       //    which makes behavior safe: one must explicitly set the date in order
-      //    to make article discoverable.
+      //    to make article publicly discoverable.
       // * date value - specifies the date after which the article is available
-      //    for any user. Must be set explicitly.
+      //    publicly. Must be set explicitly.
       type: Date,
       default: null,
     },
@@ -144,7 +146,16 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
   }
 
   const result = {
-    ...omit(article.toObject(), ['__v', 'collectionId', 'video._id']),
+    ...omit(article.toObject(), [
+      '__v',
+      'collectionId',
+      'video._id',
+      'metadata._id',
+      'metadata.createdBy._id',
+      'metadata.createdBy.displayName',
+      'metadata.updatedBy._id',
+      'metadata.updatedBy.displayName',
+    ]),
     locales: keyBy(article.locales, 'locale'),
   };
 
@@ -207,6 +218,7 @@ export const POPULATE_OPTIONS = {
     },
   }),
   locales: '-_id -__v',
+  metadataBy: 'email',
 };
 
 export default Article;
