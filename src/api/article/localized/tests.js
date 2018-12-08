@@ -1,4 +1,4 @@
-import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
+import { supertest, expect, dropData, loginTestAdmin, defaultObjectMetadata } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -15,15 +15,19 @@ describe('Locales API', () => {
   before(async () => {
     const brand = await ArticleBrand({ slug: 'test' }).save();
 
+    sessionCookie = await loginTestAdmin();
+
+    const defaultMetadata = await defaultObjectMetadata();
+
     const article = await Article({
       brand: brand._id,
       imagePreviewUrl: 'image-url',
       type: 'text',
+      metadata: defaultMetadata,
       publishAt: Date.now(),
     }).save();
 
     articleId = article._id;
-    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);

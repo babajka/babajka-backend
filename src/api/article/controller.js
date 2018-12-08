@@ -4,6 +4,7 @@ import set from 'lodash/set';
 import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import { parseVideoUrl } from 'utils/networks';
+import { getInitObjectMetadata, updateObjectMetadata } from 'api/helpers/metadata';
 
 import { User } from 'api/user';
 import Article, {
@@ -38,6 +39,8 @@ export const getAll = ({ query, user }, res, next) => {
     .populate('brand', POPULATE_OPTIONS.brand)
     .populate(POPULATE_OPTIONS.collection(user))
     .populate('locales', POPULATE_OPTIONS.locales)
+    .populate('metadata.updatedBy', POPULATE_OPTIONS.metadataBy)
+    .populate('metadata.createdBy', POPULATE_OPTIONS.metadataBy)
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
@@ -67,7 +70,9 @@ const getArticleById = (articleId, user) =>
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
     .populate(POPULATE_OPTIONS.collection(user))
-    .populate('locales', POPULATE_OPTIONS.locales);
+    .populate('locales', POPULATE_OPTIONS.locales)
+    .populate('metadata.updatedBy', POPULATE_OPTIONS.metadataBy)
+    .populate('metadata.createdBy', POPULATE_OPTIONS.metadataBy);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
@@ -109,6 +114,7 @@ export const create = async ({ body, user }, res, next) => {
       ...omit(body, ['locales', 'videoUrl']),
       author: authorId,
       brand: brandId,
+      metadata: getInitObjectMetadata(user),
       collectionId,
     });
 
@@ -215,6 +221,8 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
       )
     );
 
+    article.metadata = updateObjectMetadata(article.metadata.toObject(), user);
+
     await article.save();
 
     if (oldArticleCollectionId !== article.collectionId) {
@@ -240,8 +248,15 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
   }
 };
 
-export const remove = ({ params: { slugOrId } }, res, next) =>
+export const remove = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
-    .then(articleId => Article.update({ _id: articleId }, { active: false }))
+    .then(articleId =>
+      Article.update(
+        { _id: articleId },
+        {
+          $set: { active: false, 'metadata.updatedBy': user._id, 'metadata.updatedAt': Date.now() },
+        }
+      )
+    )
     .then(() => res.sendStatus(200))
     .catch(next);

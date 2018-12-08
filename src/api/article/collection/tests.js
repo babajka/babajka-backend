@@ -1,4 +1,4 @@
-import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
+import { supertest, expect, dropData, loginTestAdmin, defaultObjectMetadata } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -15,6 +15,11 @@ describe('Collections API', () => {
 
   before(async () => {
     const brand = await new ArticleBrand({ slug: 'wir' }).save();
+
+    sessionCookie = await loginTestAdmin();
+
+    const defaultMetadata = await defaultObjectMetadata();
+
     // Populating DB with Collections.
     const articlePromises = [];
     for (let i = 1; i <= 5; i += 1) {
@@ -23,6 +28,7 @@ describe('Collections API', () => {
           type: 'text',
           imagePreviewUrl: 'image-url',
           brand: brand._id,
+          metadata: defaultMetadata,
         }).save()
       );
     }
@@ -43,8 +49,6 @@ describe('Collections API', () => {
       );
     }
     await Promise.all(promises);
-
-    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);

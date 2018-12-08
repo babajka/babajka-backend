@@ -1,4 +1,4 @@
-import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
+import { supertest, expect, dropData, loginTestAdmin, defaultObjectMetadata } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -13,10 +13,14 @@ describe('Articles API', () => {
   const articleIDs = [];
   const brandSlug = 'wir';
   let sessionCookie;
+  let defaultMetadata;
 
   before(async () => {
     // Populating DB with articles.
     const { _id: articleBrandId } = await new ArticleBrand({ slug: brandSlug }).save();
+
+    sessionCookie = await loginTestAdmin();
+    defaultMetadata = await defaultObjectMetadata();
 
     let promises = [];
     for (let i = 1; i <= 8; i += 1) {
@@ -26,7 +30,7 @@ describe('Articles API', () => {
           brand: articleBrandId,
           type: 'text',
           imagePreviewUrl: 'image-url',
-          createdAt: date,
+          metadata: defaultMetadata,
           publishAt: date,
         })
           .save()
@@ -41,6 +45,7 @@ describe('Articles API', () => {
         brand: articleBrandId,
         type: 'text',
         imagePreviewUrl: 'image-url',
+        metadata: defaultMetadata,
         publishAt: new Date('2025-01-01T18:25:43.511Z'),
       })
         .save()
@@ -71,8 +76,6 @@ describe('Articles API', () => {
       }
     });
     await Promise.all(promises);
-
-    sessionCookie = await loginTestAdmin();
   });
 
   after(dropData);
@@ -279,6 +282,8 @@ describe('Articles API', () => {
 
 describe('Articles Bundled API', () => {
   let sessionCookie;
+  let defaultMetadata;
+
   const brandSlug = 'wir';
   const authorEmail = 'the-best-author-ever@wir.by';
 
@@ -298,6 +303,7 @@ describe('Articles Bundled API', () => {
     }).save();
 
     sessionCookie = await loginTestAdmin();
+    defaultMetadata = await defaultObjectMetadata();
   });
 
   after(dropData);
@@ -311,16 +317,24 @@ describe('Articles Bundled API', () => {
       .send({
         imagePreviewUrl: 'ololo',
       })
-      .expect(400));
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error).not.empty();
+        expect(res.body.error.type).to.include('error');
+      }));
+
+  const articleBase = {
+    brandSlug,
+    type: 'text',
+    imagePreviewUrl: 'abc',
+  };
 
   it('should fail to create an article with broken localization', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        brandSlug: 'wir',
-        imagePreviewUrl: 'image-url',
-        type: 'text',
+        ...articleBase,
         locales: {
           be: {
             title: 'xx',
@@ -328,16 +342,18 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(400));
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error).not.empty();
+        expect(res.body.error.locales.be.slug).to.include('error');
+      }));
 
   it('should fail to create an article with bad locale slug', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        brandSlug: 'wir',
-        imagePreviewUrl: 'image-url',
-        type: 'text',
+        ...articleBase,
         locales: {
           be: {
             title: 'xx',
@@ -358,9 +374,7 @@ describe('Articles Bundled API', () => {
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        brandSlug: 'wir',
-        imagePreviewUrl: 'image-url',
-        type: 'text',
+        ...articleBase,
         locales: {
           be: {
             title: 'xx',
@@ -371,17 +385,19 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(400));
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error).not.empty();
+        expect(res.body.error.localeConsistency).to.include('error');
+      }));
 
   it('should fail to create an article due to forbidden field', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        brandSlug,
+        ...articleBase,
         brand: 'xxx',
-        type: 'text',
-        imagePreviewUrl: 'some-image-url',
         locales: {
           be: {
             title: 'be-title',
@@ -401,9 +417,8 @@ describe('Articles Bundled API', () => {
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        brandSlug,
+        ...articleBase,
         type: 'text',
-        imagePreviewUrl: 'abc',
         videoUrl: validYoutubeLink,
       })
       .expect(400)
@@ -411,17 +426,15 @@ describe('Articles Bundled API', () => {
         expect(res.body.error.video).to.contain('forbiddenForTypeText');
       }));
 
-  const articleBase = {
-    brandSlug,
-    type: 'video',
-    imagePreviewUrl: 'abc',
-  };
-
   it('should fail to create an article with unsupported video platform', () =>
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
-      .send({ ...articleBase, videoUrl: validVimeoLink })
+      .send({
+        ...articleBase,
+        type: 'video',
+        videoUrl: validVimeoLink,
+      })
       .expect(400)
       .expect(res => {
         expect(res.body.error).to.contain('badVideoUrl');
@@ -431,7 +444,11 @@ describe('Articles Bundled API', () => {
     request
       .post('/api/articles')
       .set('Cookie', sessionCookie)
-      .send({ ...articleBase, videoUrl: badYoutubeLink })
+      .send({
+        ...articleBase,
+        type: 'video',
+        videoUrl: badYoutubeLink,
+      })
       .expect(400)
       .expect(res => {
         expect(res.body.error).to.contain('badVideoUrl');
@@ -505,6 +522,7 @@ describe('Articles Bundled API', () => {
       .expect(res => {
         expect(res.body.type).to.equal('text');
         expect(res.body.video).to.be.undefined();
+        expect(Date.parse(res.body.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
       }));
 
   // TODO(uladbohdan): to find a way to test duplication of slugs. The problem
@@ -622,6 +640,7 @@ describe('Articles Bundled API', () => {
         expect(res.body.locales.fr.slug).to.equal('slug-fr');
         expect(res.body.locales.de.slug).to.equal('slug-de');
         expect(res.body.locales.en.slug).to.equal('new-en-slug');
+        expect(Date.parse(res.body.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
       }));
 
   it('should fail to remove article type', () =>
@@ -629,14 +648,20 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
       .send({ type: '' })
-      .expect(400));
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error.type).to.contain('error');
+      }));
 
   it('should fail to remove article brand', () =>
     request
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
       .send({ brandSlug: '' })
-      .expect(400));
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error.brandSlug).to.contain('error');
+      }));
 
   it('should fail to remove article collection due to forbidden collection field', () =>
     request
