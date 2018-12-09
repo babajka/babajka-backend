@@ -38,9 +38,8 @@ export const getAll = ({ query, user }, res, next) => {
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
     .populate(POPULATE_OPTIONS.collection(user))
-    .populate('locales', POPULATE_OPTIONS.locales)
-    .populate('metadata.updatedBy', POPULATE_OPTIONS.metadataBy)
-    .populate('metadata.createdBy', POPULATE_OPTIONS.metadataBy)
+    .populate(POPULATE_OPTIONS.locales)
+    .populate(POPULATE_OPTIONS.metadata)
     .sort({ publishAt: 'desc' })
     .skip(skip)
     .limit(pageSize)
@@ -70,9 +69,8 @@ const getArticleById = (articleId, user) =>
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
     .populate(POPULATE_OPTIONS.collection(user))
-    .populate('locales', POPULATE_OPTIONS.locales)
-    .populate('metadata.updatedBy', POPULATE_OPTIONS.metadataBy)
-    .populate('metadata.createdBy', POPULATE_OPTIONS.metadataBy);
+    .populate(POPULATE_OPTIONS.locales)
+    .populate(POPULATE_OPTIONS.metadata);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
@@ -130,6 +128,7 @@ export const create = async ({ body, user }, res, next) => {
             ...localeData,
             articleId: article._id,
             locale,
+            metadata: getInitObjectMetadata(user),
           })
             .save()
             .then(({ _id }) => _id)
@@ -203,11 +202,26 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
               locale,
               articleId,
             },
-            localeData,
+            {
+              $set: {
+                ...localeData,
+                'metadata.updatedBy': user._id,
+                'metadata.updatedAt': Date.now(),
+              },
+            },
             { new: true }
           )
             // unless found, create a new one.
-            .then(loc => loc || LocalizedArticle({ ...localeData, articleId, locale }).save())
+            .then(
+              loc =>
+                loc ||
+                LocalizedArticle({
+                  ...localeData,
+                  articleId,
+                  locale,
+                  metadata: getInitObjectMetadata(user),
+                }).save()
+            )
             .then(({ _id }) => _id)
             .catch(handleArticleLocalizationError(locale))
         )
@@ -217,12 +231,20 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
     const localesToUpdate = articleOldLocales.filter(l => !newLocales.includes(l.toString()));
     await Promise.all(
       localesToUpdate.map(_id =>
-        LocalizedArticle.findOneAndUpdate({ _id }, { active: false }).catch(next)
+        LocalizedArticle.findOneAndUpdate(
+          { _id },
+          {
+            $set: {
+              active: false,
+              'metadata.updatedBy': user._id,
+              'metadata.updatedAt': Date.now(),
+            },
+          }
+        ).catch(next)
       )
     );
 
     article.metadata = updateObjectMetadata(article.metadata.toObject(), user);
-
     await article.save();
 
     if (oldArticleCollectionId !== article.collectionId) {

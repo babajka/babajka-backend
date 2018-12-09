@@ -3,9 +3,11 @@ import { sendJson } from 'utils/api';
 
 import Article from 'api/article/article.model';
 
+import { getInitObjectMetadata } from 'api/helpers/metadata';
+
 import LocalizedArticle from './model';
 
-export const create = async ({ params: { articleId }, body }, res, next) => {
+export const create = async ({ params: { articleId }, user, body }, res, next) => {
   try {
     const article = await Article.findOne({ _id: articleId }).populate('locales', 'locale');
 
@@ -19,7 +21,11 @@ export const create = async ({ params: { articleId }, body }, res, next) => {
       throw new ValidationError('errors.slugExists');
     }
 
-    const localized = await LocalizedArticle({ ...body, articleId: article._id }).save();
+    const localized = await LocalizedArticle({
+      ...body,
+      articleId: article._id,
+      metadata: getInitObjectMetadata(user),
+    }).save();
     article.locales.push(localized._id);
     await article.save();
     return sendJson(res)(localized);
@@ -28,8 +34,12 @@ export const create = async ({ params: { articleId }, body }, res, next) => {
   }
 };
 
-export const update = ({ params: { slug }, body }, res, next) =>
-  LocalizedArticle.findOneAndUpdate({ slug }, body, { new: true })
+export const update = ({ params: { slug }, user, body }, res, next) =>
+  LocalizedArticle.findOneAndUpdate(
+    { slug },
+    { $set: { ...body, 'metadata.updatedBy': user._id, 'metadata.updatedAt': Date.now() } },
+    { new: true }
+  )
     .then(checkIsFound)
     .then(sendJson(res))
     .catch(next);

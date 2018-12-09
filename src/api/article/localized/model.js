@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 import { slugValidator } from 'utils/validation';
 
+import { ObjectMetadata } from 'api/helpers/metadata';
+
 const { Schema } = mongoose;
 
 const LocalizedArticleSchema = new Schema(
@@ -31,9 +33,8 @@ const LocalizedArticleSchema = new Schema(
       unique: true,
       validate: slugValidator,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
+    metadata: {
+      type: ObjectMetadata.schema,
       required: true,
     },
     active: {
