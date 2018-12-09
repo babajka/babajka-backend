@@ -65,6 +65,7 @@ describe('Articles API', () => {
             subtitle: `subtitle-${i}-${loc}`,
             slug: i === 9 ? `postpublished-slug-${loc}` : `article-${i}-${loc}`,
             articleId: articleIDs[i - 1],
+            metadata: defaultMetadata,
           })
             .save()
             .then(async ({ _id }) => {
@@ -640,7 +641,13 @@ describe('Articles Bundled API', () => {
         expect(res.body.locales.fr.slug).to.equal('slug-fr');
         expect(res.body.locales.de.slug).to.equal('slug-de');
         expect(res.body.locales.en.slug).to.equal('new-en-slug');
+
+        // Below are the tests for object metadata.
         expect(Date.parse(res.body.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
+        expect(Date.parse(res.body.locales.en.metadata.updatedAt)).to.be.above(
+          defaultMetadata.updatedAt
+        );
+        expect(res.body.locales.en.metadata.updatedBy.email).to.contain('@babajka');
       }));
 
   it('should fail to remove article type', () =>

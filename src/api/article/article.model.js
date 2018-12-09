@@ -53,8 +53,6 @@ const ArticleSchema = new Schema(
     },
     metadata: {
       type: ObjectMetadata.schema,
-      //  Schema.Types.ObjectId,
-      // ref: 'ObjectMetadata',
       required: true,
     },
     publishAt: {
@@ -217,8 +215,18 @@ export const POPULATE_OPTIONS = {
       populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
     },
   }),
-  locales: '-_id -__v',
-  metadataBy: 'email',
+  locales: {
+    path: 'locales',
+    select: '-_id -__v',
+    populate: [
+      { path: 'metadata.createdBy', select: 'email' },
+      { path: 'metadata.updatedBy', select: 'email' },
+    ],
+  },
+  metadata: [
+    { path: 'metadata.updatedBy', select: 'email' },
+    { path: 'metadata.createdBy', select: 'email' },
+  ],
 };
 
 export default Article;
