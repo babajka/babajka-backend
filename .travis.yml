@@ -21,11 +21,13 @@ before_deploy:
 - chmod 600 /tmp/babajka_dev_rsa
 - ssh-add /tmp/babajka_dev_rsa
 deploy:
-  provider: script
+- provider: script
   skip_cleanup: true
-  script:
-  - rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/babajka-backend/ wir-dev@dev.wir.by:/home/wir-dev/deployed/swap-backend/
-  - rm -rf /home/wir-dev/deployed/backend/
-  - mv /home/wir-dev/deployed/swap-backend /home/wir-dev/deployed/backend
+  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/babajka-backend/ wir-dev@dev.wir.by:/home/wir-dev/deployed/swap-backend/
+  on:
+    branch: real-autodeploy
+- provider: script
+  skip_cleanup: true
+  script: rm -rf /home/wir-dev/deployed/backend/ && mv /home/wir-dev/deployed/swap-backend /home/wir-dev/deployed/backend
   on:
     branch: real-autodeploy
