@@ -25,9 +25,9 @@ deploy:
   skip_cleanup: true
   script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR wir-dev@dev.wir.by:/home/wir-dev/deployed/swap-backend/
   on:
-    branch: real-autodeploy
+    branch: develop
 - provider: script
   skip_cleanup: true
   script: ssh wir-dev@dev.wir.by 'bash -s' < deploy-dev.sh
   on:
-    branch: real-autodeploy
+    branch: develop
