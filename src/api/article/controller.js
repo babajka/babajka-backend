@@ -4,7 +4,11 @@ import set from 'lodash/set';
 import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import { parseVideoUrl } from 'utils/networks';
-import { getInitObjectMetadata, updateObjectMetadata } from 'api/helpers/metadata';
+import {
+  getInitObjectMetadata,
+  updateObjectMetadata,
+  mergeWithUpdateMetadata,
+} from 'api/helpers/metadata';
 
 import { User } from 'api/user';
 import Article, {
@@ -202,13 +206,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
               locale,
               articleId,
             },
-            {
-              $set: {
-                ...localeData,
-                'metadata.updatedBy': user._id,
-                'metadata.updatedAt': Date.now(),
-              },
-            },
+            mergeWithUpdateMetadata(localeData, user._id),
             { new: true }
           )
             // unless found, create a new one.
@@ -233,13 +231,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
       localesToUpdate.map(_id =>
         LocalizedArticle.findOneAndUpdate(
           { _id },
-          {
-            $set: {
-              active: false,
-              'metadata.updatedBy': user._id,
-              'metadata.updatedAt': Date.now(),
-            },
-          }
+          mergeWithUpdateMetadata({ active: false }, user._id)
         ).catch(next)
       )
     );
@@ -273,12 +265,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
 export const remove = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
     .then(articleId =>
-      Article.update(
-        { _id: articleId },
-        {
-          $set: { active: false, 'metadata.updatedBy': user._id, 'metadata.updatedAt': Date.now() },
-        }
-      )
+      Article.update({ _id: articleId }, mergeWithUpdateMetadata({ active: false }, user._id))
     )
     .then(() => res.sendStatus(200))
     .catch(next);

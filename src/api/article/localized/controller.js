@@ -3,7 +3,7 @@ import { sendJson } from 'utils/api';
 
 import Article from 'api/article/article.model';
 
-import { getInitObjectMetadata } from 'api/helpers/metadata';
+import { getInitObjectMetadata, mergeWithUpdateMetadata } from 'api/helpers/metadata';
 
 import LocalizedArticle from './model';
 
@@ -35,11 +35,9 @@ export const create = async ({ params: { articleId }, user, body }, res, next) =
 };
 
 export const update = ({ params: { slug }, user, body }, res, next) =>
-  LocalizedArticle.findOneAndUpdate(
-    { slug },
-    { $set: { ...body, 'metadata.updatedBy': user._id, 'metadata.updatedAt': Date.now() } },
-    { new: true }
-  )
+  LocalizedArticle.findOneAndUpdate({ slug }, mergeWithUpdateMetadata(body, user._id), {
+    new: true,
+  })
     .then(checkIsFound)
     .then(sendJson(res))
     .catch(next);
