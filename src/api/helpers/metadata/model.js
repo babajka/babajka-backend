@@ -38,3 +38,11 @@ export const updateObjectMetadata = (oldMetadata, user) => ({
   updatedAt: Date.now(),
   updatedBy: user._id,
 });
+
+export const mergeWithUpdateMetadata = (data, userId) => ({
+  $set: {
+    ...data,
+    'metadata.updatedBy': userId,
+    'metadata.updatedAt': Date.now(),
+  },
+});
