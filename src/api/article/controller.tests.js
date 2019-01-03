@@ -94,7 +94,7 @@ describe('Articles API', () => {
           );
         }));
 
-    it('should return set default `skip` to 0', () =>
+    it('should default skip to 0 and take 1 article', () =>
       request
         .get('/api/articles?take=1')
         .expect(200)
@@ -105,7 +105,7 @@ describe('Articles API', () => {
           expect(total).to.equal(8);
         }));
 
-    it('should return apply skip and take 4 articles', () =>
+    it('should properly apply skip and take 4 articles', () =>
       request
         .get('/api/articles?skip=1&take=4')
         .expect(200)
