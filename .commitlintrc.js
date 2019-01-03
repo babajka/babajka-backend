@@ -18,6 +18,7 @@ module.exports = {
         'specials',
         'config',
         'db',
+        'postman',
       ],
     ],
     'scope-empty': [2, 'never'],
