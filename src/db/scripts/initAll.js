@@ -25,6 +25,7 @@ import connectDb from 'db';
 import { User } from 'api/user';
 import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
 import { Diary } from 'api/specials';
+import { getInitObjectMetadata } from 'api/helpers/metadata';
 import * as permissions from 'constants/permissions';
 
 const defaultDataPath = `${__dirname}/../data/`;
@@ -141,12 +142,20 @@ const getAuthorsDict = async () => {
   return authorsDict;
 };
 
-const initArticles = (articleBrandsDict, authorsDict) =>
+const retrieveMetadataTestingUser = async () => {
+  const testingUser = await User.findOne({ email: 'admin@babajka.io' });
+  return testingUser;
+};
+
+const initArticles = (articleBrandsDict, authorsDict, metadataTestingUser) =>
   Promise.all(
     initData.articles.map(async rawArticleData => {
+      const commonMetadata = getInitObjectMetadata(metadataTestingUser);
+
       const articleLocales = rawArticleData.locales;
       const articleData = omit(rawArticleData, ['locales', 'videoId']);
       articleData.brand = articleBrandsDict[articleData.brand];
+      articleData.metadata = commonMetadata;
       if (articleData.authorEmail) {
         articleData.author = authorsDict[articleData.authorEmail];
       }
@@ -170,6 +179,7 @@ const initArticles = (articleBrandsDict, authorsDict) =>
             ...articleLocales[locale],
             locale,
             articleId: article._id,
+            metadata: commonMetadata,
           });
           article.locales.push(data._id);
           return data.save();
@@ -227,8 +237,9 @@ const initDiaries = () =>
 
     const articleBrandsDict = await getArticleBrandsDict();
     const authorsDict = await getAuthorsDict();
+    const metadataTestingUser = await retrieveMetadataTestingUser();
 
-    await initArticles(articleBrandsDict, authorsDict);
+    await initArticles(articleBrandsDict, authorsDict, metadataTestingUser);
     const articlesCount = await Article.countDocuments();
     console.log(`Mongoose: insert ${articlesCount} article(s)`);
     const articleDict = await getArticlesDict();
