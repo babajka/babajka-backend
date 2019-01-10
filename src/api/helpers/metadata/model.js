@@ -26,17 +26,17 @@ const ObjectMetadataSchema = new Schema({
 
 export const ObjectMetadata = mongoose.model('ObjectMetadata', ObjectMetadataSchema);
 
-export const getInitObjectMetadata = user => ({
+export const getInitObjectMetadata = userId => ({
   createdAt: Date.now(),
-  createdBy: user._id,
+  createdBy: userId,
   updatedAt: Date.now(),
-  updatedBy: user._id,
+  updatedBy: userId,
 });
 
-export const updateObjectMetadata = (oldMetadata, user) => ({
+export const updateObjectMetadata = (oldMetadata, userId) => ({
   ...oldMetadata,
   updatedAt: Date.now(),
-  updatedBy: user._id,
+  updatedBy: userId,
 });
 
 export const mergeWithUpdateMetadata = (data, userId) => ({

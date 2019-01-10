@@ -1,4 +1,5 @@
 import { supertest, expect, dropData, addUser, testData } from 'utils/testing';
+import * as permissions from 'constants/permissions';
 
 import app from 'server';
 import 'db/connect';
@@ -40,7 +41,9 @@ describe('Auth API', () => {
         expect(res.body.email).to.equal('admin@babajka.io');
         expect(res.headers['set-cookie']).not.empty();
         sessionCookie = res.headers['set-cookie'];
-        expect(Object.keys(res.body.permissions)).to.have.length(3);
+        expect(Object.keys(res.body.permissions)).to.have.length(
+          Object.keys(permissions.admin).length
+        );
       }));
 
   it('should access protected resource', () =>

@@ -16,9 +16,10 @@
     "lint": "npm run prettify && eslint index.js src/ --fix",
     "prettier": "prettier --config .prettierrc --write",
     "prettify": "npm run prettier 'src/**/*.{js,md}' '*.js' '*.md'",
-    "mocha": "find ./src -name '*tests.js' | cross-env NODE_ENV=testing xargs mocha --exit -r @babel/register",
+    "mocha": "npm run test:subset",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "test": "cross-env NODE_ENV=testing nyc npm run mocha && npm run coverage",
+    "test:subset": "f(){ find ./src$1 -name '*tests.js' | cross-env NODE_ENV=testing xargs mocha --exit -r @babel/register ;};f",
     "semantic-release": "semantic-release",
     "travis-deploy-once": "travis-deploy-once"
   },
