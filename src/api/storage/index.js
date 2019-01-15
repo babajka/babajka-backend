@@ -2,24 +2,20 @@ import { Router } from 'express';
 
 import { requireAuth, verifyPermission } from 'auth';
 
+import { precheck } from 'utils/validation';
+
 import * as controller from './controller';
 
 const router = Router();
 
-router.get('/public/:key', controller.getPublicDocument);
-
-router.get(
-  '/protected/:key',
-  requireAuth,
-  verifyPermission('canOperateOnStorage'),
-  controller.getProtectedDocument
-);
+router.get('/mainPage', controller.getMainPage);
 
 router.post(
-  '/:accessPolicy/:key',
+  '/mainPage',
   requireAuth,
-  verifyPermission('canOperateOnStorage'),
-  controller.updateDocument
+  verifyPermission('canManageArticles'),
+  precheck.setMainPage,
+  controller.setMainPage
 );
 
 export default router;

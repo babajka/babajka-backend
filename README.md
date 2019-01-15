@@ -25,11 +25,25 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 - `npm run prettify` to just fix style with `prettier`
 
-- `npm run test` to test and check coverage
+- `npm run test:with-coverage` to test and check coverage
 
-- `npm run mocha` to test without coveralls
+- `npm run test` to test without coveralls
 
-## rules
+## development tips
+
+### selective testing
+
+usage:
+
+`npm run test:subset -- /auth` - to only run auth tests
+
+`npm run test:subset -- /api/storage` - to only run storage tests
+
+`npm run test:subset -- /utils` - to only run utils tests
+
+etc.
+
+## rules [OUTDATED]
 
 - we have autoversioning set up, in order to trigger new release one should follow the conventions:
   - `fix(<scope>): <subject>` - increases **patch** version: 1.0.0 -> 1.0.1

@@ -1,105 +1,108 @@
-import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
+import {
+  supertest,
+  expect,
+  dropData,
+  loginTestAdmin,
+  addAdminUser,
+  addBrand,
+  addArticles,
+} from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
 
+import { StorageEntity } from './model';
+
 const request = supertest.agent(app.listen());
 
-describe('Storage API', () => {
-  let sessionCookie;
+describe('Storage Helpers', () => {
+  let userId;
 
   before(async () => {
-    sessionCookie = await loginTestAdmin();
+    const user = await addAdminUser();
+    userId = user._id;
+    await StorageEntity.setValue('key', { some: 'value' }, userId);
   });
 
   after(dropData);
 
-  it('should create a new storage entity with public access', () =>
+  it('should retrieve a value from the storage', () =>
+    StorageEntity.getValue('key').then(({ document }) => {
+      expect(document).not.empty();
+      expect(document.some).to.equal('value');
+    }));
+
+  it('should update storage entity on set', () =>
+    StorageEntity.setValue('key', { some: 'old', also: 'new' }, userId).then(({ document }) => {
+      expect(document).not.empty();
+      expect(document.some).to.equal('old');
+      expect(document.also).to.equal('new');
+    }));
+
+  it('should retrieve an updates value from storage', () =>
+    StorageEntity.getValue('key').then(({ document }) => {
+      expect(document).not.empty();
+      expect(document.also).to.equal('new');
+    }));
+});
+
+describe('Storage API', () => {
+  let sessionCookie;
+  let articles;
+  let validMainPageState;
+
+  before(async () => {
+    sessionCookie = await loginTestAdmin();
+
+    const { _id: articleBrandId } = await addBrand();
+
+    articles = await addArticles(articleBrandId, 3, 2);
+
+    validMainPageState = {
+      blocks: {},
+      data: { articles: articles.slice(0, 3).map(({ _id }) => _id), brands: [articleBrandId] },
+    };
+  });
+
+  after(dropData);
+
+  it('should fail to update main page state with no auth', () =>
     request
-      .post('/api/storage/public/public-entity')
+      .post('/api/storage/mainPage')
+      .send(validMainPageState)
+      .expect(403));
+
+  it('should fail to push main page state with invalid entities', () =>
+    request
+      .post('/api/storage/mainPage')
       .set('Cookie', sessionCookie)
-      .send({
-        a: 'b',
-        c: ['d', 'e'],
-      })
+      .send({ blocks: {}, data: { badEntity: ['x'] } })
+      .expect(400)
+      .expect(({ body }) => {
+        expect(body).not.empty();
+        expect(body.error).not.empty();
+        expect(body.error.mainPageEntities).to.contain('not valid');
+      }));
+
+  it('should succeed in pushing main page state', () =>
+    request
+      .post('/api/storage/mainPage')
+      .set('Cookie', sessionCookie)
+      .send(validMainPageState)
       .expect(200)
       .expect(({ body }) => {
         expect(body).not.empty();
-        expect(body.a).to.equal('b');
-        expect(body.c).has.length(2);
+        expect(body.data.articles).has.length(3);
       }));
 
-  it('should fail to auth when retrieving public entity as protected with no auth', () =>
-    request.get('/api/storage/protected/public-entity').expect(403));
-
-  it('should fail to retrieve public entity as protected with auth', () =>
+  it('should retrieve main page state with articles populated', () =>
     request
-      .get('/api/storage/protected/public-entity')
-      .set('Cookie', sessionCookie)
-      .expect(404));
-
-  it('should retrieve a public storage entity', () =>
-    request
-      .get('/api/storage/public/public-entity')
-      .expect(200)
-      .expect(({ body }) => {
-        expect(body.a).to.equal('b');
-      }));
-
-  it('should create a new storage entity with protected access', () =>
-    request
-      .post('/api/storage/protected/protected-entity')
-      .set('Cookie', sessionCookie)
-      .send({
-        x: 'y',
-      })
-      .expect(200)
-      .expect(({ body }) => {
-        expect(body).not.empty();
-        expect(body.x).to.equal('y');
-      }));
-
-  it('should fail to retrieve protected entity without auth', () =>
-    request.get('/api/storage/protected/protected-entity').expect(403));
-
-  it('should retrieve a protected storage entity', () =>
-    request
-      .get('/api/storage/protected/protected-entity')
+      .get('/api/storage/mainPage')
       .set('Cookie', sessionCookie)
       .expect(200)
       .expect(({ body }) => {
         expect(body).not.empty();
-        expect(body.x).to.equal('y');
-      }));
-
-  it('should make a protected entity public', () =>
-    request
-      .post('/api/storage/public/protected-entity')
-      .set('Cookie', sessionCookie)
-      .expect(200));
-
-  it('should retrieve an updated public storage entity', () =>
-    request
-      .get('/api/storage/public/protected-entity')
-      .expect(200)
-      .expect(({ body }) => {
-        expect(body).not.empty();
-        expect(body.x).to.equal('y');
-      }));
-
-  it('should update a document', () =>
-    request
-      .post('/api/storage/public/protected-entity')
-      .set('Cookie', sessionCookie)
-      .send({ x: 'z' })
-      .expect(200));
-
-  it('should retrieve a storage entity with updated document', () =>
-    request
-      .get('/api/storage/public/protected-entity')
-      .expect(200)
-      .expect(({ body }) => {
-        expect(body).not.empty();
-        expect(body.x).to.equal('z');
+        expect(body.data.articles).has.length(3);
+        expect(body.data.brands).has.length(1);
       }));
 });

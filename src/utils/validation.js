@@ -2,6 +2,12 @@ import HttpError from 'node-http-error';
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 import mongoose from 'mongoose';
+import Joi from 'joi';
+import joiObjectId from 'joi-objectid';
+
+import { mainPageEntities } from 'constants/storage';
+
+Joi.objectId = joiObjectId(Joi);
 
 export function ValidationError(message) {
   return HttpError(400, message);
@@ -73,9 +79,23 @@ const updateArticleValidator = ({ body }, res, next) => {
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
+export const checkMainPageEntitiesFormat = data => {
+  const schema = Joi.object().pattern(
+    Joi.string().valid(mainPageEntities),
+    Joi.array().items(Joi.objectId())
+  );
+  return Joi.validate(data, schema).error === null;
+};
+
+const setMainPageValidator = ({ body }, res, next) => {
+  const valid = checkMainPageEntitiesFormat(body.data);
+  return next(!valid && new ValidationError({ mainPageEntities: 'not valid' }));
+};
+
 export const precheck = {
   createArticle: createArticleValidator,
   updateArticle: updateArticleValidator,
+  setMainPage: setMainPageValidator,
 };
 
 export const requireFields = (...fields) => (req, res, next) => {

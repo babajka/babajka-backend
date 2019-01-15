@@ -1,82 +1,34 @@
-import { supertest, expect, dropData, loginTestAdmin, defaultObjectMetadata } from 'utils/testing';
+import {
+  supertest,
+  expect,
+  dropData,
+  loginTestAdmin,
+  defaultObjectMetadata,
+  addBrand,
+  addAuthorUser,
+  addArticles,
+} from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
-import User from 'api/user/model';
-import Article from './article.model';
-import ArticleBrand from './brand/model';
-import LocalizedArticle from './localized/model';
 
 const request = supertest.agent(app.listen());
 
 describe('Articles API', () => {
-  const articleIDs = [];
-  const brandSlug = 'wir';
+  let articles;
+  let brandSlug;
   let sessionCookie;
-  let defaultMetadata;
+
+  const numberPublished = 8;
+  const numberUnpublished = 1;
 
   before(async () => {
-    // Populating DB with articles.
-    const { _id: articleBrandId } = await new ArticleBrand({ slug: brandSlug }).save();
+    let articleBrandId;
+    ({ _id: articleBrandId, slug: brandSlug } = await addBrand());
 
     sessionCookie = await loginTestAdmin();
-    defaultMetadata = await defaultObjectMetadata();
 
-    let promises = [];
-    for (let i = 1; i <= 8; i += 1) {
-      const date = new Date(`2017-11-0${i}T18:25:43.511Z`);
-      promises.push(
-        new Article({
-          brand: articleBrandId,
-          type: 'text',
-          imagePreviewUrl: 'image-url',
-          metadata: defaultMetadata,
-          publishAt: date,
-        })
-          .save()
-          .then(({ _id }) => {
-            articleIDs[i - 1] = _id;
-          })
-      );
-    }
-    // An article with post publishing.
-    promises.push(
-      new Article({
-        brand: articleBrandId,
-        type: 'text',
-        imagePreviewUrl: 'image-url',
-        metadata: defaultMetadata,
-        publishAt: new Date('2025-01-01T18:25:43.511Z'),
-      })
-        .save()
-        .then(({ _id }) => {
-          articleIDs[8] = _id;
-        })
-    );
-    await Promise.all(promises);
-
-    promises = [];
-    ['en', 'be'].forEach(loc => {
-      for (let i = 1; i <= 9; i += 1) {
-        promises.push(
-          new LocalizedArticle({
-            locale: `${loc}`,
-            title: `title-${i}-${loc}`,
-            subtitle: `subtitle-${i}-${loc}`,
-            slug: i === 9 ? `postpublished-slug-${loc}` : `article-${i}-${loc}`,
-            articleId: articleIDs[i - 1],
-            metadata: defaultMetadata,
-          })
-            .save()
-            .then(async ({ _id }) => {
-              const article = await Article.findOne({ _id: articleIDs[i - 1] }).exec();
-              article.locales.push(_id);
-              await article.save();
-            })
-        );
-      }
-    });
-    await Promise.all(promises);
+    articles = await addArticles(articleBrandId, numberPublished, numberUnpublished);
   });
 
   after(dropData);
@@ -88,10 +40,10 @@ describe('Articles API', () => {
         .expect(200)
         .expect(({ body: { data, next } }) => {
           expect(data).has.length(4);
-          expect(data[0].locales.be.slug).to.equal('article-8-be');
-          expect(data[0].locales.en.slug).to.equal('article-8-en');
-          expect(data[3].locales.be.slug).to.equal('article-5-be');
-          expect(data[3].locales.en.slug).to.equal('article-5-en');
+          expect(data[0].locales.be.slug).to.equal(articles[7].be.slug);
+          expect(data[0].locales.en.slug).to.equal(articles[7].en.slug);
+          expect(data[3].locales.be.slug).to.equal(articles[4].be.slug);
+          expect(data[3].locales.en.slug).to.equal(articles[4].en.slug);
           expect(next.page).to.equal(1);
           expect(next.pageSize).to.equal(4);
         }));
@@ -101,10 +53,8 @@ describe('Articles API', () => {
         .get('/api/articles')
         .expect(200)
         .expect(({ body: { data, next } }) => {
-          expect(data).has.length(8);
-          expect(data.map(({ locales }) => locales.en.slug)).not.includes(
-            'postpublished-article-en'
-          );
+          expect(data).has.length(numberPublished);
+          expect(data.map(({ locales }) => locales.en.slug)).not.includes('draft');
           expect(next).to.be.false();
         }));
 
@@ -137,20 +87,20 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          expect(res.body.data).has.length(9);
+          expect(res.body.data).has.length(numberPublished + numberUnpublished);
           expect(res.body.data.map(({ locales }) => locales.be.slug)).includes(
-            'postpublished-slug-be'
+            articles[numberPublished].be.slug
           );
         }));
 
     it('should return unpublished', () =>
       request
-        .get('/api/articles/postpublished-slug-en')
+        .get(`/api/articles/${articles[numberPublished].en.slug}`)
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(res => {
-          expect(res.body.locales.en.slug).equal('postpublished-slug-en');
-          expect(res.body.locales.be.slug).equal('postpublished-slug-be');
+          expect(res.body.locales.en.slug).equal(articles[numberPublished].en.slug);
+          expect(res.body.locales.be.slug).equal(articles[numberPublished].be.slug);
         }));
 
     let newArticleId;
@@ -188,7 +138,7 @@ describe('Articles API', () => {
         .expect(res => {
           expect(res.body.data).has.length(8);
           expect(res.body.data.map(({ _id }) => _id)).not.includes(newArticleId);
-          expect(res.body.data.map(({ _id }) => _id)).not.includes(articleIDs[8]);
+          expect(res.body.data.map(({ _id }) => _id)).not.includes(articles[numberPublished]._id);
         }));
 
     it('should create a localization and assign to the article', () =>
@@ -282,26 +232,26 @@ describe('Articles API', () => {
 });
 
 describe('Articles Bundled API', () => {
+  let authorEmail;
+  let brandSlug;
   let sessionCookie;
   let defaultMetadata;
-
-  const brandSlug = 'wir';
-  const authorEmail = 'the-best-author-ever@wir.by';
 
   const validYoutubeID = 'ABCABCABCAB';
   const validYoutubeLink = `https://www.youtube.com/watch?v=${validYoutubeID}`;
   const badYoutubeLink = 'https://www.youtube.com/watch?v=BAD-ID';
   const validVimeoLink = 'https://vimeo.com/197700533';
 
-  before(async () => {
-    await new ArticleBrand({ slug: brandSlug }).save();
+  const articleBase = {
+    type: 'text',
+    imagePreviewUrl: 'abc',
+  };
 
-    await new User({
-      firstName: 'First',
-      lastName: 'Second',
-      email: authorEmail,
-      role: 'author',
-    }).save();
+  before(async () => {
+    ({ slug: brandSlug } = await addBrand());
+    articleBase.brandSlug = brandSlug;
+
+    ({ email: authorEmail } = await addAuthorUser());
 
     sessionCookie = await loginTestAdmin();
     defaultMetadata = await defaultObjectMetadata();
@@ -323,12 +273,6 @@ describe('Articles Bundled API', () => {
         expect(res.body.error).not.empty();
         expect(res.body.error.type).to.include('error');
       }));
-
-  const articleBase = {
-    brandSlug,
-    type: 'text',
-    imagePreviewUrl: 'abc',
-  };
 
   it('should fail to create an article with broken localization', () =>
     request

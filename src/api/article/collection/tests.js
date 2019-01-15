@@ -1,10 +1,16 @@
-import { supertest, expect, dropData, loginTestAdmin, defaultObjectMetadata } from 'utils/testing';
+import {
+  supertest,
+  expect,
+  dropData,
+  loginTestAdmin,
+  defaultObjectMetadata,
+  addBrand,
+} from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
 
 import Article from 'api/article/article.model';
-import ArticleBrand from 'api/article/brand/model';
 
 import ArticleCollection from './model';
 
@@ -14,7 +20,7 @@ describe('Collections API', () => {
   let sessionCookie;
 
   before(async () => {
-    const brand = await new ArticleBrand({ slug: 'wir' }).save();
+    const { _id: articleBrandId } = await addBrand();
 
     sessionCookie = await loginTestAdmin();
 
@@ -27,7 +33,7 @@ describe('Collections API', () => {
         new Article({
           type: 'text',
           imagePreviewUrl: 'image-url',
-          brand: brand._id,
+          brand: articleBrandId,
           metadata: defaultMetadata,
         }).save()
       );

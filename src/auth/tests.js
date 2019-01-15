@@ -1,4 +1,4 @@
-import { supertest, expect, dropData, addUser, testData } from 'utils/testing';
+import { supertest, expect, dropData, addAdminUser } from 'utils/testing';
 import * as permissions from 'constants/permissions';
 
 import app from 'server';
@@ -11,7 +11,7 @@ app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth API', () => {
   before(async () => {
-    await addUser(testData.admin);
+    await addAdminUser();
   });
 
   after(dropData);

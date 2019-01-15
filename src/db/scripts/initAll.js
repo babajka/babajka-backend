@@ -24,8 +24,11 @@ import path from 'path';
 import connectDb from 'db';
 import { User } from 'api/user';
 import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
+import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
+import { getInitObjectMetadata } from 'api/helpers/metadata';
 import * as permissions from 'constants/permissions';
+import { mainPageKey } from 'constants/storage';
 
 const defaultDataPath = `${__dirname}/../data/`;
 const dataFilenames = {
@@ -141,12 +144,20 @@ const getAuthorsDict = async () => {
   return authorsDict;
 };
 
-const initArticles = (articleBrandsDict, authorsDict) =>
+const retrieveMetadataTestingUser = async () => {
+  const testingUser = await User.findOne({ email: 'admin@babajka.io' });
+  return testingUser;
+};
+
+const initArticles = (articleBrandsDict, authorsDict, metadataTestingUser) =>
   Promise.all(
     initData.articles.map(async rawArticleData => {
+      const commonMetadata = getInitObjectMetadata(metadataTestingUser);
+
       const articleLocales = rawArticleData.locales;
       const articleData = omit(rawArticleData, ['locales', 'videoId']);
       articleData.brand = articleBrandsDict[articleData.brand];
+      articleData.metadata = commonMetadata;
       if (articleData.authorEmail) {
         articleData.author = authorsDict[articleData.authorEmail];
       }
@@ -170,6 +181,7 @@ const initArticles = (articleBrandsDict, authorsDict) =>
             ...articleLocales[locale],
             locale,
             articleId: article._id,
+            metadata: commonMetadata,
           });
           article.locales.push(data._id);
           return data.save();
@@ -209,6 +221,22 @@ const initArticleCollections = articlesDict => {
 const initDiaries = () =>
   Promise.all(initData.diaries.map(async diaryData => new Diary(diaryData).save()));
 
+const initMainPageState = metadataTestingUser =>
+  Article.find()
+    .then(articles => articles.map(({ _id }) => _id))
+    .then(async articleIds => {
+      const brandIds = await ArticleBrand.find().then(articleBrands =>
+        articleBrands.map(({ _id }) => _id)
+      );
+      return {
+        articles: articleIds,
+        brands: brandIds,
+      };
+    })
+    .then(entities =>
+      StorageEntity.setValue(mainPageKey, { blocks: [], data: entities }, metadataTestingUser._id)
+    );
+
 (async () => {
   try {
     getData();
@@ -227,8 +255,9 @@ const initDiaries = () =>
 
     const articleBrandsDict = await getArticleBrandsDict();
     const authorsDict = await getAuthorsDict();
+    const metadataTestingUser = await retrieveMetadataTestingUser();
 
-    await initArticles(articleBrandsDict, authorsDict);
+    await initArticles(articleBrandsDict, authorsDict, metadataTestingUser);
     const articlesCount = await Article.countDocuments();
     console.log(`Mongoose: insert ${articlesCount} article(s)`);
     const articleDict = await getArticlesDict();
@@ -240,6 +269,9 @@ const initDiaries = () =>
     await initDiaries();
     const diariesCount = await Diary.countDocuments();
     console.log(`Mongoose: insert ${diariesCount} diary(es)`);
+
+    await initMainPageState(metadataTestingUser);
+    console.log('Mongoose: main page state pushed');
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);
