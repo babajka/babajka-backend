@@ -22,9 +22,9 @@ import ArticleCollection from './collection/model';
 import LocalizedArticle from './localized/model';
 
 export const getAll = ({ query, user }, res, next) => {
-  const page = parseInt(query.page) || 0; // eslint-disable-line radix
-  const pageSize = parseInt(query.pageSize) || 10; // eslint-disable-line radix
-  const skip = page * pageSize;
+  const skip = parseInt(query.skip) || 0; // eslint-disable-line radix
+  // A limit() value of 0 is equivalent to setting no limit.
+  const take = parseInt(query.take) || 0; // eslint-disable-line radix
   let data;
   const articlesQuery = {
     $and: [
@@ -46,7 +46,7 @@ export const getAll = ({ query, user }, res, next) => {
     .populate(POPULATE_OPTIONS.metadata)
     .sort({ publishAt: 'desc' })
     .skip(skip)
-    .limit(pageSize)
+    .limit(take)
     .then(articles => articles.map(serializeArticle))
     .then(articles => {
       data = articles;
@@ -54,10 +54,7 @@ export const getAll = ({ query, user }, res, next) => {
     })
     .then(count => ({
       data,
-      next: count > skip + pageSize && {
-        page: page + 1,
-        pageSize,
-      },
+      total: count,
     }))
     .then(sendJson(res))
     .catch(next);

@@ -34,28 +34,38 @@ describe('Articles API', () => {
   after(dropData);
 
   describe('# Articles CRUD', () => {
-    it('should return 4 articles from the first page', () =>
-      request
-        .get('/api/articles?page=0&pageSize=4')
-        .expect(200)
-        .expect(({ body: { data, next } }) => {
-          expect(data).has.length(4);
-          expect(data[0].locales.be.slug).to.equal(articles[7].be.slug);
-          expect(data[0].locales.en.slug).to.equal(articles[7].en.slug);
-          expect(data[3].locales.be.slug).to.equal(articles[4].be.slug);
-          expect(data[3].locales.en.slug).to.equal(articles[4].en.slug);
-          expect(next.page).to.equal(1);
-          expect(next.pageSize).to.equal(4);
-        }));
-
-    it('should return 8 published articles and skip 1 unpublished', () =>
+    it('should return only 8 published without authorization', () =>
       request
         .get('/api/articles')
         .expect(200)
-        .expect(({ body: { data, next } }) => {
+        .expect(({ body: { data, total } }) => {
           expect(data).has.length(numberPublished);
+          expect(total).to.equal(numberPublished);
           expect(data.map(({ locales }) => locales.en.slug)).not.includes('draft');
-          expect(next).to.be.false();
+        }));
+
+    it('should default skip to 0 and take 1 article', () =>
+      request
+        .get('/api/articles?take=1')
+        .expect(200)
+        .expect(({ body: { data, total } }) => {
+          expect(data).has.length(1);
+          expect(data[0].locales.be.slug).to.equal('article-8-be');
+          expect(data[0].locales.en.slug).to.equal('article-8-en');
+          expect(total).to.equal(8);
+        }));
+
+    it('should properly apply skip and take 4 articles', () =>
+      request
+        .get('/api/articles?skip=1&take=4')
+        .expect(200)
+        .expect(({ body: { data, total } }) => {
+          expect(data).has.length(4);
+          expect(data[0].locales.be.slug).to.equal('article-7-be');
+          expect(data[0].locales.en.slug).to.equal('article-7-en');
+          expect(data[3].locales.be.slug).to.equal('article-4-be');
+          expect(data[3].locales.en.slug).to.equal('article-4-en');
+          expect(total).to.equal(8);
         }));
 
     it('should return an article by slug', () =>
@@ -86,9 +96,10 @@ describe('Articles API', () => {
         .get('/api/articles')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.data).has.length(numberPublished + numberUnpublished);
-          expect(res.body.data.map(({ locales }) => locales.be.slug)).includes(
+        .expect(({ body: { data, total } }) => {
+          expect(total).to.equal(numberPublished + numberUnpublished);
+          expect(data).has.length(numberPublished + numberUnpublished);
+          expect(data.map(({ locales }) => locales.be.slug)).includes(
             articles[numberPublished].be.slug
           );
         }));
@@ -98,9 +109,9 @@ describe('Articles API', () => {
         .get(`/api/articles/${articles[numberPublished].en.slug}`)
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.locales.en.slug).equal(articles[numberPublished].en.slug);
-          expect(res.body.locales.be.slug).equal(articles[numberPublished].be.slug);
+        .expect(({ body: { locales } }) => {
+          expect(locales.en.slug).equal(articles[numberPublished].en.slug);
+          expect(locales.be.slug).equal(articles[numberPublished].be.slug);
         }));
 
     let newArticleId;
@@ -115,10 +126,10 @@ describe('Articles API', () => {
           type: 'text',
         })
         .expect(200)
-        .expect(res => {
-          expect(res.body.publishAt).to.be.null();
-          expect(res.body.createdAt).to.be.not.null();
-          newArticleId = res.body._id;
+        .expect(({ body }) => {
+          expect(body.publishAt).to.be.null();
+          expect(body.createdAt).to.be.not.null();
+          newArticleId = body._id;
         }));
 
     it('should contain a newly created article if querying with permissions', () =>
@@ -126,9 +137,10 @@ describe('Articles API', () => {
         .get('/api/articles')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.data).has.length(10);
-          expect(res.body.data.map(({ _id }) => _id)).includes(newArticleId);
+        .expect(({ body: { data, total } }) => {
+          expect(total).to.equal(10);
+          expect(data).has.length(10);
+          expect(data.map(({ _id }) => _id)).includes(newArticleId);
         }));
 
     it('should not contain a newly created article if querying with no permissions', () =>
@@ -162,11 +174,11 @@ describe('Articles API', () => {
         })
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          articleId = res.body._id;
-          expect(res.body.imagePreviewUrl).to.equal('new-image-url');
-          expect(res.body.active).to.equal(true);
-          expect(res.body.locales.en.title).to.equal('title-new');
+        .expect(({ body }) => {
+          articleId = body._id;
+          expect(body.imagePreviewUrl).to.equal('new-image-url');
+          expect(body.active).to.equal(true);
+          expect(body.locales.en.title).to.equal('title-new');
         }));
 
     it('should not get an article by ID', () =>
@@ -177,9 +189,9 @@ describe('Articles API', () => {
         .get(`/api/articles/${articleId}`)
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.imagePreviewUrl).equal('new-image-url');
-          expect(res.body.locales.en.slug).to.equal('article-new');
+        .expect(({ body }) => {
+          expect(body.imagePreviewUrl).equal('new-image-url');
+          expect(body.locales.en.slug).to.equal('article-new');
         }));
 
     it('should fail to get an article due to invalid ID', () =>
@@ -200,9 +212,9 @@ describe('Articles API', () => {
         .send({ active: true, locales: { en: {} } })
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.imagePreviewUrl).to.equal('new-image-url');
-          expect(res.body.active).to.equal(true);
+        .expect(({ body }) => {
+          expect(body.imagePreviewUrl).to.equal('new-image-url');
+          expect(body.active).to.equal(true);
         }));
 
     it('should get an article by slug', () =>
@@ -225,8 +237,9 @@ describe('Articles API', () => {
         .get('/api/articles')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.data).has.length(9);
+        .expect(({ body: { data, total } }) => {
+          expect(total).to.equal(9);
+          expect(data).has.length(9);
         }));
   });
 });

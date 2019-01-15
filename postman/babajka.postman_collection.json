@@ -372,7 +372,7 @@
 					"response": []
 				},
 				{
-					"name": "Articles: get all with pagination",
+					"name": "Articles: get an article using skip/take feature",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -381,7 +381,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles?page=2&pageSize=1",
+							"raw": "{{DOMAIN}}{{API_URL}}/articles?skip=1&take=1",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
@@ -390,12 +390,12 @@
 							],
 							"query": [
 								{
-									"key": "page",
-									"value": "2",
+									"key": "skip",
+									"value": "1",
 									"equals": true
 								},
 								{
-									"key": "pageSize",
+									"key": "take",
 									"value": "1",
 									"equals": true
 								}
