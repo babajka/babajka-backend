@@ -15,9 +15,11 @@ import 'db/connect';
 const request = supertest.agent(app.listen());
 
 describe('Articles API', () => {
-  let articles;
   let brandSlug;
+  let dbArticles;
   let sessionCookie;
+
+  let articleUnpublished;
 
   const numberPublished = 8;
   const numberUnpublished = 1;
@@ -28,7 +30,9 @@ describe('Articles API', () => {
 
     sessionCookie = await loginTestAdmin();
 
-    articles = await addArticles(articleBrandId, numberPublished, numberUnpublished);
+    dbArticles = await addArticles(articleBrandId, numberPublished, numberUnpublished);
+
+    articleUnpublished = dbArticles[numberPublished];
   });
 
   after(dropData);
@@ -50,8 +54,9 @@ describe('Articles API', () => {
         .expect(200)
         .expect(({ body: { data, total } }) => {
           expect(data).has.length(1);
-          expect(data[0].locales.be.slug).to.equal('article-8-be');
-          expect(data[0].locales.en.slug).to.equal('article-8-en');
+          const idx = numberPublished - 1;
+          expect(data[0].locales.be.slug).to.equal(dbArticles[idx].locales.be.slug);
+          expect(data[0].locales.en.slug).to.equal(dbArticles[idx].locales.en.slug);
           expect(total).to.equal(8);
         }));
 
@@ -61,19 +66,21 @@ describe('Articles API', () => {
         .expect(200)
         .expect(({ body: { data, total } }) => {
           expect(data).has.length(4);
-          expect(data[0].locales.be.slug).to.equal('article-7-be');
-          expect(data[0].locales.en.slug).to.equal('article-7-en');
-          expect(data[3].locales.be.slug).to.equal('article-4-be');
-          expect(data[3].locales.en.slug).to.equal('article-4-en');
+          const idx1 = numberPublished - 1 - 1;
+          const idx2 = numberPublished - 1 - 4;
+          expect(data[0].locales.be.slug).to.equal(dbArticles[idx1].locales.be.slug);
+          expect(data[0].locales.en.slug).to.equal(dbArticles[idx1].locales.en.slug);
+          expect(data[3].locales.be.slug).to.equal(dbArticles[idx2].locales.be.slug);
+          expect(data[3].locales.en.slug).to.equal(dbArticles[idx2].locales.en.slug);
           expect(total).to.equal(8);
         }));
 
     it('should return an article by slug', () =>
       request
-        .get('/api/articles/article-2-be')
+        .get(`/api/articles/${dbArticles[2].locales.en.slug}`)
         .expect(200)
-        .expect(res => {
-          expect(res.body.locales.be.slug).equal('article-2-be');
+        .expect(({ body }) => {
+          expect(body.locales.be.slug).equal(dbArticles[2].locales.be.slug);
         }));
 
     it('should not return with bad slug', () =>
@@ -97,21 +104,22 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(({ body: { data, total } }) => {
-          expect(total).to.equal(numberPublished + numberUnpublished);
-          expect(data).has.length(numberPublished + numberUnpublished);
+          const totalNumber = numberPublished + numberUnpublished;
+          expect(total).to.equal(totalNumber);
+          expect(data).has.length(totalNumber);
           expect(data.map(({ locales }) => locales.be.slug)).includes(
-            articles[numberPublished].be.slug
+            articleUnpublished.locales.be.slug
           );
         }));
 
     it('should return unpublished', () =>
       request
-        .get(`/api/articles/${articles[numberPublished].en.slug}`)
+        .get(`/api/articles/${dbArticles[numberPublished].locales.en.slug}`)
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(({ body: { locales } }) => {
-          expect(locales.en.slug).equal(articles[numberPublished].en.slug);
-          expect(locales.be.slug).equal(articles[numberPublished].be.slug);
+          expect(locales.en.slug).equal(articleUnpublished.locales.en.slug);
+          expect(locales.be.slug).equal(articleUnpublished.locales.be.slug);
         }));
 
     let newArticleId;
@@ -150,7 +158,7 @@ describe('Articles API', () => {
         .expect(res => {
           expect(res.body.data).has.length(8);
           expect(res.body.data.map(({ _id }) => _id)).not.includes(newArticleId);
-          expect(res.body.data.map(({ _id }) => _id)).not.includes(articles[numberPublished]._id);
+          expect(res.body.data.map(({ _id }) => _id)).not.includes(articleUnpublished._id);
         }));
 
     it('should create a localization and assign to the article', () =>

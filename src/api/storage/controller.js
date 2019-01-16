@@ -11,15 +11,15 @@ import { StorageEntity } from './model';
 
 // TODO: to sync calls in this dict with the similar calls in controllers.
 const mainPageEntities = {
-  articles: options =>
-    Article.find(options.query)
+  articles: ({ query, user }) =>
+    Article.find(query)
       .populate('author', POPULATE_OPTIONS.author)
       .populate('brand', POPULATE_OPTIONS.brand)
-      .populate(POPULATE_OPTIONS.collection(options.user))
+      .populate(POPULATE_OPTIONS.collection(user))
       .populate(POPULATE_OPTIONS.locales)
       .populate(POPULATE_OPTIONS.metadata)
       .then(articles => articles.map(serializeArticle)),
-  brands: options => ArticleBrand.find(options.query).select('-_id -__v'),
+  brands: ({ query }) => ArticleBrand.find(query).select('-__v'),
 };
 
 export const getMainPage = ({ user }, res, next) =>

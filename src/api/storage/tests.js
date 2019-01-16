@@ -47,20 +47,21 @@ describe('Storage Helpers', () => {
 });
 
 describe('Storage API', () => {
+  let articleBrandId;
+  let dbArticles;
   let sessionCookie;
-  let articles;
   let validMainPageState;
 
   before(async () => {
     sessionCookie = await loginTestAdmin();
 
-    const { _id: articleBrandId } = await addBrand();
+    ({ _id: articleBrandId } = await addBrand());
 
-    articles = await addArticles(articleBrandId, 3, 2);
+    dbArticles = await addArticles(articleBrandId, 3, 2);
 
     validMainPageState = {
-      blocks: {},
-      data: { articles: articles.slice(0, 3).map(({ _id }) => _id), brands: [articleBrandId] },
+      blocks: [],
+      data: { articles: dbArticles.slice(0, 3).map(({ _id }) => _id), brands: [articleBrandId] },
     };
   });
 
@@ -76,13 +77,16 @@ describe('Storage API', () => {
     request
       .post('/api/storage/mainPage')
       .set('Cookie', sessionCookie)
-      .send({ blocks: {}, data: { badEntity: ['x'] } })
+      .send({ blocks: [], data: { badEntity: ['x'] } })
       .expect(400)
       .expect(({ body }) => {
         expect(body).not.empty();
         expect(body.error).not.empty();
         expect(body.error.mainPageEntities).to.contain('not valid');
       }));
+
+  it('should not found main page state as it was never initialized', () =>
+    request.get('/api/storage/mainPage').expect(404));
 
   it('should succeed in pushing main page state', () =>
     request
@@ -100,9 +104,13 @@ describe('Storage API', () => {
       .get('/api/storage/mainPage')
       .set('Cookie', sessionCookie)
       .expect(200)
-      .expect(({ body }) => {
-        expect(body).not.empty();
-        expect(body.data.articles).has.length(3);
-        expect(body.data.brands).has.length(1);
+      .expect(({ body: { blocks, data: { articles, brands } } }) => {
+        expect(blocks).to.be.an('array');
+        expect(articles).has.length(3);
+        expect(articles.map(({ _id }) => _id)).to.have.members(
+          dbArticles.slice(0, 3).map(({ _id }) => _id.toString())
+        );
+        expect(brands).has.length(1);
+        expect(brands[0]._id).to.equal(articleBrandId.toString());
       }));
 });

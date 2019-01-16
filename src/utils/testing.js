@@ -85,21 +85,19 @@ export const addBrand = () => new ArticleBrand(testData.brands.default).save();
 
 // TODO: this method could benefit from refactoring. To consider.
 export const addArticles = async (articleBrandId, numberPublished, numberUnpublished) => {
-  let promises = [];
+  const defaultMetadata = await defaultObjectMetadata();
+  const totalNumber = numberPublished + numberUnpublished;
 
   const articles = [];
 
-  const defaultMetadata = await defaultObjectMetadata();
+  await Promise.all(
+    [...Array(totalNumber).keys()].map(i => {
+      const day = i < 9 ? `0${i + 1}` : i + 1;
+      const passedDate = new Date(`2017-11-${day}T17:25:43.511Z`);
+      const futureDate = new Date(`2027-11-${day}T16:25:43.511Z`);
+      const date = i < numberPublished ? passedDate : futureDate;
 
-  const totalNumber = numberPublished + numberUnpublished;
-
-  for (let i = 1; i <= totalNumber; i += 1) {
-    const passedDate = new Date(`2017-11-02T1${i}:25:43.511Z`);
-    const futureDate = new Date(`2027-11-02T1${i}:25:43.511Z`);
-    const date = i <= numberPublished ? passedDate : futureDate;
-
-    promises.push(
-      new Article({
+      return new Article({
         brand: articleBrandId,
         type: 'text',
         imagePreviewUrl: 'image-url',
@@ -108,11 +106,10 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
       })
         .save()
         .then(({ _id }) => {
-          articles.push({ _id, publishAt: date });
-        })
-    );
-  }
-  await Promise.all(promises);
+          articles.push({ _id, publishAt: date, locales: {} });
+        });
+    })
+  );
 
   articles.sort((a, b) => {
     if (a.publishAt < b.publishAt) {
@@ -124,31 +121,35 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
     return 0;
   });
 
-  promises = [];
-  ['en', 'be'].forEach(loc => {
-    for (let i = 1; i <= totalNumber; i += 1) {
-      promises.push(
-        new LocalizedArticle({
-          locale: `${loc}`,
-          title: `title-${i}-${loc}`,
-          subtitle: `subtitle-${i}-${loc}`,
-          slug: i <= numberPublished ? `article-${i}-${loc}` : `article-draft-${i}-${loc}`,
-          articleId: articles[i - 1]._id,
-          metadata: defaultMetadata,
-        })
-          .save()
-          .then(locArticle => {
-            articles[i - 1][loc] = locArticle;
-            return locArticle;
-          })
-          // eslint-disable-next-line no-loop-func
-          .then(({ _id, articleId }) =>
-            Article.findOneAndUpdate({ _id: articleId }, { $push: { locales: _id } }).exec()
+  await Promise.all(
+    [...Array(totalNumber).keys()].reduce(
+      (r, i) =>
+        r.push(
+          ...['en', 'be'].map(loc =>
+            new LocalizedArticle({
+              locale: `${loc}`,
+              title: `title-${i + 1}-${loc}`,
+              subtitle: `subtitle-${i + 1}-${loc}`,
+              slug:
+                articles[i].publishAt < Date.now()
+                  ? `article-${i + 1}-${loc}`
+                  : `article-draft-${i + 1}-${loc}`,
+              articleId: articles[i]._id,
+              metadata: defaultMetadata,
+            })
+              .save()
+              .then(locArticle => {
+                articles[i].locales[loc] = locArticle;
+                return locArticle;
+              })
+              .then(({ _id, articleId }) =>
+                Article.findOneAndUpdate({ _id: articleId }, { $push: { locales: _id } }).exec()
+              )
           )
-      );
-    }
-  });
-  await Promise.all(promises);
+        ) && r,
+      []
+    )
+  );
 
   return articles;
 };
