@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import supertest from 'supertest';
 import chai from 'chai';
 import dirtyChai from 'dirty-chai';
+import flatten from 'lodash/flatten';
 
 import app from 'server';
 import * as permissions from 'constants/permissions';
@@ -22,7 +23,7 @@ export const dropData = () => mongoose.connection.db.dropDatabase();
 
 const request = supertest.agent(app.listen());
 
-const testData = {
+const TEST_DATA = {
   users: {
     admin: {
       firstName: 'Name',
@@ -52,9 +53,9 @@ export const addUser = async data => {
   return user;
 };
 
-export const addAdminUser = () => addUser(testData.users.admin);
+export const addAdminUser = () => addUser(TEST_DATA.users.admin);
 
-export const addAuthorUser = () => addUser(testData.users.author);
+export const addAuthorUser = () => addUser(TEST_DATA.users.author);
 
 export const testLogin = ({ email, password }) =>
   request
@@ -67,12 +68,12 @@ export const testLogin = ({ email, password }) =>
     });
 
 export const loginTestAdmin = async () => {
-  await addUser(testData.users.admin);
-  return testLogin(testData.users.admin);
+  await addUser(TEST_DATA.users.admin);
+  return testLogin(TEST_DATA.users.admin);
 };
 
 export const defaultObjectMetadata = async () => {
-  const admin = await User.findOne({ email: testData.users.admin.email }).exec();
+  const admin = await User.findOne({ email: TEST_DATA.users.admin.email }).exec();
   return {
     createdAt: Date.now(),
     createdBy: admin._id,
@@ -81,18 +82,18 @@ export const defaultObjectMetadata = async () => {
   };
 };
 
-export const addBrand = () => new ArticleBrand(testData.brands.default).save();
+export const addBrand = () => new ArticleBrand(TEST_DATA.brands.default).save();
+
+const normalizedDay = i => (i < 9 ? `0${i + 1}` : i + 1);
 
 // TODO: this method could benefit from refactoring. To consider.
 export const addArticles = async (articleBrandId, numberPublished, numberUnpublished) => {
   const defaultMetadata = await defaultObjectMetadata();
   const totalNumber = numberPublished + numberUnpublished;
 
-  const articles = [];
-
-  await Promise.all(
-    [...Array(totalNumber).keys()].map(i => {
-      const day = i < 9 ? `0${i + 1}` : i + 1;
+  const articles = await Promise.all(
+    Array.from({ length: totalNumber }).map((_, i) => {
+      const day = normalizedDay(i);
       const passedDate = new Date(`2017-11-${day}T17:25:43.511Z`);
       const futureDate = new Date(`2027-11-${day}T16:25:43.511Z`);
       const date = i < numberPublished ? passedDate : futureDate;
@@ -105,49 +106,37 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
         publishAt: date,
       })
         .save()
-        .then(({ _id }) => {
-          articles.push({ _id, publishAt: date, locales: {} });
-        });
+        .then(({ _id }) => ({ _id, publishAt: date, locales: {} }));
     })
   );
 
-  articles.sort((a, b) => {
-    if (a.publishAt < b.publishAt) {
-      return -1;
-    }
-    if (a.publishAt > b.publishAt) {
-      return 1;
-    }
-    return 0;
-  });
+  articles.sort((a, b) => a.publishAt - b.publishAt);
 
   await Promise.all(
-    [...Array(totalNumber).keys()].reduce(
-      (r, i) =>
-        r.push(
-          ...['en', 'be'].map(loc =>
-            new LocalizedArticle({
-              locale: `${loc}`,
-              title: `title-${i + 1}-${loc}`,
-              subtitle: `subtitle-${i + 1}-${loc}`,
-              slug:
-                articles[i].publishAt < Date.now()
-                  ? `article-${i + 1}-${loc}`
-                  : `article-draft-${i + 1}-${loc}`,
-              articleId: articles[i]._id,
-              metadata: defaultMetadata,
+    flatten(
+      Array.from({ length: totalNumber }).map((_, i) =>
+        ['be', 'en'].map(loc =>
+          new LocalizedArticle({
+            locale: `${loc}`,
+            title: `title-${i + 1}-${loc}`,
+            subtitle: `subtitle-${i + 1}-${loc}`,
+            slug:
+              articles[i].publishAt < Date.now()
+                ? `article-${i + 1}-${loc}`
+                : `article-draft-${i + 1}-${loc}`,
+            articleId: articles[i]._id,
+            metadata: defaultMetadata,
+          })
+            .save()
+            .then(locArticle => {
+              articles[i].locales[loc] = locArticle;
+              return locArticle;
             })
-              .save()
-              .then(locArticle => {
-                articles[i].locales[loc] = locArticle;
-                return locArticle;
-              })
-              .then(({ _id, articleId }) =>
-                Article.findOneAndUpdate({ _id: articleId }, { $push: { locales: _id } }).exec()
-              )
-          )
-        ) && r,
-      []
+            .then(({ _id, articleId }) =>
+              Article.findOneAndUpdate({ _id: articleId }, { $push: { locales: _id } }).exec()
+            )
+        )
+      )
     )
   );
 

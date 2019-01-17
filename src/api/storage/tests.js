@@ -48,20 +48,22 @@ describe('Storage Helpers', () => {
 
 describe('Storage API', () => {
   let articleBrandId;
-  let dbArticles;
+  let dbArticleIds;
   let sessionCookie;
   let validMainPageState;
 
   before(async () => {
     sessionCookie = await loginTestAdmin();
 
-    ({ _id: articleBrandId } = await addBrand());
+    const brand = await addBrand();
+    articleBrandId = brand._id;
 
-    dbArticles = await addArticles(articleBrandId, 3, 2);
+    const rawArticles = await addArticles(articleBrandId, 3, 2);
+    dbArticleIds = rawArticles.slice(0, 3).map(({ _id }) => _id.toString());
 
     validMainPageState = {
-      blocks: [],
-      data: { articles: dbArticles.slice(0, 3).map(({ _id }) => _id), brands: [articleBrandId] },
+      blocks: [{ type: 'featured' }, { type: 'diary' }],
+      data: { articles: dbArticleIds, brands: [articleBrandId] },
     };
   });
 
@@ -96,6 +98,7 @@ describe('Storage API', () => {
       .expect(200)
       .expect(({ body }) => {
         expect(body).not.empty();
+        expect(body.blocks).to.deep.equal(validMainPageState.blocks);
         expect(body.data.articles).has.length(3);
       }));
 
@@ -105,11 +108,9 @@ describe('Storage API', () => {
       .set('Cookie', sessionCookie)
       .expect(200)
       .expect(({ body: { blocks, data: { articles, brands } } }) => {
-        expect(blocks).to.be.an('array');
+        expect(blocks).to.deep.equal(validMainPageState.blocks);
         expect(articles).has.length(3);
-        expect(articles.map(({ _id }) => _id)).to.have.members(
-          dbArticles.slice(0, 3).map(({ _id }) => _id.toString())
-        );
+        expect(articles.map(({ _id }) => _id)).to.have.members(dbArticleIds);
         expect(brands).has.length(1);
         expect(brands[0]._id).to.equal(articleBrandId.toString());
       }));

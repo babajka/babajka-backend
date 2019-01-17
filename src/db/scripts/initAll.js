@@ -28,7 +28,7 @@ import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 import * as permissions from 'constants/permissions';
-import { mainPageKey } from 'constants/storage';
+import { MAIN_PAGE_KEY } from 'constants/storage';
 
 const defaultDataPath = `${__dirname}/../data/`;
 const dataFilenames = {
@@ -233,8 +233,12 @@ const initMainPageState = metadataTestingUser =>
         brands: brandIds,
       };
     })
-    .then(entities =>
-      StorageEntity.setValue(mainPageKey, { blocks: [], data: entities }, metadataTestingUser._id)
+    .then(data =>
+      StorageEntity.setValue(
+        MAIN_PAGE_KEY,
+        { blocks: [{ type: 'featured' }, { type: 'diary' }], data },
+        metadataTestingUser._id
+      )
     );
 
 (async () => {

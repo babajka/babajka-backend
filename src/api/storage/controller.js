@@ -1,7 +1,7 @@
 import { sendJson } from 'utils/api';
 
 import { checkIsFound } from 'utils/validation';
-import { mainPageKey } from 'constants/storage';
+import { MAIN_PAGE_KEY } from 'constants/storage';
 
 import { Article } from 'api/article';
 import { serializeArticle, POPULATE_OPTIONS } from 'api/article/article.model';
@@ -10,7 +10,7 @@ import { ArticleBrand } from 'api/article/brand';
 import { StorageEntity } from './model';
 
 // TODO: to sync calls in this dict with the similar calls in controllers.
-const mainPageEntities = {
+const MAIN_PAGE_ENTITIES = {
   articles: ({ query, user }) =>
     Article.find(query)
       .populate('author', POPULATE_OPTIONS.author)
@@ -23,21 +23,21 @@ const mainPageEntities = {
 };
 
 export const getMainPage = ({ user }, res, next) =>
-  StorageEntity.getValue(mainPageKey)
+  StorageEntity.getValue(MAIN_PAGE_KEY)
     .then(checkIsFound)
     .then(obj => obj.document)
-    .then(async document => {
+    .then(async ({ blocks, data }) => {
       const result = {
-        blocks: document.blocks,
+        blocks,
         data: {},
       };
 
       await Promise.all(
-        Object.keys(mainPageEntities).map(supportedEntity =>
-          mainPageEntities[supportedEntity]({
+        Object.entries(MAIN_PAGE_ENTITIES).map(([supportedEntity, queryFunction]) =>
+          queryFunction({
             query: {
               _id: {
-                $in: document.data[supportedEntity],
+                $in: data[supportedEntity],
               },
             },
             user,
@@ -53,7 +53,7 @@ export const getMainPage = ({ user }, res, next) =>
     .catch(next);
 
 export const setMainPage = ({ body, user }, res, next) =>
-  StorageEntity.setValue(mainPageKey, body, user._id)
+  StorageEntity.setValue(MAIN_PAGE_KEY, body, user._id)
     .then(entity => entity.document)
     .then(sendJson(res))
     .catch(next);

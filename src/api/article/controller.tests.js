@@ -25,8 +25,8 @@ describe('Articles API', () => {
   const numberUnpublished = 1;
 
   before(async () => {
-    let articleBrandId;
-    ({ _id: articleBrandId, slug: brandSlug } = await addBrand());
+    const { _id: articleBrandId, slug } = await addBrand();
+    brandSlug = slug;
 
     sessionCookie = await loginTestAdmin();
 
@@ -269,10 +269,12 @@ describe('Articles Bundled API', () => {
   };
 
   before(async () => {
-    ({ slug: brandSlug } = await addBrand());
-    articleBase.brandSlug = brandSlug;
+    const { slug } = await addBrand();
+    brandSlug = slug;
+    articleBase.brandSlug = slug;
 
-    ({ email: authorEmail } = await addAuthorUser());
+    const { email } = await addAuthorUser();
+    authorEmail = email;
 
     sessionCookie = await loginTestAdmin();
     defaultMetadata = await defaultObjectMetadata();
