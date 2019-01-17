@@ -4,7 +4,6 @@ import { checkIsFound } from 'utils/validation';
 import { MAIN_PAGE_KEY } from 'constants/storage';
 
 import { Article } from 'api/article';
-import { DEFAULT_ARTICLE_QUERY } from 'api/article/article.model';
 import { ArticleBrand } from 'api/article/brand';
 
 import { StorageEntity } from './model';
@@ -39,7 +38,11 @@ export const getMainPage = ({ user }, res, next) =>
 
       promises.push(
         Article.query({
-          query: DEFAULT_ARTICLE_QUERY(user),
+          query: {
+            active: true,
+            locales: { $exists: true },
+            publishAt: { $lt: Date.now() },
+          },
           limit: 3,
           sort: { publishAt: 'desc' },
           user,
