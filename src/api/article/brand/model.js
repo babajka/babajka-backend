@@ -25,6 +25,11 @@ const ArticleBrandSchema = new Schema({
   },
 });
 
+// eslint-disable-next-line func-names
+ArticleBrandSchema.statics.query = function({ query = {} }) {
+  return this.find(query).select('-__v');
+};
+
 const ArticleBrand = mongoose.model('ArticleBrand', ArticleBrandSchema);
 
 export default ArticleBrand;

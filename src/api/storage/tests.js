@@ -107,11 +107,12 @@ describe('Storage API', () => {
       .get('/api/storage/mainPage')
       .set('Cookie', sessionCookie)
       .expect(200)
-      .expect(({ body: { blocks, data: { articles, brands } } }) => {
+      .expect(({ body: { blocks, data: { articles, brands, latestArticles } } }) => {
         expect(blocks).to.deep.equal(validMainPageState.blocks);
         expect(articles).has.length(3);
         expect(articles.map(({ _id }) => _id)).to.have.members(dbArticleIds);
         expect(brands).has.length(1);
         expect(brands[0]._id).to.equal(articleBrandId.toString());
+        expect(latestArticles).have.length(3);
       }));
 });

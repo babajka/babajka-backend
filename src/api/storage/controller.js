@@ -4,22 +4,14 @@ import { checkIsFound } from 'utils/validation';
 import { MAIN_PAGE_KEY } from 'constants/storage';
 
 import { Article } from 'api/article';
-import { serializeArticle, POPULATE_OPTIONS } from 'api/article/article.model';
+import { DEFAULT_ARTICLE_QUERY } from 'api/article/article.model';
 import { ArticleBrand } from 'api/article/brand';
 
 import { StorageEntity } from './model';
 
-// TODO: to sync calls in this dict with the similar calls in controllers.
 const MAIN_PAGE_ENTITIES = {
-  articles: ({ query, user }) =>
-    Article.find(query)
-      .populate('author', POPULATE_OPTIONS.author)
-      .populate('brand', POPULATE_OPTIONS.brand)
-      .populate(POPULATE_OPTIONS.collection(user))
-      .populate(POPULATE_OPTIONS.locales)
-      .populate(POPULATE_OPTIONS.metadata)
-      .then(articles => articles.map(serializeArticle)),
-  brands: ({ query }) => ArticleBrand.find(query).select('-__v'),
+  articles: ({ query, user }) => Article.query({ query, user }),
+  brands: ({ query }) => ArticleBrand.query({ query }),
 };
 
 export const getMainPage = ({ user }, res, next) =>
@@ -32,20 +24,31 @@ export const getMainPage = ({ user }, res, next) =>
         data: {},
       };
 
-      await Promise.all(
-        Object.entries(MAIN_PAGE_ENTITIES).map(([supportedEntity, queryFunction]) =>
-          queryFunction({
-            query: {
-              _id: {
-                $in: data[supportedEntity],
-              },
+      const promises = Object.entries(MAIN_PAGE_ENTITIES).map(([supportedEntity, queryFunction]) =>
+        queryFunction({
+          query: {
+            _id: {
+              $in: data[supportedEntity],
             },
-            user,
-          }).then(obj => {
-            result.data[supportedEntity] = obj;
-          })
-        )
+          },
+          user,
+        }).then(obj => {
+          result.data[supportedEntity] = obj;
+        })
       );
+
+      promises.push(
+        Article.query({
+          query: DEFAULT_ARTICLE_QUERY(user),
+          limit: 3,
+          sort: { publishAt: 'desc' },
+          user,
+        }).then(obj => {
+          result.data.latestArticles = obj;
+        })
+      );
+
+      await Promise.all(promises);
 
       return result;
     })
