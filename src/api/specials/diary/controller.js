@@ -34,7 +34,7 @@ export const getDay = async ({ params: { locale, month, day } }, res, next) => {
     if (!bestNext) {
       // The very end of the year might be requested.
       [bestNext] = await Diary.find({ locale })
-        .sort({ colloquialDate: 'asc' })
+        .sort({ colloquialDateHash: 'asc' })
         .limit(1)
         .exec();
     }

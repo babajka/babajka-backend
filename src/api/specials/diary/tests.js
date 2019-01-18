@@ -9,27 +9,41 @@ const request = supertest.agent(app.listen());
 
 describe('Diary API', () => {
   before(async () => {
-    await Promise.all([
-      Diary({
-        author: 'Author1',
-        text: 'Diary02-27',
-        colloquialDateHash: '0227',
-        locale: 'be',
-      }).save(),
-      Diary({
-        author: 'Author2',
-        text: 'Diary02-28',
-        colloquialDateHash: '0228',
-        locale: 'be',
-        year: '2018',
-      }).save(),
-      Diary({
-        author: 'Author3',
-        text: 'Diary03-01',
-        colloquialDateHash: '0301',
-        locale: 'be',
-      }).save(),
-    ]);
+    await Promise.all(
+      [
+        {
+          author: 'Author1',
+          text: 'Diary01-15',
+          colloquialDateHash: '0115',
+          locale: 'be',
+        },
+        {
+          author: 'Author2',
+          text: 'Diary02-27',
+          colloquialDateHash: '0227',
+          locale: 'be',
+        },
+        {
+          author: 'Author3',
+          text: 'Diary02-28',
+          colloquialDateHash: '0228',
+          locale: 'be',
+          year: '2018',
+        },
+        {
+          author: 'Author4',
+          text: 'Diary03-04',
+          colloquialDateHash: '0304',
+          locale: 'be',
+        },
+        {
+          author: 'Author5',
+          text: 'Diary05-17',
+          colloquialDateHash: '0517',
+          locale: 'be',
+        },
+      ].map(diaryData => Diary(diaryData).save())
+    );
   });
 
   after(dropData);
@@ -40,48 +54,54 @@ describe('Diary API', () => {
         .get('/api/specials/diary/be/02/28/')
         .expect(200)
         .expect(({ body: { data, prev, next } }) => {
-          expect(data.author).to.equal('Author2');
+          expect(data.author).to.equal('Author3');
           expect(data.year).to.equal('2018');
           expect(data.month).to.equal('02');
           expect(data.day).to.equal('28');
           expect(prev.month).to.equal('02');
           expect(prev.day).to.equal('27');
           expect(next.month).to.equal('03');
-          expect(next.day).to.equal('01');
+          expect(next.day).to.equal('04');
         }));
 
     it('should return the first diary of the year', () =>
       request
-        .get('/api/specials/diary/be/02/27')
+        .get('/api/specials/diary/be/01/15')
         .expect(200)
         .expect(({ body: { data, prev, next } }) => {
           expect(data.author).to.equal('Author1');
-          expect(prev.month).to.equal('03');
-          expect(prev.day).to.equal('01');
-          expect(next.month).to.equal('02');
-          expect(next.day).to.equal('28');
-        }));
-
-    it('should return the last diary of the year', () =>
-      request
-        .get('/api/specials/diary/be/03/01')
-        .expect(200)
-        .expect(({ body: { data, prev, next } }) => {
-          expect(data.author).to.equal('Author3');
-          expect(prev.month).to.equal('02');
-          expect(prev.day).to.equal('28');
+          expect(data.month).to.equal('01');
+          expect(data.day).to.equal('15');
+          expect(prev.month).to.equal('05');
+          expect(prev.day).to.equal('17');
           expect(next.month).to.equal('02');
           expect(next.day).to.equal('27');
         }));
 
+    it('should return the last diary of the year', () =>
+      request
+        .get('/api/specials/diary/be/05/17')
+        .expect(200)
+        .expect(({ body: { data, prev, next } }) => {
+          expect(data.author).to.equal('Author5');
+          expect(data.month).to.equal('05');
+          expect(data.day).to.equal('17');
+          expect(prev.month).to.equal('03');
+          expect(prev.day).to.equal('04');
+          expect(next.month).to.equal('01');
+          expect(next.day).to.equal('15');
+        }));
+
     it('should return noting when request unexisting diary', () =>
       request
-        .get('/api/specials/diary/be/01/15')
+        .get('/api/specials/diary/be/04/15')
         .expect(200)
         .expect(({ body: { data, prev, next } }) => {
           expect(data).to.be.empty();
           expect(prev.month).to.equal('03');
-          expect(next.month).to.equal('02');
+          expect(prev.day).to.equal('04');
+          expect(next.month).to.equal('05');
+          expect(next.day).to.equal('17');
         }));
   });
 });
