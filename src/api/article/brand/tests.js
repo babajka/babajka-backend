@@ -8,10 +8,10 @@ import ArticleBrand from './model';
 const request = supertest.agent(app.listen());
 
 describe('Brands API', () => {
-  const brands = ['Wir', 'Kurilka', 'Minsk'];
+  const brandSlugs = ['wir', 'kurilka', 'minsk'];
 
   before(async () => {
-    const promises = brands.map(brand => new ArticleBrand({ slug: brand }).save());
+    const promises = brandSlugs.map(brandSlug => new ArticleBrand({ slug: brandSlug }).save());
     await Promise.all(promises);
   });
 
@@ -23,7 +23,7 @@ describe('Brands API', () => {
         .get('/api/articles/brands')
         .expect(200)
         .expect(res => {
-          expect(res.body).has.length(brands.length);
+          expect(res.body).has.length(brandSlugs.length);
         }));
   });
 });

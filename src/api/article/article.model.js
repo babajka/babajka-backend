@@ -112,8 +112,6 @@ ArticleSchema.pre('validate', function validateArticleType(next) {
   next();
 });
 
-const Article = mongoose.model('Article', ArticleSchema);
-
 // includeCollection flag here is to be able to avoid including collections
 // in case we're serializing an article into the ArticleCollection object..
 export const serializeArticle = (article, { includeCollection = true } = {}) => {
@@ -228,5 +226,31 @@ export const POPULATE_OPTIONS = {
     { path: 'metadata.createdBy', select: 'email' },
   ],
 };
+
+export const DEFAULT_ARTICLE_QUERY = user => ({
+  $and: [
+    {
+      active: true,
+      locales: { $exists: true },
+    },
+    queryUnpublished(user),
+  ],
+});
+
+// eslint-disable-next-line func-names
+ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
+  return this.find(query)
+    .populate('author', POPULATE_OPTIONS.author)
+    .populate('brand', POPULATE_OPTIONS.brand)
+    .populate(POPULATE_OPTIONS.collection(user))
+    .populate(POPULATE_OPTIONS.locales)
+    .populate(POPULATE_OPTIONS.metadata)
+    .sort(sort)
+    .skip(skip)
+    .limit(limit)
+    .then(articles => articles.map(serializeArticle));
+};
+
+const Article = mongoose.model('Article', ArticleSchema);
 
 export default Article;

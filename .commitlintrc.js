@@ -18,6 +18,7 @@ module.exports = {
         'specials',
         'config',
         'db',
+        'storage',
         'postman',
       ],
     ],

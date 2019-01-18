@@ -11,54 +11,26 @@ import {
 } from 'api/helpers/metadata';
 
 import { User } from 'api/user';
-import Article, {
-  serializeArticle,
-  checkIsPublished,
-  queryUnpublished,
-  POPULATE_OPTIONS,
-} from './article.model';
+import Article, { checkIsPublished, DEFAULT_ARTICLE_QUERY } from './article.model';
 import ArticleBrand from './brand/model';
 import ArticleCollection from './collection/model';
 import LocalizedArticle from './localized/model';
 
-export const getAll = ({ query, user }, res, next) => {
-  const skip = parseInt(query.skip) || 0; // eslint-disable-line radix
-  // A limit() value of 0 is equivalent to setting no limit.
-  const take = parseInt(query.take) || 0; // eslint-disable-line radix
-  let data;
-  const articlesQuery = {
-    $and: [
-      {
-        active: true,
-        // TODO(uladbohdan): investigate how it was saved to db
-        // https://trello.com/c/uLai119m/265-empty-locales-slug-duplication-bug
-        locales: { $exists: true },
-      },
-      queryUnpublished(user),
-    ],
-  };
-
-  return Article.find(articlesQuery)
-    .populate('author', POPULATE_OPTIONS.author)
-    .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection(user))
-    .populate(POPULATE_OPTIONS.locales)
-    .populate(POPULATE_OPTIONS.metadata)
-    .sort({ publishAt: 'desc' })
-    .skip(skip)
-    .limit(take)
-    .then(articles => articles.map(serializeArticle))
-    .then(articles => {
-      data = articles;
-      return Article.find(articlesQuery).countDocuments();
-    })
-    .then(count => ({
+export const getAll = ({ query: { skip, take }, user }, res, next) =>
+  Article.customQuery({
+    query: DEFAULT_ARTICLE_QUERY(user),
+    user,
+    sort: { publishAt: 'desc' },
+    skip: parseInt(skip) || 0, // eslint-disable-line radix
+    // A limit() value of 0 is equivalent to setting no limit.
+    limit: parseInt(take) || 0, // eslint-disable-line radix
+  })
+    .then(async data => ({
       data,
-      total: count,
+      total: await Article.find(DEFAULT_ARTICLE_QUERY(user)).countDocuments(),
     }))
     .then(sendJson(res))
     .catch(next);
-};
 
 const retrieveArticleId = (slugOrId, options) =>
   LocalizedArticle.findOne({ slug: slugOrId, ...options })
@@ -66,19 +38,17 @@ const retrieveArticleId = (slugOrId, options) =>
     .then(checkIsFound);
 
 const getArticleById = (articleId, user) =>
-  Article.findOne({ _id: articleId, active: true })
-    .populate('author', POPULATE_OPTIONS.author)
-    .populate('brand', POPULATE_OPTIONS.brand)
-    .populate(POPULATE_OPTIONS.collection(user))
-    .populate(POPULATE_OPTIONS.locales)
-    .populate(POPULATE_OPTIONS.metadata);
+  Article.customQuery({
+    query: { _id: articleId, active: true },
+    user,
+    limit: 1,
+  }).then(articles => articles[0]);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
     .then(artId => getArticleById(artId, user))
     .then(checkIsFound)
     .then(article => checkIsPublished(article, user))
-    .then(serializeArticle)
     .then(sendJson(res))
     .catch(next);
 
@@ -146,7 +116,6 @@ export const create = async ({ body, user }, res, next) => {
     }
 
     return getArticleById(article._id, user)
-      .then(serializeArticle)
       .then(sendJson(res))
       .catch(next);
   } catch (err) {
@@ -251,7 +220,6 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
     }
 
     return getArticleById(article._id, user)
-      .then(serializeArticle)
       .then(sendJson(res))
       .catch(next);
   } catch (err) {

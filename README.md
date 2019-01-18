@@ -24,23 +24,27 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 - `npm run prettify` to just fix style with `prettier`
 
-- `npm run test` to test and check coverage
+- `npm run test:with-coverage` to test and check coverage
 
-- `npm run mocha` to test without coveralls
+- `npm run test` to test without coveralls
 
-## rules
+## development tips
+
+### selective testing
+
+usage:
+
+`npm run test:subset -- /auth` - to only run auth tests
+
+`npm run test:subset -- /api/storage` - to only run storage tests
+
+`npm run test:subset -- /utils` - to only run utils tests
+
+etc.
+
+## rules [OUTDATED]
 
 - we have autoversioning set up, in order to trigger new release one should follow the conventions:
   - `fix(<scope>): <subject>` - increases **patch** version: 1.0.0 -> 1.0.1
   - `feat(<scope>): <subject>` - increases **minor** version: 1.0.0 -> 1.1.0
   - `major(<scope>): <subject>` - increases **major** version: 1.0.0 -> 2.0.0
-
-## api
-
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/04d9ee38c7759d94872c#?env%5Bbabajka%5D=W3siZW5hYmxlZCI6dHJ1ZSwia2V5IjoiRE9NQUlOIiwidmFsdWUiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJ0eXBlIjoidGV4dCJ9LHsiZW5hYmxlZCI6dHJ1ZSwia2V5IjoiQVBJX1VSTCIsInZhbHVlIjoiL2FwaSIsInR5cGUiOiJ0ZXh0In1d)
-
-for testing `api` use [`Postman`](https://www.getpostman.com/) latest collections and environments
-configs you can find in [`postman/`](https://github.com/babajka/babajka-backend/tree/master/postman)
-folder
-
-> please update postman collections links and `.json` files after your changes

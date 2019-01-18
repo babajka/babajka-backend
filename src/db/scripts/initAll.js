@@ -24,9 +24,11 @@ import path from 'path';
 import connectDb from 'db';
 import { User } from 'api/user';
 import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
+import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 import * as permissions from 'constants/permissions';
+import { MAIN_PAGE_KEY } from 'constants/storage';
 
 const defaultDataPath = `${__dirname}/../data/`;
 const dataFilenames = {
@@ -219,6 +221,26 @@ const initArticleCollections = articlesDict => {
 const initDiaries = () =>
   Promise.all(initData.diaries.map(async diaryData => new Diary(diaryData).save()));
 
+const initMainPageState = metadataTestingUser =>
+  Article.find()
+    .then(articles => articles.map(({ _id }) => _id))
+    .then(async articleIds => {
+      const brandIds = await ArticleBrand.find().then(articleBrands =>
+        articleBrands.map(({ _id }) => _id)
+      );
+      return {
+        articles: articleIds,
+        brands: brandIds,
+      };
+    })
+    .then(data =>
+      StorageEntity.setValue(
+        MAIN_PAGE_KEY,
+        { blocks: [{ type: 'featured' }, { type: 'diary' }], data },
+        metadataTestingUser._id
+      )
+    );
+
 (async () => {
   try {
     getData();
@@ -251,6 +273,9 @@ const initDiaries = () =>
     await initDiaries();
     const diariesCount = await Diary.countDocuments();
     console.log(`Mongoose: insert ${diariesCount} diary(es)`);
+
+    await initMainPageState(metadataTestingUser);
+    console.log('Mongoose: main page state pushed');
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);
