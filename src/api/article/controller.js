@@ -17,7 +17,7 @@ import ArticleCollection from './collection/model';
 import LocalizedArticle from './localized/model';
 
 export const getAll = ({ query: { skip, take }, user }, res, next) =>
-  Article.query({
+  Article.customQuery({
     query: DEFAULT_ARTICLE_QUERY(user),
     user,
     sort: { publishAt: 'desc' },
@@ -38,7 +38,7 @@ const retrieveArticleId = (slugOrId, options) =>
     .then(checkIsFound);
 
 const getArticleById = (articleId, user) =>
-  Article.query({
+  Article.customQuery({
     query: { _id: articleId, active: true },
     user,
     limit: 1,

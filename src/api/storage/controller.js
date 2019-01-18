@@ -9,8 +9,8 @@ import { ArticleBrand } from 'api/article/brand';
 import { StorageEntity } from './model';
 
 const MAIN_PAGE_ENTITIES = {
-  articles: ({ query, user }) => Article.query({ query, user }),
-  brands: ({ query }) => ArticleBrand.query({ query }),
+  articles: ({ query, user }) => Article.customQuery({ query, user }),
+  brands: ({ query }) => ArticleBrand.customQuery({ query }),
 };
 
 export const getMainPage = ({ user }, res, next) =>
@@ -37,7 +37,7 @@ export const getMainPage = ({ user }, res, next) =>
       );
 
       promises.push(
-        Article.query({
+        Article.customQuery({
           query: {
             active: true,
             locales: { $exists: true },

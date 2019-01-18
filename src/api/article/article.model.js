@@ -238,7 +238,7 @@ export const DEFAULT_ARTICLE_QUERY = user => ({
 });
 
 // eslint-disable-next-line func-names
-ArticleSchema.statics.query = function({ query = {}, user, sort, skip, limit }) {
+ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
   return this.find(query)
     .populate('author', POPULATE_OPTIONS.author)
     .populate('brand', POPULATE_OPTIONS.brand)
