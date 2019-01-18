@@ -7,6 +7,7 @@ import {
   slugValidator,
   permissionsObjectValidator,
   checkMainPageEntitiesFormat,
+  colorValidator,
 } from './validation';
 
 describe('Slug Validation Tests', () => {
@@ -65,4 +66,16 @@ describe('Main Page State Validation Tests', () => {
     expect(
       checkMainPageEntitiesFormat({ articles: [sampleObjectId, sampleObjectId] })
     ).to.be.true());
+});
+
+describe('Color Validation Tests', () => {
+  const validate = colorValidator.validator;
+
+  it('should not accept short strings', () => expect(validate('abf6')).to.be.false());
+
+  it('should not accept long strings', () => expect(validate('12345678')).to.be.false());
+
+  it('should not accept forbidden symbols', () => expect(validate('12zfab')).to.be.false());
+
+  it('should accept valid hex color', () => expect(validate('a8a8ff')).to.be.true());
 });

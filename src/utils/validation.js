@@ -123,7 +123,7 @@ export const colloquialDateHashValidator = {
     const day = Math.floor(parseInt(v, 10) % 100);
     return month >= 0 && month <= 12 && day >= 0 && day <= 31;
   },
-  message: 'errors.failedMatchRegex',
+  message: 'errors.failedMatchDateHashFormat',
 };
 
 export const permissionsObjectValidator = {
@@ -134,4 +134,9 @@ export const permissionsObjectValidator = {
     return Object.values(v).every(val => typeof val === 'boolean');
   },
   message: 'errors.badPermissions',
+};
+
+export const colorValidator = {
+  validator: v => /^[0-9a-fA-F]{6}$/.test(v),
+  message: 'errors.failedMatchRegex',
 };

@@ -434,6 +434,8 @@ describe('Articles Bundled API', () => {
         authorEmail,
         publishAt: Date.now(),
         videoUrl: validYoutubeLink,
+        color: 'ababab',
+        textColorTheme: 'dark',
         locales: {
           be: {
             title: 'be-title',
@@ -444,14 +446,16 @@ describe('Articles Bundled API', () => {
         },
       })
       .expect(200)
-      .expect(res => {
-        articleId = res.body._id;
-        expect(res.body.imagePreviewUrl).to.equal('some-image-url');
-        expect(Object.keys(res.body.locales)).has.length(1);
-        expect(res.body.locales.be.slug).to.equal('be-slug');
-        expect(res.body.video.platform).to.equal('youtube');
-        expect(res.body.video.videoId).to.equal(validYoutubeID);
-        expect(res.body.video.videoUrl).to.equal(validYoutubeLink);
+      .expect(({ body: { _id, locales, imagePreviewUrl, video, color, textColorTheme } }) => {
+        articleId = _id;
+        expect(imagePreviewUrl).to.equal('some-image-url');
+        expect(Object.keys(locales)).has.length(1);
+        expect(locales.be.slug).to.equal('be-slug');
+        expect(video.platform).to.equal('youtube');
+        expect(video.videoId).to.equal(validYoutubeID);
+        expect(video.videoUrl).to.equal(validYoutubeLink);
+        expect(color).to.equal('ababab');
+        expect(textColorTheme).to.equal('dark');
       }));
 
   it('should return an article by ID', () =>
@@ -502,6 +506,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         imagePreviewUrl: 'new-image-url',
+        color: '123456',
         locales: {
           be: {
             title: 'new-be-title',
@@ -510,21 +515,23 @@ describe('Articles Bundled API', () => {
         },
       })
       .expect(200)
-      .expect(res => {
-        expect(res.body.imagePreviewUrl).to.equal('new-image-url');
-        expect(Object.keys(res.body.locales)).has.length(1);
-        expect(res.body.locales.be.title).to.equal('new-be-title');
-        expect(res.body.locales.be.subtitle).to.equal('new-be-subtitle');
+      .expect(({ body: { imagePreviewUrl, locales, color } }) => {
+        expect(imagePreviewUrl).to.equal('new-image-url');
+        expect(Object.keys(locales)).has.length(1);
+        expect(locales.be.title).to.equal('new-be-title');
+        expect(locales.be.subtitle).to.equal('new-be-subtitle');
+        expect(color).to.equal('123456');
       }));
 
-  it('should return an article with new image & title', () =>
+  it('should return an article with new image & title & color', () =>
     request
       .get(`/api/articles/${articleId}`)
       .expect(200)
-      .expect(res => {
-        expect(res.body.imagePreviewUrl).to.equal('new-image-url');
-        expect(Object.keys(res.body.locales)).has.length(1);
-        expect(res.body.locales.be.title).to.equal('new-be-title');
+      .expect(({ body: { imagePreviewUrl, locales, color } }) => {
+        expect(imagePreviewUrl).to.equal('new-image-url');
+        expect(Object.keys(locales)).has.length(1);
+        expect(locales.be.title).to.equal('new-be-title');
+        expect(color).to.equal('123456');
       }));
 
   it('should add a localization by updating an article', () =>

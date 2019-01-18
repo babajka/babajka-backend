@@ -6,7 +6,7 @@ import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
-import { ValidationError } from 'utils/validation';
+import { ValidationError, colorValidator } from 'utils/validation';
 import { ObjectMetadata } from 'api/helpers/metadata';
 
 const { Schema } = mongoose;
@@ -85,6 +85,21 @@ const ArticleSchema = new Schema(
     video: {
       // Can only be present when Article type is video.
       type: VideoReferenceSchema,
+    },
+    color: {
+      // Articles have colors to be rendered on the main page.
+      type: String,
+      validate: colorValidator,
+      required: true,
+      default: '000000',
+    },
+    textColorTheme: {
+      // Text on article card may be rendered in one of the following ways.
+      // This depends on the color and is set manually.
+      type: String,
+      required: true,
+      enum: ['light', 'dark'],
+      default: 'light',
     },
   },
   {
