@@ -22,7 +22,7 @@
     "imageUrl": "/test/images/einstein.jpeg"
   },
   {
-    "email": "very-first-author@wir.by",
+    "email": "very-first-author@babajka.io",
     "firstName": {
       "en": "Very"
     },
@@ -36,7 +36,7 @@
     "imageUrl": "/test/images/curie.jpg"
   },
   {
-    "email": "albert@wir.by",
+    "email": "albert@babajka.io",
     "firstName": {
       "en": "Albert",
       "be": "Альберт"
@@ -53,7 +53,7 @@
     "imageUrl": "/test/images/einstein.jpeg"
   },
   {
-    "email": "curie@wir.by",
+    "email": "curie@babajka.io",
     "firstName": {
       "en": "Maria",
       "be": "Марыя"
