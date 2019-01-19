@@ -10,11 +10,13 @@ import flatten from 'lodash/flatten';
 
 import app from 'server';
 import * as permissions from 'constants/permissions';
+import { TOPIC_SLUGS } from 'constants/topic';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
 import LocalizedArticle from 'api/article/localized/model';
 import User from 'api/user/model';
+import Topic from 'api/topic/model';
 
 const { expect } = chai;
 chai.use(dirtyChai);
@@ -142,5 +144,8 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
 
   return articles;
 };
+
+export const addTopics = metadata =>
+  Promise.all(TOPIC_SLUGS.map(topicSlug => Topic({ slug: topicSlug, metadata }).save()));
 
 export { expect, supertest };

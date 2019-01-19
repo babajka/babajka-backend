@@ -6,11 +6,14 @@ import {
   addAdminUser,
   addBrand,
   addArticles,
+  addTopics,
+  defaultObjectMetadata,
 } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
 
+import { TOPIC_SLUGS } from 'constants/topic';
 import { StorageEntity } from './model';
 
 const request = supertest.agent(app.listen());
@@ -54,6 +57,7 @@ describe('Storage API', () => {
 
   before(async () => {
     sessionCookie = await loginTestAdmin();
+    const metadata = await defaultObjectMetadata();
 
     const brand = await addBrand();
     articleBrandId = brand._id;
@@ -65,6 +69,8 @@ describe('Storage API', () => {
       blocks: [{ type: 'featured' }, { type: 'diary' }],
       data: { articles: dbArticleIds, brands: [articleBrandId] },
     };
+
+    await addTopics(metadata);
   });
 
   after(dropData);
@@ -107,12 +113,13 @@ describe('Storage API', () => {
       .get('/api/storage/mainPage')
       .set('Cookie', sessionCookie)
       .expect(200)
-      .expect(({ body: { blocks, data: { articles, brands, latestArticles } } }) => {
+      .expect(({ body: { blocks, data: { articles, brands, latestArticles, topics } } }) => {
         expect(blocks).to.deep.equal(validMainPageState.blocks);
         expect(articles).has.length(3);
         expect(articles.map(({ _id }) => _id)).to.have.members(dbArticleIds);
         expect(brands).has.length(1);
         expect(brands[0]._id).to.equal(articleBrandId.toString());
         expect(latestArticles).have.length(3);
+        expect(topics).have.length(TOPIC_SLUGS.length);
       }));
 });

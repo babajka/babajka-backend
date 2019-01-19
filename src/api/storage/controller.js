@@ -5,12 +5,14 @@ import { MAIN_PAGE_KEY } from 'constants/storage';
 
 import { Article } from 'api/article';
 import { ArticleBrand } from 'api/article/brand';
+import { Topic } from 'api/topic';
 
 import { StorageEntity } from './model';
 
 const MAIN_PAGE_ENTITIES = {
   articles: ({ query, user }) => Article.customQuery({ query, user }),
   brands: ({ query }) => ArticleBrand.customQuery({ query }),
+  topics: () => Topic.getAll(),
 };
 
 export const getMainPage = ({ user }, res, next) =>
