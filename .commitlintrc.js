@@ -21,6 +21,7 @@ module.exports = {
         'storage',
         'postman',
         'topics-tags',
+        'mail',
       ],
     ],
     'scope-empty': [2, 'never'],
