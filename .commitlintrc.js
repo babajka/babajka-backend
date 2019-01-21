@@ -20,6 +20,7 @@ module.exports = {
         'db',
         'storage',
         'postman',
+        'mail',
       ],
     ],
     'scope-empty': [2, 'never'],

@@ -28,5 +28,11 @@
       "clientId": "MUST BE SET IN BABAJKA SECRET CONFIG",
       "clientSecret": "MUST BE SET IN BABAJKA SECRET CONFIG"
     }
+  },
+  "mail": {
+    "mailchimp": {
+      "apiKey": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "listId": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    }
   }
 }
