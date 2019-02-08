@@ -51,7 +51,9 @@ TagSchema.pre('validate', async function(next) {
 
 // eslint-disable-next-line func-names
 TagSchema.statics.customQuery = function({ query = {} } = {}) {
-  return this.find(query).populate('topic');
+  return this.find(query)
+    .select('-__v -metadata')
+    .populate('topic', 'slug');
 };
 
 const Tag = mongoose.model('Tag', TagSchema);

@@ -248,7 +248,11 @@ export const POPULATE_OPTIONS = {
   ],
   tags: {
     path: 'tags',
-    populate: 'topic',
+    select: '-__v -metadata',
+    populate: {
+      path: 'topic',
+      select: 'slug',
+    },
   },
 };
 

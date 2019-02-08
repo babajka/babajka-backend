@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6b1379f7-95f7-4010-a5ce-b4cfd01b963e",
+		"_postman_id": "63f4e621-e833-4fda-aac7-1ffad47f151d",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -862,6 +862,57 @@
 							"path": [
 								"storage",
 								"mainPage"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Topics/Tags",
+			"item": [
+				{
+					"name": "Tags: get by topic",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/byTopic/locations",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"tags",
+								"byTopic",
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tags: articles by tag",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/articles/bykau",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"tags",
+								"articles",
+								"bykau"
 							]
 						}
 					},
