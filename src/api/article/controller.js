@@ -208,11 +208,11 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
     if (oldArticleCollectionId !== article.collectionId) {
       // We must update both an old collection and a new collection.
       await Promise.all([
-        ArticleCollection.update(
+        ArticleCollection.updateOne(
           { _id: oldArticleCollectionId },
           { $pull: { articles: article._id } }
         ).exec(),
-        ArticleCollection.update(
+        ArticleCollection.updateOne(
           { _id: article.collectionId },
           { $push: { articles: article._id } }
         ).exec(),
@@ -230,7 +230,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
 export const remove = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
     .then(articleId =>
-      Article.update({ _id: articleId }, mergeWithUpdateMetadata({ active: false }, user._id))
+      Article.updateOne({ _id: articleId }, mergeWithUpdateMetadata({ active: false }, user._id))
     )
     .then(() => res.sendStatus(200))
     .catch(next);

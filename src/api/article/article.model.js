@@ -101,6 +101,12 @@ const ArticleSchema = new Schema(
       enum: ['light', 'dark'],
       default: 'light',
     },
+    tags: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Tag',
+      },
+    ],
   },
   {
     usePushEach: true,
@@ -240,6 +246,10 @@ export const POPULATE_OPTIONS = {
     { path: 'metadata.updatedBy', select: 'email' },
     { path: 'metadata.createdBy', select: 'email' },
   ],
+  tags: {
+    path: 'tags',
+    populate: 'topic',
+  },
 };
 
 export const DEFAULT_ARTICLE_QUERY = user => ({
@@ -260,6 +270,7 @@ ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, lim
     .populate(POPULATE_OPTIONS.collection(user))
     .populate(POPULATE_OPTIONS.locales)
     .populate(POPULATE_OPTIONS.metadata)
+    .populate(POPULATE_OPTIONS.tags)
     .sort(sort)
     .skip(skip)
     .limit(limit)

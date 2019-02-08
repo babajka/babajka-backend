@@ -70,7 +70,7 @@ export const testLogin = ({ email, password }) =>
     });
 
 export const loginTestAdmin = async () => {
-  await addUser(TEST_DATA.users.admin);
+  await addAdminUser();
   return testLogin(TEST_DATA.users.admin);
 };
 

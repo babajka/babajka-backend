@@ -20,7 +20,7 @@ const TopicSchema = new Schema({
 
 // eslint-disable-next-line func-names
 TopicSchema.statics.getAll = function() {
-  return this.find().select('-_id slug');
+  return this.find().select('slug');
 };
 
 const Topic = mongoose.model('Topic', TopicSchema);

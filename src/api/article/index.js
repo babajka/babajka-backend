@@ -10,7 +10,7 @@ import localeRoutes from 'api/article/localized';
 
 import * as controller from './controller';
 
-import Article from './article.model';
+import Article, { queryUnpublished } from './article.model';
 import ArticleBrand from './brand/model';
 import ArticleCollection from './collection/model';
 import LocalizedArticle from './localized/model';
@@ -43,5 +43,5 @@ router.put(
 );
 router.delete('/:slugOrId', requireAuth, verifyPermission('canCreateArticle'), controller.remove);
 
-export { Article, ArticleBrand, ArticleCollection, LocalizedArticle };
+export { Article, ArticleBrand, ArticleCollection, LocalizedArticle, queryUnpublished };
 export default router;
