@@ -16,6 +16,7 @@ import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
 import LocalizedArticle from 'api/article/localized/model';
 import User from 'api/user/model';
+import Tag from 'api/tag/model';
 import Topic from 'api/topic/model';
 
 const { expect } = chai;
@@ -147,5 +148,19 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
 
 export const addTopics = metadata =>
   Promise.all(TOPIC_SLUGS.map(topicSlug => Topic({ slug: topicSlug, metadata }).save()));
+
+export const addTag = metadata =>
+  Topic.findOne({ slug: 'themes' }).then(topic =>
+    Tag({
+      topic: topic._id,
+      slug: 'history',
+      content: {
+        title: {
+          be: 'Гісторыя',
+        },
+      },
+      metadata,
+    }).save()
+  );
 
 export { expect, supertest };

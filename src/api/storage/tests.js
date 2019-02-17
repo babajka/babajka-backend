@@ -6,6 +6,7 @@ import {
   addAdminUser,
   addBrand,
   addArticles,
+  addTag,
   addTopics,
   defaultObjectMetadata,
 } from 'utils/testing';
@@ -65,12 +66,15 @@ describe('Storage API', () => {
     const rawArticles = await addArticles(articleBrandId, 3, 2);
     dbArticleIds = rawArticles.slice(0, 3).map(({ _id }) => _id.toString());
 
+    await addTopics(metadata);
+
+    const tag = await addTag(metadata);
+    const tagId = tag._id;
+
     validMainPageState = {
       blocks: [{ type: 'featured' }, { type: 'diary' }],
-      data: { articles: dbArticleIds, brands: [articleBrandId] },
+      data: { articles: dbArticleIds, brands: [articleBrandId], tags: [tagId] },
     };
-
-    await addTopics(metadata);
   });
 
   after(dropData);
@@ -102,10 +106,11 @@ describe('Storage API', () => {
       .set('Cookie', sessionCookie)
       .send(validMainPageState)
       .expect(200)
-      .expect(({ body }) => {
-        expect(body).not.empty();
-        expect(body.blocks).to.deep.equal(validMainPageState.blocks);
-        expect(body.data.articles).has.length(3);
+      .expect(({ body: { blocks, data: { articles, brands, tags } } }) => {
+        expect(blocks).to.deep.equal(validMainPageState.blocks);
+        expect(articles).has.length(3);
+        expect(brands).has.length(1);
+        expect(tags).has.length(1);
       }));
 
   it('should retrieve main page state with articles populated', () =>

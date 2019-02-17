@@ -233,9 +233,11 @@ const initMainPageState = metadataTestingUser =>
       const brandIds = await ArticleBrand.find().then(articleBrands =>
         articleBrands.map(({ _id }) => _id)
       );
+      const tagIds = await Tag.find().then(tags => tags.map(({ _id }) => _id));
       return {
         articles: articleIds,
         brands: brandIds,
+        tags: tagIds,
       };
     })
     .then(data =>
@@ -305,11 +307,11 @@ const initTags = async metadataTestingUser => {
     const diariesCount = await Diary.countDocuments();
     console.log(`Mongoose: insert ${diariesCount} diary(es)`);
 
-    await initMainPageState(metadataTestingUser);
-    console.log('Mongoose: main page state pushed');
-
     const tagsCount = await initTags(metadataTestingUser);
     console.log(`Mongoose: insert ${tagsCount} tags; all articles are randomly updated with tags`);
+
+    await initMainPageState(metadataTestingUser);
+    console.log('Mongoose: main page state pushed');
 
     // PLACEHOLDER.
   } catch (err) {

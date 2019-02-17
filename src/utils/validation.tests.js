@@ -64,7 +64,11 @@ describe('Main Page State Validation Tests', () => {
 
   it('should accept', () =>
     expect(
-      checkMainPageEntitiesFormat({ articles: [sampleObjectId, sampleObjectId] })
+      checkMainPageEntitiesFormat({
+        articles: [sampleObjectId, sampleObjectId],
+        brands: [sampleObjectId],
+        tags: [sampleObjectId],
+      })
     ).to.be.true());
 });
 
