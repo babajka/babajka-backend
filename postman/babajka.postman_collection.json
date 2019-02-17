@@ -833,13 +833,13 @@
 							"raw": "{\n    \"blocks\": [\n        {\n            \"type\": \"featured\",\n            \"article\": null,\n            \"frozen\": false\n        }\n    ],\n    \"data\": {\n        \"articles\": [\n            \"5c3e1e441c1cb879a50d0b0c\"\n        ]\n    }\n}"
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/storage/mainPage",
+							"raw": "{{DOMAIN}}{{API_URL}}/storage/main-page",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"storage",
-								"mainPage"
+								"main-page"
 							]
 						}
 					},
@@ -855,13 +855,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/storage/mainPage",
+							"raw": "{{DOMAIN}}{{API_URL}}/storage/main-page",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"storage",
-								"mainPage"
+								"main-page"
 							]
 						}
 					},
@@ -882,13 +882,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/tags/byTopic/locations",
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/by-topic/locations",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"tags",
-								"byTopic",
+								"by-topic",
 								"locations"
 							]
 						}

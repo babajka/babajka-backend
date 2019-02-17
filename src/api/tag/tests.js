@@ -163,7 +163,7 @@ describe('Tags API', () => {
 
   it('should get locations tags by topic', () =>
     request
-      .get('/api/tags/byTopic/locations')
+      .get('/api/tags/by-topic/locations')
       .expect(200)
       .expect(({ body }) => {
         expect(body).to.have.length(1);
@@ -176,7 +176,7 @@ describe('Tags API', () => {
 
   it('should get times tags by topic', () =>
     request
-      .get('/api/tags/byTopic/times')
+      .get('/api/tags/by-topic/times')
       .expect(200)
       .expect(({ body }) => {
         expect(body).to.have.length(1);
@@ -189,7 +189,7 @@ describe('Tags API', () => {
 
   it('should get an error for unsupported topic', () =>
     request
-      .get('/api/tags/byTopic/randomTopic')
+      .get('/api/tags/by-topic/randomTopic')
       .expect(400)
       .expect(({ body: { error } }) => {
         expect(error.topic).to.contain('not supported');

@@ -81,13 +81,13 @@ describe('Storage API', () => {
 
   it('should fail to update main page state with no auth', () =>
     request
-      .post('/api/storage/mainPage')
+      .post('/api/storage/main-page')
       .send(validMainPageState)
       .expect(403));
 
   it('should fail to push main page state with invalid entities', () =>
     request
-      .post('/api/storage/mainPage')
+      .post('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .send({ blocks: [], data: { badEntity: ['x'] } })
       .expect(400)
@@ -98,11 +98,11 @@ describe('Storage API', () => {
       }));
 
   it('should not found main page state as it was never initialized', () =>
-    request.get('/api/storage/mainPage').expect(404));
+    request.get('/api/storage/main-page').expect(404));
 
   it('should succeed in pushing main page state', () =>
     request
-      .post('/api/storage/mainPage')
+      .post('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .send(validMainPageState)
       .expect(200)
@@ -115,7 +115,7 @@ describe('Storage API', () => {
 
   it('should retrieve main page state with articles populated', () =>
     request
-      .get('/api/storage/mainPage')
+      .get('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .expect(200)
       .expect(({ body: { blocks, data: { articles, brands, latestArticles, topics } } }) => {

@@ -12,7 +12,7 @@ const router = Router();
 // adding new topics or removing old (by performing diffs on slugs).
 // Therefore there is no need to implement create/update endpoints right now.
 
-router.get('/byTopic/:topic', verifyTopicName, controller.getByTopic);
+router.get('/by-topic/:topic', verifyTopicName, controller.getByTopic);
 
 router.get('/articles/:tag', controller.getArticles);
 

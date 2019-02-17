@@ -25,6 +25,7 @@ const isEqual = require('lodash/isEqual');
 const omit = require('lodash/omit');
 const uniq = require('lodash/uniq');
 const difference = require('lodash/difference');
+const flatten = require('lodash/flatten');
 
 const GoogleSpreadsheet = require('google-spreadsheet');
 
@@ -52,7 +53,7 @@ const parseSheet = (sheet, scopesLocalized = [], scopesUnlocalized = []) =>
         scopesUnlocalized.forEach(scope => {
           const value = row[scope];
           if (value) {
-            set(data, [scope], row[scope]);
+            set(data, scope, value);
           }
         });
         locales.forEach(locale => {
@@ -92,24 +93,24 @@ const getSheetsData = async info => {
 };
 
 const validateSheetsData = sheetsData => {
-  const allTags = [];
+  const allTags = flatten(
+    Object.entries(sheetsData).map(([topic, tags]) => {
+      const topicTags = tags.map(tagData => {
+        if (!tagData.slug) {
+          throw new Error(`TOPIC: ${topic}, SLUG is missing for one of the objects`);
+        }
+        const { error } = Joi.validate(omit(tagData, ['slug']), TAG_CONTENT_SCHEMA[topic]);
+        if (error !== null) {
+          throw new Error(`TOPIC: ${topic}, SLUG: ${tagData.slug}, ${error}`);
+        }
+        return tagData.slug;
+      });
 
-  Object.entries(sheetsData).forEach(([topic, tags]) => {
-    tags.forEach(tagData => {
-      if (!tagData.slug) {
-        throw new Error(`TOPIC: ${topic}, SLUG is missing for one of the objects`);
-      }
-      const { error } = Joi.validate(omit(tagData, ['slug']), TAG_CONTENT_SCHEMA[topic]);
-      if (error !== null) {
-        throw new Error(`TOPIC: ${topic}, SLUG: ${tagData.slug}, ${error}`);
-      }
-    });
+      console.log(`  [OK] ${topic} : `, topicTags);
 
-    const topicTags = tags.map(({ slug }) => slug);
-    allTags.push(...topicTags);
-
-    console.log(`  [OK] ${topic} : `, topicTags);
-  });
+      return topicTags;
+    })
+  );
 
   if (allTags.length !== uniq(allTags).length) {
     throw new Error('it seems like there are slug duplicates in the Spreadsheet');
@@ -119,11 +120,9 @@ const validateSheetsData = sheetsData => {
 };
 
 const updateTags = async (sheetsData, db) => {
-  const promises = [];
-
-  Object.entries(sheetsData).forEach(([topic, tags]) => {
-    promises.push(
-      ...tags.map(tag =>
+  const promises = flatten(
+    Object.entries(sheetsData).map(([topic, tags]) =>
+      tags.map(tag =>
         Tag.updateOne(
           { slug: tag.slug },
           // TODO: to update metadata. This is unclear due to an absense of explicit user.
@@ -131,8 +130,8 @@ const updateTags = async (sheetsData, db) => {
           { upsert: true, setDefaultsOnInsert: true, runValidators: true }
         ).exec()
       )
-    );
-  });
+    )
+  );
 
   console.log(`[OK] ${promises.length} tags are ready for being created/updated`);
 
