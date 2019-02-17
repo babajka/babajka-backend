@@ -6,11 +6,15 @@ import {
   addAdminUser,
   addBrand,
   addArticles,
+  addTag,
+  addTopics,
+  defaultObjectMetadata,
 } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
 
+import { TOPIC_SLUGS } from 'constants/topic';
 import { StorageEntity } from './model';
 
 const request = supertest.agent(app.listen());
@@ -54,6 +58,7 @@ describe('Storage API', () => {
 
   before(async () => {
     sessionCookie = await loginTestAdmin();
+    const metadata = await defaultObjectMetadata();
 
     const brand = await addBrand();
     articleBrandId = brand._id;
@@ -61,9 +66,14 @@ describe('Storage API', () => {
     const rawArticles = await addArticles(articleBrandId, 3, 2);
     dbArticleIds = rawArticles.slice(0, 3).map(({ _id }) => _id.toString());
 
+    await addTopics(metadata);
+
+    const tag = await addTag(metadata);
+    const tagId = tag._id;
+
     validMainPageState = {
       blocks: [{ type: 'featured' }, { type: 'diary' }],
-      data: { articles: dbArticleIds, brands: [articleBrandId] },
+      data: { articles: dbArticleIds, brands: [articleBrandId], tags: [tagId] },
     };
   });
 
@@ -71,13 +81,13 @@ describe('Storage API', () => {
 
   it('should fail to update main page state with no auth', () =>
     request
-      .post('/api/storage/mainPage')
+      .post('/api/storage/main-page')
       .send(validMainPageState)
       .expect(403));
 
   it('should fail to push main page state with invalid entities', () =>
     request
-      .post('/api/storage/mainPage')
+      .post('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .send({ blocks: [], data: { badEntity: ['x'] } })
       .expect(400)
@@ -88,31 +98,33 @@ describe('Storage API', () => {
       }));
 
   it('should not found main page state as it was never initialized', () =>
-    request.get('/api/storage/mainPage').expect(404));
+    request.get('/api/storage/main-page').expect(404));
 
   it('should succeed in pushing main page state', () =>
     request
-      .post('/api/storage/mainPage')
+      .post('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .send(validMainPageState)
       .expect(200)
-      .expect(({ body }) => {
-        expect(body).not.empty();
-        expect(body.blocks).to.deep.equal(validMainPageState.blocks);
-        expect(body.data.articles).has.length(3);
+      .expect(({ body: { blocks, data: { articles, brands, tags } } }) => {
+        expect(blocks).to.deep.equal(validMainPageState.blocks);
+        expect(articles).has.length(3);
+        expect(brands).has.length(1);
+        expect(tags).has.length(1);
       }));
 
   it('should retrieve main page state with articles populated', () =>
     request
-      .get('/api/storage/mainPage')
+      .get('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .expect(200)
-      .expect(({ body: { blocks, data: { articles, brands, latestArticles } } }) => {
+      .expect(({ body: { blocks, data: { articles, brands, latestArticles, topics } } }) => {
         expect(blocks).to.deep.equal(validMainPageState.blocks);
         expect(articles).has.length(3);
         expect(articles.map(({ _id }) => _id)).to.have.members(dbArticleIds);
         expect(brands).has.length(1);
         expect(brands[0]._id).to.equal(articleBrandId.toString());
         expect(latestArticles).have.length(3);
+        expect(topics).have.length(TOPIC_SLUGS.length);
       }));
 });

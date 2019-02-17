@@ -5,12 +5,16 @@ import { MAIN_PAGE_KEY } from 'constants/storage';
 
 import { Article } from 'api/article';
 import { ArticleBrand } from 'api/article/brand';
+import { Tag } from 'api/tag';
+import { Topic } from 'api/topic';
 
 import { StorageEntity } from './model';
 
-const MAIN_PAGE_ENTITIES = {
+const MAIN_PAGE_ENTITIES_QUERIES = {
   articles: ({ query, user }) => Article.customQuery({ query, user }),
   brands: ({ query }) => ArticleBrand.customQuery({ query }),
+  tags: ({ query }) => Tag.customQuery({ query }),
+  topics: () => Topic.getAll(),
 };
 
 export const getMainPage = ({ user }, res, next) =>
@@ -23,17 +27,18 @@ export const getMainPage = ({ user }, res, next) =>
         data: {},
       };
 
-      const promises = Object.entries(MAIN_PAGE_ENTITIES).map(([supportedEntity, queryFunction]) =>
-        queryFunction({
-          query: {
-            _id: {
-              $in: data[supportedEntity],
+      const promises = Object.entries(MAIN_PAGE_ENTITIES_QUERIES).map(
+        ([supportedEntity, queryFunction]) =>
+          queryFunction({
+            query: {
+              _id: {
+                $in: data[supportedEntity],
+              },
             },
-          },
-          user,
-        }).then(obj => {
-          result.data[supportedEntity] = obj;
-        })
+            user,
+          }).then(obj => {
+            result.data[supportedEntity] = obj;
+          })
       );
 
       promises.push(

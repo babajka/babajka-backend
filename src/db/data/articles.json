@@ -16,7 +16,7 @@
         "slug": "slug0-en"
       }
     },
-    "authorEmail": "albert@wir.by",
+    "authorEmail": "albert@babajka.io",
     "imagePreviewUrl": "/test/images/gradient-1.jpg",
     "imageFolderUrl": "/test/images/gradient-1.jpg"
   },
@@ -74,7 +74,7 @@
         "slug": "slug1-en"
       }
     },
-    "authorEmail": "curie@wir.by",
+    "authorEmail": "curie@babajka.io",
     "videoId": "SPauxWv1Rnk",
     "imagePreviewUrl": "/test/images/gradient-2.png",
     "imageFolderUrl": "/test/images/seattle.jpg"
@@ -97,7 +97,7 @@
         "slug": "slug2-en"
       }
     },
-    "authorEmail": "albert@wir.by",
+    "authorEmail": "albert@babajka.io",
     "videoId": "SPauxWv1Rnk",
     "imagePreviewUrl": "/test/images/gradient-3.png",
     "imageFolderUrl": "/test/images/seattle.jpg"
@@ -120,7 +120,7 @@
         "slug": "slug3-en"
       }
     },
-    "authorEmail": "curie@wir.by",
+    "authorEmail": "curie@babajka.io",
     "imagePreviewUrl": "/test/images/seattle.jpg",
     "imageFolderUrl": "/test/images/seattle.jpg"
   },

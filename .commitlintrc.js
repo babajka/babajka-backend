@@ -20,6 +20,7 @@ module.exports = {
         'db',
         'storage',
         'postman',
+        'topics-tags',
       ],
     ],
     'scope-empty': [2, 'never'],

@@ -1,0 +1,51 @@
+[
+  {
+    "topicSlug": "locations",
+    "slug": "minsk",
+    "content": {
+      "title": {
+        "be": "Мінск",
+        "en": "Minsk"
+      },
+      "image": "random-url"
+    }
+  },
+  {
+    "topicSlug": "times",
+    "slug": "middle-ages",
+    "content": {
+      "title": {
+        "be": "Сярэднявечча",
+        "en": "Middle Ages"
+      }
+    }
+  },
+  {
+    "topicSlug": "themes",
+    "slug": "architecture",
+    "content": {
+      "title": {
+        "be": "Архітэктура",
+        "en": "Architecture"
+      }
+    }
+  },
+  {
+    "topicSlug": "personalities",
+    "slug": "bowie",
+    "content": {
+      "name": {
+        "be": "Дэвід Боўі",
+        "en": "David Bowie"
+      },
+      "dates": {
+        "be": "1947 - 2016"
+      },
+      "image": "random-url",
+      "color": "1234ab",
+      "description": {
+        "be": "Брытанскі рок-музыка, аўтар песень, прадзюсар, гукарэжысёр, мастак і акцёр"
+      }
+    }
+  }
+]

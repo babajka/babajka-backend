@@ -12,17 +12,14 @@ describe('Authors API', () => {
 
   before(async () => {
     await addBrand();
-    await Promise.all([
-      User({ firstName: 'Name', email: 'author1@wir.by', role: 'author' }).save(),
-      User({ firstName: 'Name', email: 'author2@wir.by', role: 'author' }).save(),
-      User({
-        firstName: 'Name',
-        email: 'author-non-active@wir.by',
-        role: 'author',
-        active: false,
-      }).save(),
-      User({ firstName: 'Name', email: 'regular-user@wir.by' }).save(),
-    ]);
+    await Promise.all(
+      [
+        { firstName: 'Name', email: 'author1@babajka.io', role: 'author' },
+        { firstName: 'Name', email: 'author2@babajka.io', role: 'author' },
+        { firstName: 'Name', email: 'author-non-active@babajka.io', role: 'author', active: false },
+        { firstName: 'Name', email: 'regular-user@babajka.io' },
+      ].map(userData => User(userData).save())
+    );
     sessionCookie = await loginTestAdmin();
   });
 

@@ -8,10 +8,10 @@ import * as controller from './controller';
 
 const router = Router();
 
-router.get('/mainPage', controller.getMainPage);
+router.get('/main-page', controller.getMainPage);
 
 router.post(
-  '/mainPage',
+  '/main-page',
   requireAuth,
   verifyPermission('canManageArticles'),
   precheck.setMainPage,

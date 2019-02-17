@@ -18,6 +18,8 @@ import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
+import sampleSize from 'lodash/sampleSize';
 import fs from 'fs';
 import path from 'path';
 
@@ -26,9 +28,11 @@ import { User } from 'api/user';
 import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
 import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
+import { Tag } from 'api/tag';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 import * as permissions from 'constants/permissions';
 import { MAIN_PAGE_KEY } from 'constants/storage';
+import { addTopics } from 'utils/testing';
 
 const defaultDataPath = `${__dirname}/../data/`;
 const dataFilenames = {
@@ -37,6 +41,7 @@ const dataFilenames = {
   articleCollections: 'articleCollections.json',
   articles: 'articles.json',
   diaries: 'diary.json',
+  tags: 'tags.json',
 };
 
 const initData = {};
@@ -228,9 +233,11 @@ const initMainPageState = metadataTestingUser =>
       const brandIds = await ArticleBrand.find().then(articleBrands =>
         articleBrands.map(({ _id }) => _id)
       );
+      const tagIds = await Tag.find().then(tags => tags.map(({ _id }) => _id));
       return {
         articles: articleIds,
         brands: brandIds,
+        tags: tagIds,
       };
     })
     .then(data =>
@@ -240,6 +247,32 @@ const initMainPageState = metadataTestingUser =>
         metadataTestingUser._id
       )
     );
+
+const initTags = async metadataTestingUser => {
+  const commonMetadata = getInitObjectMetadata(metadataTestingUser);
+  const topics = keyBy(await addTopics(commonMetadata), 'slug');
+  const tags = await Promise.all(
+    initData.tags.map(rawTagData =>
+      Tag({
+        ...omit(rawTagData, ['topicSlug']),
+        topic: topics[rawTagData.topicSlug],
+        metadata: commonMetadata,
+      })
+        .save()
+        .then(({ _id }) => _id)
+    )
+  );
+
+  // Randomly applying tags to articles.
+  const articles = await Article.find({}).then(data => data.map(({ _id }) => _id));
+  await Promise.all(
+    articles.map(articleId =>
+      Article.findOneAndUpdate({ _id: articleId }, { tags: sampleSize(tags, 2) })
+    )
+  );
+
+  return tags.length;
+};
 
 (async () => {
   try {
@@ -274,8 +307,13 @@ const initMainPageState = metadataTestingUser =>
     const diariesCount = await Diary.countDocuments();
     console.log(`Mongoose: insert ${diariesCount} diary(es)`);
 
+    const tagsCount = await initTags(metadataTestingUser);
+    console.log(`Mongoose: insert ${tagsCount} tags; all articles are randomly updated with tags`);
+
     await initMainPageState(metadataTestingUser);
     console.log('Mongoose: main page state pushed');
+
+    // PLACEHOLDER.
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);

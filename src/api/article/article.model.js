@@ -6,7 +6,7 @@ import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
-import { ValidationError } from 'utils/validation';
+import { ValidationError, colorValidator } from 'utils/validation';
 import { ObjectMetadata } from 'api/helpers/metadata';
 
 const { Schema } = mongoose;
@@ -86,6 +86,27 @@ const ArticleSchema = new Schema(
       // Can only be present when Article type is video.
       type: VideoReferenceSchema,
     },
+    color: {
+      // Articles have colors to be rendered on the main page.
+      type: String,
+      validate: colorValidator,
+      required: true,
+      default: '000000',
+    },
+    textColorTheme: {
+      // Text on article card may be rendered in one of the following ways.
+      // This depends on the color and is set manually.
+      type: String,
+      required: true,
+      enum: ['light', 'dark'],
+      default: 'light',
+    },
+    tags: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Tag',
+      },
+    ],
   },
   {
     usePushEach: true,
@@ -225,6 +246,14 @@ export const POPULATE_OPTIONS = {
     { path: 'metadata.updatedBy', select: 'email' },
     { path: 'metadata.createdBy', select: 'email' },
   ],
+  tags: {
+    path: 'tags',
+    select: '-__v -metadata',
+    populate: {
+      path: 'topic',
+      select: 'slug',
+    },
+  },
 };
 
 export const DEFAULT_ARTICLE_QUERY = user => ({
@@ -245,6 +274,7 @@ ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, lim
     .populate(POPULATE_OPTIONS.collection(user))
     .populate(POPULATE_OPTIONS.locales)
     .populate(POPULATE_OPTIONS.metadata)
+    .populate(POPULATE_OPTIONS.tags)
     .sort(sort)
     .skip(skip)
     .limit(limit)

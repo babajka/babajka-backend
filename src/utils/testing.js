@@ -10,11 +10,14 @@ import flatten from 'lodash/flatten';
 
 import app from 'server';
 import * as permissions from 'constants/permissions';
+import { TOPIC_SLUGS } from 'constants/topic';
 
 import Article from 'api/article/article.model';
 import ArticleBrand from 'api/article/brand/model';
 import LocalizedArticle from 'api/article/localized/model';
 import User from 'api/user/model';
+import Tag from 'api/tag/model';
+import Topic from 'api/topic/model';
 
 const { expect } = chai;
 chai.use(dirtyChai);
@@ -68,7 +71,7 @@ export const testLogin = ({ email, password }) =>
     });
 
 export const loginTestAdmin = async () => {
-  await addUser(TEST_DATA.users.admin);
+  await addAdminUser();
   return testLogin(TEST_DATA.users.admin);
 };
 
@@ -142,5 +145,22 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
 
   return articles;
 };
+
+export const addTopics = metadata =>
+  Promise.all(TOPIC_SLUGS.map(topicSlug => Topic({ slug: topicSlug, metadata }).save()));
+
+export const addTag = metadata =>
+  Topic.findOne({ slug: 'themes' }).then(topic =>
+    Tag({
+      topic: topic._id,
+      slug: 'history',
+      content: {
+        title: {
+          be: 'Гісторыя',
+        },
+      },
+      metadata,
+    }).save()
+  );
 
 export { expect, supertest };
