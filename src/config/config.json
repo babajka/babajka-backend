@@ -28,5 +28,13 @@
       "clientId": "MUST BE SET IN BABAJKA SECRET CONFIG",
       "clientSecret": "MUST BE SET IN BABAJKA SECRET CONFIG"
     }
+  },
+  "services": {
+    "cloudinary": {
+      "cloudName": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "folder": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "apiKey": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "apiSecret": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    }
   }
 }
