@@ -310,6 +310,8 @@ const initTags = async metadataTestingUser => {
 
     const tagsCount = await initTags(metadataTestingUser);
     console.log(`Mongoose: insert ${tagsCount} tags; all articles are randomly updated with tags`);
+
+    // PLACEHOLDER.
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);

@@ -11,6 +11,9 @@ app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth API', () => {
   before(async () => {
+    // It is not clear why dropData() here helps with flaky auth tests. But it helps.
+    await dropData();
+
     await addAdminUser();
   });
 
@@ -24,8 +27,8 @@ describe('Auth API', () => {
       .post('/auth/login')
       .send({ email: 'admin@babajka.io', password: 'some-random-text' })
       .expect(400)
-      .then(res => {
-        expect(res.body.error).to.have.property('password');
+      .then(({ body }) => {
+        expect(body.error).to.have.property('password');
       }));
 
   it('should fail to logout without authorization', () => request.get('/auth/logout').expect(403));
@@ -37,13 +40,11 @@ describe('Auth API', () => {
       .post('/auth/login')
       .send({ email: 'admin@babajka.io', password: 'password' })
       .expect(200)
-      .then(res => {
-        expect(res.body.email).to.equal('admin@babajka.io');
-        expect(res.headers['set-cookie']).not.empty();
-        sessionCookie = res.headers['set-cookie'];
-        expect(Object.keys(res.body.permissions)).to.have.length(
-          Object.keys(permissions.admin).length
-        );
+      .then(({ body, headers }) => {
+        expect(body.email).to.equal('admin@babajka.io');
+        expect(headers['set-cookie']).not.empty();
+        sessionCookie = headers['set-cookie'];
+        expect(Object.keys(body.permissions)).to.have.length(Object.keys(permissions.admin).length);
       }));
 
   it('should access protected resource', () =>

@@ -1,11 +1,11 @@
 [
   {
     "topicSlug": "locations",
-    "slug": "homiel",
+    "slug": "minsk",
     "content": {
       "title": {
-        "be": "Гомель",
-        "en": "Homiel"
+        "be": "Мінск",
+        "en": "Minsk"
       },
       "image": "random-url"
     }
@@ -32,19 +32,19 @@
   },
   {
     "topicSlug": "personalities",
-    "slug": "bykau",
+    "slug": "bowie",
     "content": {
       "name": {
-        "be": "Васіль Быкаў",
-        "en": "Vasil Bykau"
+        "be": "Дэвід Боўі",
+        "en": "David Bowie"
       },
       "dates": {
-        "be": "1924 - 2003"
+        "be": "1947 - 2016"
       },
       "image": "random-url",
       "color": "1234ab",
       "description": {
-        "be": "Васіль Быкаў - класны."
+        "be": "Брытанскі рок-музыка, аўтар песень, прадзюсар, гукарэжысёр, мастак і акцёр"
       }
     }
   }
