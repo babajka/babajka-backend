@@ -7,7 +7,7 @@ import User, { checkPermissions, serializeUser } from './model';
 
 const router = Router();
 router.get('/', requireAuth, verifyPermission('canManageUsers'), controller.getAll);
-router.get('/current', requireAuth, controller.getCurrent);
+router.get('/current', controller.getCurrent);
 
 export { User, checkPermissions, serializeUser };
 export default router;

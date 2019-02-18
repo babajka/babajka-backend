@@ -39,6 +39,9 @@ app.use((err, req, res, next) => {
   if (!err.status) {
     // log only 500 errors
     console.error(err.message);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(err.stack);
+    }
   }
   sendJson(res, err.status || 500)({ error: err.message });
 });

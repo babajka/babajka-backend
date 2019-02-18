@@ -12,7 +12,7 @@ const router = Router();
 router.post('/login', requireFields('email', 'password'), (req, res, next) =>
   local
     .login(req, res, next)
-    .then(user => sendJson(res)(serializeUser(user)))
+    .then(user => sendJson(res)({ user: serializeUser(user) }))
     .catch(next)
 );
 

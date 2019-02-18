@@ -8,4 +8,4 @@ export const getAll = (req, res, next) =>
     .catch(next);
 
 // eslint-disable-next-line no-unused-vars
-export const getCurrent = ({ user }, res, next) => sendJson(res)(serializeUser(user));
+export const getCurrent = ({ user }, res, next) => sendJson(res)({ user: serializeUser(user) });

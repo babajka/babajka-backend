@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "63f4e621-e833-4fda-aac7-1ffad47f151d",
+		"_postman_id": "eb2d903b-35e1-481b-9571-2176aa7a7822",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -823,14 +823,12 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"blocks\": [\n        {\n            \"type\": \"featured\",\n            \"article\": null,\n            \"frozen\": false\n        }\n    ],\n    \"data\": {\n        \"articles\": [\n            \"5c3e1e441c1cb879a50d0b0c\"\n        ]\n    }\n}"
+							"raw": "{\n    \"blocks\": [\n        {\n            \"type\": \"featured\",\n            \"article\": \"5bdaf9666dd79324fa815e41\",\n            \"frozen\": true\n        },\n        {\n        \t\"type\": \"diary\"\n        },\n        {\n        \t\"type\": \"latestArticles\",\n        \t\"articles\": [\n        \t\t{\n        \t\t\t\"id\": \"5bdaf9666dd79324fa815e35\",\n        \t\t\t\"frozen\": true\n        \t\t},\n        \t\t{ \n        \t\t\t\"id\": null,\n        \t\t\t\"frozen\": false \n        \t\t}\n        \t] \n        },\n        {\n        \t\"type\": \"tagsByTopic\",\n        \t\"topic\": \"5c6c7c7575ab984b2be61e0e\",\n        \t\"tags\": [\n        \t\t\"5c6c7c7575ab984b2be61e16\",\n        \t\t\"5c6c81db27e25f4bd0d689f3\",\n        \t\t\"5c6c81db27e25f4bd0d689f2\"\n        \t],\n        \t\"style\": \"1-2\"\n        },\n        {\n        \t\"type\": \"articlesByTag3\",\n        \t\"tag\": \"5c6c7c7575ab984b2be61e1c\",\n        \t\"articles\": [\n        \t\t\"5c6c7c7575ab984b2be61dc8\",\n        \t\t\"5c6c7c7575ab984b2be61de8\",\n        \t\t\"5c6c7c7575ab984b2be61d97\"\n        \t]\n        },\n        { \n        \t\"type\": \"banner\"\n        },\n        {\n        \t\"type\": \"articlesByBrand\",\n        \t\"brand\": \"5c6c7c7475ab984b2be61d83\",\n        \t\"articles\": [\n        \t\t\"5c6c7c7575ab984b2be61d97\",\n        \t\t\"5c6c7c7575ab984b2be61d8b\",\n        \t\t\"5c6c7c7575ab984b2be61d9d\"\n        \t]\n        }\n    ],\n    \"data\": {\n        \"articles\": [\n            \"5bdaf9666dd79324fa815e41\",\n            \"5bdaf9666dd79324fa815e35\",\n            \"5c6c7c7575ab984b2be61dc8\",\n            \"5c6c7c7575ab984b2be61de8\",\n            \"5c6c7c7575ab984b2be61d97\",\n            \"5c6c7c7575ab984b2be61d8b\",\n            \"5c6c7c7575ab984b2be61d9d\"\n        ],\n        \"tags\": [\n        \t\"5c6c7c7575ab984b2be61e1c\",\n        \t\"5c6c7c7575ab984b2be61e16\",\n        \t\"5c6c81db27e25f4bd0d689f3\",\n        \t\"5c6c81db27e25f4bd0d689f2\"\n        ],\n        \"brands\": [\n        \t\"5c6c7c7475ab984b2be61d83\"\n        ]\n    }\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/storage/main-page",
@@ -882,14 +880,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/tags/by-topic/locations",
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/by-topic/personalities",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"tags",
 								"by-topic",
-								"locations"
+								"personalities"
 							]
 						}
 					},
@@ -905,14 +903,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/tags/articles/bykau",
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/articles/bowie",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"tags",
 								"articles",
-								"bykau"
+								"bowie"
 							]
 						}
 					},
