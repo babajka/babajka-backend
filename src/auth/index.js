@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { serializeUser } from 'api/user';
+import { getUserResponse } from 'api/user';
 import { requireFields, validatePassword } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
@@ -12,7 +12,7 @@ const router = Router();
 router.post('/login', requireFields('email', 'password'), (req, res, next) =>
   local
     .login(req, res, next)
-    .then(user => sendJson(res)(serializeUser(user)))
+    .then(user => sendJson(res)(getUserResponse(user)))
     .catch(next)
 );
 
@@ -23,7 +23,7 @@ router.post('/register', requireFields('email', 'password', 'firstName'), (req, 
 
   return local
     .register(req, res, next)
-    .then(user => sendJson(res)(serializeUser(user)))
+    .then(user => sendJson(res)(getUserResponse(user)))
     .catch(next);
 });
 
