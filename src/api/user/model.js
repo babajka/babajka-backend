@@ -100,12 +100,17 @@ const basicFields = [
 ];
 
 export const serializeUser = object => {
+  if (!object) {
+    return null;
+  }
   const obj = pick(object, [...basicFields, 'permissions']);
   if (!obj.permissions) {
     obj.permissions = {};
   }
   return obj;
 };
+
+export const getUserResponse = object => ({ user: serializeUser(object) });
 
 export const serializeAuthor = object => pick(object, basicFields);
 
