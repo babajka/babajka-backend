@@ -20,7 +20,7 @@ const MAIN_PAGE_ENTITIES_QUERIES = {
 export const getMainPage = ({ user }, res, next) =>
   StorageEntity.getValue(MAIN_PAGE_KEY)
     .then(checkIsFound)
-    .then(obj => obj.document)
+    .then(entity => entity.document)
     .then(async ({ blocks, data }) => {
       const result = {
         blocks,
@@ -36,8 +36,8 @@ export const getMainPage = ({ user }, res, next) =>
               },
             },
             user,
-          }).then(obj => {
-            result.data[supportedEntity] = obj;
+          }).then(list => {
+            result.data[supportedEntity] = list;
           })
       );
 
@@ -51,8 +51,8 @@ export const getMainPage = ({ user }, res, next) =>
           limit: 3,
           sort: { publishAt: 'desc' },
           user,
-        }).then(obj => {
-          result.data.latestArticles = obj;
+        }).then(list => {
+          result.data.latestArticles = list;
         })
       );
 

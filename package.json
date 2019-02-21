@@ -8,6 +8,7 @@
   "scripts": {
     "start": "nodemon -w index.js -w . --exec node -r esm esm.js",
     "start-prod": "node -r esm esm.js",
+    "start-secret": "npm start -- src/config/secret.json",
     "init-db": "babel-node src/db/scripts/initAll.js",
     "init-prod-diaries": "babel-node src/db/scripts/initProdDiaries.js",
     "init-golden-data": "bash src/db/scripts/init-golden-data.sh",

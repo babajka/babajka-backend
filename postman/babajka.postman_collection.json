@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "63f4e621-e833-4fda-aac7-1ffad47f151d",
+		"_postman_id": "eb2d903b-35e1-481b-9571-2176aa7a7822",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -9,44 +9,6 @@
 		{
 			"name": "Auth",
 			"item": [
-				{
-					"name": "Login local",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "admin@babajka.io",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "password",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{DOMAIN}}/auth/login",
-							"host": [
-								"{{DOMAIN}}"
-							],
-							"path": [
-								"auth",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Register local",
 					"request": {
@@ -86,6 +48,44 @@
 					"response": []
 				},
 				{
+					"name": "Login local",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "admin@babajka.io",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/auth/login",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Logout",
 					"request": {
 						"method": "GET",
@@ -113,28 +113,6 @@
 			"name": "Users",
 			"item": [
 				{
-					"name": "Users: get current",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/users/current",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"users",
-								"current"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Users: get all",
 					"request": {
 						"method": "GET",
@@ -155,6 +133,28 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Users: get current",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/users/current",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"users",
+								"current"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -162,13 +162,61 @@
 			"name": "Articles",
 			"item": [
 				{
-					"name": "Articles: get all",
+					"name": "Articles: remove",
 					"request": {
-						"method": "GET",
-						"header": [],
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: create with Collection",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "type",
+									"value": "text",
+									"type": "text"
+								},
+								{
+									"key": "brand",
+									"value": "wir",
+									"type": "text"
+								},
+								{
+									"key": "collectionSlug",
+									"value": "collection0",
+									"type": "text"
+								}
+							]
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles",
@@ -177,28 +225,6 @@
 							],
 							"path": [
 								"articles"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Articles: get all Brands",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/brands",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"brands"
 							]
 						}
 					},
@@ -242,43 +268,31 @@
 					"response": []
 				},
 				{
-					"name": "Articles: create with deferred publish",
+					"name": "Articles: get an article using skip/take feature",
 					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
+						"method": "GET",
+						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "brand",
-									"value": "wir",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "text",
-									"type": "text"
-								},
-								{
-									"key": "publishAt",
-									"value": "2025-01-01T18:25:43.511Z",
-									"description": "a date from far future",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"raw": "{{DOMAIN}}{{API_URL}}/articles?skip=1&take=1",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"articles"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "1"
+								},
+								{
+									"key": "take",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -323,114 +337,13 @@
 					"response": []
 				},
 				{
-					"name": "Articles: remove",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"slug4"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Articles: get one",
+					"name": "Articles: get all",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4-be",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"slug4-be"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Articles: get an article using skip/take feature",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles?skip=1&take=1",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles"
-							],
-							"query": [
-								{
-									"key": "skip",
-									"value": "1"
-								},
-								{
-									"key": "take",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Articles: create with Collection",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "type",
-									"value": "text",
-									"type": "text"
-								},
-								{
-									"key": "brand",
-									"value": "wir",
-									"type": "text"
-								},
-								{
-									"key": "collectionSlug",
-									"value": "collection0",
-									"type": "text"
-								}
-							]
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles",
@@ -439,6 +352,28 @@
 							],
 							"path": [
 								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: get all Brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/brands",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"brands"
 							]
 						}
 					},
@@ -494,40 +429,6 @@
 					"response": []
 				},
 				{
-					"name": "Articles: update localization",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "title",
-									"value": "new French title",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/localize/slug4-fr",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"localize",
-								"slug4-fr"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Articles: create with Author",
 					"request": {
 						"method": "POST",
@@ -568,59 +469,9 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Collections",
-			"item": [
-				{
-					"name": "Collections: get all",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"collections"
-							]
-						}
-					},
-					"response": []
 				},
 				{
-					"name": "Collections: get one",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"collections",
-								"collection0"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Collections: update",
+					"name": "Articles: update localization",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -633,31 +484,96 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "active",
-									"value": "true",
-									"type": "text"
-								},
-								{
-									"key": "description.en",
-									"value": "new EN description",
+									"key": "title",
+									"value": "new French title",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/localize/slug4-fr",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"articles",
-								"collections",
-								"collection0"
+								"localize",
+								"slug4-fr"
 							]
 						}
 					},
 					"response": []
 				},
+				{
+					"name": "Articles: create with deferred publish",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "brand",
+									"value": "wir",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "text",
+									"type": "text"
+								},
+								{
+									"key": "publishAt",
+									"value": "2025-01-01T18:25:43.511Z",
+									"description": "a date from far future",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles: get one",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/slug4-be",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"slug4-be"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Collections",
+			"item": [
 				{
 					"name": "Collections: remove",
 					"request": {
@@ -707,14 +623,9 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Authors",
-			"item": [
+				},
 				{
-					"name": "Authors: get all",
+					"name": "Collections: get all",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -723,19 +634,85 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"articles",
-								"authors",
-								""
+								"collections"
 							]
 						}
 					},
 					"response": []
 				},
+				{
+					"name": "Collections: update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "active",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "description.en",
+									"value": "new EN description",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"collections",
+								"collection0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Collections: get one",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"collections",
+								"collection0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authors",
+			"item": [
 				{
 					"name": "Authors: create",
 					"request": {
@@ -765,6 +742,29 @@
 									"type": "text"
 								}
 							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"articles",
+								"authors",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authors: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
@@ -823,14 +823,12 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"blocks\": [\n        {\n            \"type\": \"featured\",\n            \"article\": null,\n            \"frozen\": false\n        }\n    ],\n    \"data\": {\n        \"articles\": [\n            \"5c3e1e441c1cb879a50d0b0c\"\n        ]\n    }\n}"
+							"raw": "{\n    \"blocks\": [\n        {\n            \"type\": \"featured\",\n            \"articleId\": \"5c6c7c7575ab984b2be61dda\",\n            \"frozen\": true\n        },\n        {\n        \t\"type\": \"diary\"\n        },\n        {\n        \t\"type\": \"latestArticles\",\n        \t\"articlesIds\": [\n        \t\t{\n        \t\t\t\"id\": \"5c6c7c7575ab984b2be61daf\",\n        \t\t\t\"frozen\": true\n        \t\t},\n        \t\t{ \n        \t\t\t\"id\": null,\n        \t\t\t\"frozen\": false \n        \t\t}\n        \t] \n        },\n        {\n        \t\"type\": \"tagsByTopic\",\n        \t\"topicId\": \"5c6c7c7575ab984b2be61e0e\",\n        \t\"tagsIds\": [\n        \t\t\"5c6c7c7575ab984b2be61e16\",\n        \t\t\"5c6c81db27e25f4bd0d689f3\",\n        \t\t\"5c6c81db27e25f4bd0d689f2\"\n        \t],\n        \t\"style\": \"1-2\"\n        },\n        {\n        \t\"type\": \"articlesByTag3\",\n        \t\"tagId\": \"5c6c7c7575ab984b2be61e1c\",\n        \t\"articlesIds\": [\n        \t\t\"5c6c7c7575ab984b2be61dc8\",\n        \t\t\"5c6c7c7575ab984b2be61de8\",\n        \t\t\"5c6c7c7575ab984b2be61d97\"\n        \t]\n        },\n        { \n        \t\"type\": \"banner\"\n        },\n        {\n        \t\"type\": \"articlesByBrand\",\n        \t\"brandId\": \"5c6c7c7475ab984b2be61d83\",\n        \t\"articlesIds\": [\n        \t\t\"5c6c7c7575ab984b2be61d97\",\n        \t\t\"5c6c7c7575ab984b2be61d8b\",\n        \t\t\"5c6c7c7575ab984b2be61d9d\"\n        \t]\n        }\n    ],\n    \"data\": {\n        \"articles\": [\n            \"5c6c7c7575ab984b2be61dda\",\n            \"5c6c7c7575ab984b2be61daf\",\n            \"5c6c7c7575ab984b2be61dc8\",\n            \"5c6c7c7575ab984b2be61de8\",\n            \"5c6c7c7575ab984b2be61d97\",\n            \"5c6c7c7575ab984b2be61d8b\",\n            \"5c6c7c7575ab984b2be61d9d\"\n        ],\n        \"tags\": [\n        \t\"5c6c7c7575ab984b2be61e1c\",\n        \t\"5c6c7c7575ab984b2be61e16\",\n        \t\"5c6c81db27e25f4bd0d689f3\",\n        \t\"5c6c81db27e25f4bd0d689f2\"\n        ],\n        \"brands\": [\n        \t\"5c6c7c7475ab984b2be61d83\"\n        ]\n    }\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/storage/main-page",
@@ -882,14 +880,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/tags/by-topic/locations",
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/by-topic/personalities",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"tags",
 								"by-topic",
-								"locations"
+								"personalities"
 							]
 						}
 					},
@@ -905,14 +903,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/tags/articles/bykau",
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/articles/bowie",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
 								"tags",
 								"articles",
-								"bykau"
+								"bowie"
 							]
 						}
 					},
