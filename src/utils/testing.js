@@ -26,7 +26,7 @@ export const dropData = () => mongoose.connection.db.dropDatabase();
 
 const request = supertest.agent(app.listen());
 
-const TEST_DATA = {
+export const TEST_DATA = {
   users: {
     admin: {
       firstName: 'Name',

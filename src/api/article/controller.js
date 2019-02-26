@@ -58,6 +58,9 @@ const handleArticleLocalizationError = locale => err => {
     // structure which makes us to distinguish it as a special case.
     throw new ValidationError(set({}, ['locales', locale, 'slug'], 'errors.valueDuplication'));
   }
+  if (err.name === 'MongoError') {
+    throw err;
+  }
   const msg = {};
   Object.values(err.errors).forEach(({ path, message }) => {
     set(msg, ['locales', locale, path], message);

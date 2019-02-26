@@ -8,6 +8,7 @@
   "scripts": {
     "start": "nodemon -w index.js -w . --exec node -r esm esm.js",
     "start-prod": "node -r esm esm.js",
+    "start-secret": "npm start -- src/config/secret.json",
     "init-db": "babel-node src/db/scripts/initAll.js",
     "init-prod-diaries": "babel-node src/db/scripts/initProdDiaries.js",
     "init-golden-data": "bash src/db/scripts/init-golden-data.sh",
@@ -22,7 +23,8 @@
     "test:subset": "f(){ find ./src$1 -name '*tests.js' | cross-env NODE_ENV=testing xargs mocha --exit -r @babel/register ;};f",
     "test:with-coverage": "cross-env NODE_ENV=testing nyc npm run test && npm run coverage",
     "semantic-release": "semantic-release",
-    "travis-deploy-once": "travis-deploy-once"
+    "travis-deploy-once": "travis-deploy-once",
+    "deploy-dev-from-local": "sh bin/dev/deploy-from-local.sh"
   },
   "dependencies": {
     "bcrypt": "^3.0.0",

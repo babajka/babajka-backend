@@ -14,7 +14,8 @@
     "saveUninitialized": false,
     "cookie": {
       "maxAge": 3600000,
-      "secure": false
+      "secure": false,
+      "httpOnly": false
     },
     "name": "csid"
   },

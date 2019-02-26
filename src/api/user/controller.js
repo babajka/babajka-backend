@@ -1,5 +1,5 @@
 import { sendJson } from 'utils/api';
-import User, { serializeUser } from './model';
+import User, { serializeUser, getUserResponse } from './model';
 
 export const getAll = (req, res, next) =>
   User.find({})
@@ -8,4 +8,4 @@ export const getAll = (req, res, next) =>
     .catch(next);
 
 // eslint-disable-next-line no-unused-vars
-export const getCurrent = ({ user }, res, next) => sendJson(res)(serializeUser(user));
+export const getCurrent = ({ user }, res, next) => sendJson(res)(getUserResponse(user));
