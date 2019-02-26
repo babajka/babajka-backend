@@ -18,8 +18,6 @@ describe('Auth API', () => {
     await addAdminUser();
   });
 
-  after(dropData);
-
   it('should fail to get protected resource without authorization', () =>
     request.get('/protected').expect(403));
 

@@ -4,11 +4,11 @@ import 'db/connect';
 import User from './model';
 
 describe('User model', () => {
-  const userData = { firstName: 'Name', email: 'test@test.test', password: 'longsecret' };
+  const userData = { firstName: 'Name', email: 'test@babajka.io', password: 'longsecret' };
   const { firstName, email, password } = userData;
   const user = new User(userData);
 
-  after(dropData);
+  before(dropData);
 
   it('should save user with password', async () => {
     await user.setPassword(password);
@@ -59,7 +59,7 @@ describe('User model as Author', () => {
   const { firstName, email } = authorData;
   const author = new User(authorData);
 
-  after(dropData);
+  before(dropData);
 
   it('should save author', async () => {
     const result = await author.save();

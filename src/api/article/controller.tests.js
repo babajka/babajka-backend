@@ -25,6 +25,8 @@ describe('Articles API', () => {
   const numberUnpublished = 1;
 
   before(async () => {
+    await dropData();
+
     const { _id: articleBrandId, slug } = await addBrand();
     brandSlug = slug;
 
@@ -34,8 +36,6 @@ describe('Articles API', () => {
 
     articleUnpublished = dbArticles[numberPublished];
   });
-
-  after(dropData);
 
   describe('# Articles CRUD', () => {
     it('should return only 8 published without authorization', () =>
@@ -269,6 +269,8 @@ describe('Articles Bundled API', () => {
   };
 
   before(async () => {
+    await dropData();
+
     const { slug } = await addBrand();
     brandSlug = slug;
     articleBase.brandSlug = slug;
@@ -279,8 +281,6 @@ describe('Articles Bundled API', () => {
     sessionCookie = await loginTestAdmin();
     defaultMetadata = await defaultObjectMetadata();
   });
-
-  after(dropData);
 
   let articleId;
 

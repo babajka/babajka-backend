@@ -7,12 +7,12 @@ import Topic from './model';
 
 describe('Topic Helpers', () => {
   before(async () => {
+    await dropData();
+
     await loginTestAdmin();
     const metadata = await defaultObjectMetadata();
     await addTopics(metadata);
   });
-
-  after(dropData);
 
   it('should get all topics', () =>
     Topic.getAll().then(obj => {

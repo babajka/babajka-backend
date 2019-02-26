@@ -11,6 +11,8 @@ describe('Authors API', () => {
   let sessionCookie;
 
   before(async () => {
+    await dropData();
+
     await addBrand();
     await Promise.all(
       [
@@ -22,8 +24,6 @@ describe('Authors API', () => {
     );
     sessionCookie = await loginTestAdmin();
   });
-
-  after(dropData);
 
   describe('# Authors basic API', () => {
     it('should return all authors available', () =>

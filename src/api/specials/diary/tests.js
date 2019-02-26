@@ -9,6 +9,8 @@ const request = supertest.agent(app.listen());
 
 describe('Diary API', () => {
   before(async () => {
+    await dropData();
+
     await Promise.all(
       [
         {
@@ -45,8 +47,6 @@ describe('Diary API', () => {
       ].map(diaryData => Diary(diaryData).save())
     );
   });
-
-  after(dropData);
 
   describe('# Diary CRUD', () => {
     it('should return an existing diary with prev and next', () =>
@@ -107,11 +107,15 @@ describe('Diary API', () => {
 });
 
 describe('Diary API with no data', () => {
+  before(dropData);
+
   it('should get no data', () => request.get('/api/specials/diary/be/03/10').expect(204));
 });
 
 describe('Diary API with lack of data', () => {
   before(async () => {
+    await dropData();
+
     await Diary({
       author: 'Author1',
       text: 'Diary10-27',
@@ -119,8 +123,6 @@ describe('Diary API with lack of data', () => {
       locale: 'be',
     }).save();
   });
-
-  after(dropData);
 
   it('should return one diary three times', () =>
     request

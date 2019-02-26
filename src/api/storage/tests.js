@@ -23,12 +23,12 @@ describe('Storage Helpers', () => {
   let userId;
 
   before(async () => {
+    await dropData();
+
     const user = await addAdminUser();
     userId = user._id;
     await StorageEntity.setValue('key', { some: 'value' }, userId);
   });
-
-  after(dropData);
 
   it('should retrieve a value from the storage', () =>
     StorageEntity.getValue('key').then(({ document }) => {
@@ -57,6 +57,8 @@ describe('Storage API', () => {
   let validMainPageState;
 
   before(async () => {
+    await dropData();
+
     sessionCookie = await loginTestAdmin();
     const metadata = await defaultObjectMetadata();
 
@@ -76,8 +78,6 @@ describe('Storage API', () => {
       data: { articles: dbArticleIds, brands: [articleBrandId], tags: [tagId] },
     };
   });
-
-  after(dropData);
 
   it('should fail to update main page state with no auth', () =>
     request

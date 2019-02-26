@@ -26,7 +26,6 @@ describe('Tag model', () => {
 
   // eslint-disable-next-line func-names
   before(async function() {
-    // I should probably avoid these lines.
     this.timeout(5000);
     await dropData();
 
@@ -35,8 +34,6 @@ describe('Tag model', () => {
 
     topics = keyBy(await addTopics(defaultMetadata), 'slug');
   });
-
-  after(dropData);
 
   it('should fail to save locations tag | no title', () =>
     Tag({
@@ -100,7 +97,6 @@ describe('Tags API', () => {
 
   // eslint-disable-next-line func-names
   before(async function() {
-    // I should probably avoid these lines.
     this.timeout(5000);
     await dropData();
 
@@ -158,8 +154,6 @@ describe('Tags API', () => {
       .save()
       .then(({ _id }) => _id.toString());
   });
-
-  after(dropData);
 
   it('should get locations tags by topic', () =>
     request

@@ -19,6 +19,8 @@ describe('Locales API', () => {
   let articleId;
 
   before(async () => {
+    await dropData();
+
     const { _id: articleBrandId } = await addBrand();
 
     sessionCookie = await loginTestAdmin();
@@ -35,8 +37,6 @@ describe('Locales API', () => {
 
     articleId = article._id;
   });
-
-  after(dropData);
 
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>

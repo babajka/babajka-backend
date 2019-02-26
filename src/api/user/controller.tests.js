@@ -17,11 +17,10 @@ describe('Users API', () => {
 
   before(async () => {
     await dropData();
+
     await addAuthorUser();
     sessionCookie = await loginTestAdmin();
   });
-
-  after(dropData);
 
   it('should return null user without authorization', () =>
     request

@@ -11,11 +11,11 @@ describe('Brands API', () => {
   const brandSlugs = ['wir', 'kurilka', 'minsk'];
 
   before(async () => {
+    await dropData();
+
     const promises = brandSlugs.map(brandSlug => new ArticleBrand({ slug: brandSlug }).save());
     await Promise.all(promises);
   });
-
-  after(dropData);
 
   describe('# get full list of brands', () => {
     it('should return all brands from the list', () =>

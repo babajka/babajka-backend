@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -e
 
 # This script fully initializes db with golden data provided.

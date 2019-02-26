@@ -20,6 +20,8 @@ describe('Collections API', () => {
   let sessionCookie;
 
   before(async () => {
+    await dropData();
+
     const { _id: articleBrandId } = await addBrand();
 
     sessionCookie = await loginTestAdmin();
@@ -56,8 +58,6 @@ describe('Collections API', () => {
     }
     await Promise.all(promises);
   });
-
-  after(dropData);
 
   describe('# Collections CRUD', () => {
     it('should return 5 collections', () =>
