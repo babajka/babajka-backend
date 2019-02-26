@@ -442,6 +442,7 @@ describe('Articles Bundled API', () => {
             subtitle: 'be-subtitle',
             content: 'some-be-text',
             slug: 'be-slug',
+            keywords: ['keyword1', 'ключавая фраза'],
           },
         },
       })
@@ -449,13 +450,15 @@ describe('Articles Bundled API', () => {
       .expect(({ body: { _id, locales, imagePreviewUrl, video, color, textColorTheme } }) => {
         articleId = _id;
         expect(imagePreviewUrl).to.equal('some-image-url');
-        expect(Object.keys(locales)).has.length(1);
-        expect(locales.be.slug).to.equal('be-slug');
         expect(video.platform).to.equal('youtube');
         expect(video.videoId).to.equal(validYoutubeID);
         expect(video.videoUrl).to.equal(validYoutubeLink);
         expect(color).to.equal('ababab');
         expect(textColorTheme).to.equal('dark');
+        expect(Object.keys(locales)).has.length(1);
+        expect(locales.be.slug).to.equal('be-slug');
+        expect(locales.be.keywords).to.have.length(2);
+        expect(locales.be.keywords).to.include('keyword1');
       }));
 
   it('should return an article by ID', () =>
@@ -477,10 +480,28 @@ describe('Articles Bundled API', () => {
         videoUrl: validYoutubeLink,
       })
       .expect(200)
-      .expect(res => {
-        expect(res.body.video.platform).to.equal('youtube');
-        expect(res.body.video.videoId).to.equal(validYoutubeID);
-        expect(res.body.video.videoUrl).to.equal(validYoutubeLink);
+      .expect(({ body: { video } }) => {
+        expect(video.platform).to.equal('youtube');
+        expect(video.videoId).to.equal(validYoutubeID);
+        expect(video.videoUrl).to.equal(validYoutubeLink);
+      }));
+
+  it('should update list of keywords', () =>
+    request
+      .put('/api/articles/be-slug')
+      .set('Cookie', sessionCookie)
+      .send({
+        locales: {
+          be: {
+            keywords: ['new-keyword'],
+          },
+        },
+      })
+      .expect(200)
+      .expect(({ body: { locales: { be: { keywords } } } }) => {
+        expect(keywords).to.have.length(1);
+        expect(keywords).to.include('new-keyword');
+        expect(keywords).to.not.include('keyword1');
       }));
 
   it('should change article type to text', () =>

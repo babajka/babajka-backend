@@ -65,13 +65,15 @@
             }
           ]
         },
-        "slug": "slug1-be"
+        "slug": "slug1-be",
+        "keywords": ["ключавое слова", "для аптымізацыі"]
       },
       "en": {
         "title": "Title 1",
         "subtitle": "Subtitle 1",
         "content": {},
-        "slug": "slug1-en"
+        "slug": "slug1-en",
+        "keywords": ["keyword", "for", "optimization"]
       }
     },
     "authorEmail": "curie@babajka.io",

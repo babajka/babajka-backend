@@ -41,6 +41,12 @@ const LocalizedArticleSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    keywords: [
+      // Keywords are for SEO optimization and search engines.
+      {
+        type: String,
+      },
+    ],
   },
   {
     usePushEach: true,
