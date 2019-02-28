@@ -84,10 +84,37 @@ const setMainPageValidator = ({ body }, res, next) => {
   return next(!valid && new ValidationError({ mainPageEntities: 'not valid' }));
 };
 
+const mailRequestValidator = ({ body }, res, next) => {
+  const errors = {};
+  const validUserStatuses = ['subscribed', 'unsubscribed'];
+  const validLanguages = ['be', 'ru', 'en'];
+
+  const validators = {
+    emailAddress: emailAddress => emailAddress,
+    userStatus: status => validUserStatuses.includes(status),
+    language: language => validLanguages.includes(language),
+  };
+
+  Object.keys(validators).forEach(field => {
+    if (!validators[field](body[field])) {
+      errors[field] = `value '${body[field]}' is not valid.`;
+    }
+  });
+
+  const valid = Object.keys(errors).length === 0;
+  return next(
+    !valid &&
+      new ValidationError({
+        mailRequest: errors,
+      })
+  );
+};
+
 export const precheck = {
   createArticle: createArticleValidator,
   updateArticle: updateArticleValidator,
   setMainPage: setMainPageValidator,
+  mailRequest: mailRequestValidator,
 };
 
 export const requireFields = (...fields) => (req, res, next) => {
