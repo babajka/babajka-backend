@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6b1379f7-95f7-4010-a5ce-b4cfd01b963e",
+		"_postman_id": "1414e028-41d6-4d69-bcd4-b3a65cd30430",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -862,6 +862,55 @@
 							"path": [
 								"storage",
 								"mainPage"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mail",
+			"item": [
+				{
+					"name": "Mail: update status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "emailAddress",
+									"value": "mail@wir.by",
+									"type": "text"
+								},
+								{
+									"key": "userStatus",
+									"value": "subscribed",
+									"type": "text"
+								},
+								{
+									"key": "language",
+									"value": "be",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/mail",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"mail"
 							]
 						}
 					},
