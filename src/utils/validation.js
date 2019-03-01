@@ -1,4 +1,6 @@
 import HttpError from 'node-http-error';
+import HttpStatus from 'http-status-codes';
+
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 import mongoose from 'mongoose';
@@ -7,7 +9,7 @@ import Joi from 'joi';
 import { MAIN_PAGE_DATA_SCHEMA } from 'constants/storage';
 
 export function ValidationError(message) {
-  return HttpError(400, message);
+  return HttpError(HttpStatus.BAD_REQUEST, message);
 }
 
 export const validatePassword = password => {
@@ -129,7 +131,7 @@ export const requireFields = (...fields) => (req, res, next) => {
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
-export const checkIsFound = (object, code = 404) => {
+export const checkIsFound = (object, code = HttpStatus.NOT_FOUND) => {
   if (!object) {
     throw new HttpError(code);
   }

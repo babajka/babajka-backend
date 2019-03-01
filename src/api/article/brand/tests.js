@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import { supertest, expect, dropData } from 'utils/testing';
 
 import app from 'server';
@@ -21,7 +23,7 @@ describe('Brands API', () => {
     it('should return all brands from the list', () =>
       request
         .get('/api/articles/brands')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => {
           expect(res.body).has.length(brandSlugs.length);
         }));

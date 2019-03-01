@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import {
   supertest,
   expect,
@@ -40,7 +42,7 @@ describe('Locales API', () => {
 
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>
-      request.post(`/api/articles/localize/${articleId}`).expect(403));
+      request.post(`/api/articles/localize/${articleId}`).expect(HttpStatus.FORBIDDEN));
 
     it('should add EN locale into the article', () =>
       request
@@ -52,7 +54,7 @@ describe('Locales API', () => {
           subtitle: 'Subtitle EN',
           locale: 'en',
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => {
           expect(res.body.slug).to.equal('slug-en');
         }));
@@ -60,7 +62,7 @@ describe('Locales API', () => {
     it('should return article with only EN locale', () =>
       request
         .get('/api/articles/slug-en')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => {
           expect(Object.keys(res.body.locales)).has.length(1);
           expect(res.body.locales.en.slug).equals('slug-en');
@@ -76,14 +78,14 @@ describe('Locales API', () => {
           subtitle: 'another subtitle',
           locale: 'en',
         })
-        .expect(400));
+        .expect(HttpStatus.BAD_REQUEST));
 
     it('should update an existing EN locale', () =>
       request
         .put('/api/articles/localize/slug-en')
         .set('Cookie', sessionCookie)
         .send({ title: 'new-title' })
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => expect(res.body.title).to.equal('new-title')));
   });
 });

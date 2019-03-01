@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import {
   supertest,
   expect,
@@ -41,7 +43,7 @@ describe('Articles API', () => {
     it('should return only 8 published without authorization', () =>
       request
         .get('/api/articles')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, total } }) => {
           expect(data).has.length(numberPublished);
           expect(total).to.equal(numberPublished);
@@ -51,7 +53,7 @@ describe('Articles API', () => {
     it('should default skip to 0 and take 1 article', () =>
       request
         .get('/api/articles?take=1')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, total } }) => {
           expect(data).has.length(1);
           const idx = numberPublished - 1;
@@ -63,7 +65,7 @@ describe('Articles API', () => {
     it('should properly apply skip and take 4 articles', () =>
       request
         .get('/api/articles?skip=1&take=4')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, total } }) => {
           expect(data).has.length(4);
           const idx1 = numberPublished - 1 - 1;
@@ -78,31 +80,31 @@ describe('Articles API', () => {
     it('should return an article by slug', () =>
       request
         .get(`/api/articles/${dbArticles[2].locales.en.slug}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.locales.be.slug).equal(dbArticles[2].locales.be.slug);
         }));
 
     it('should not return with bad slug', () =>
-      request.get('/api/articles/article-not-found').expect(404));
+      request.get('/api/articles/article-not-found').expect(HttpStatus.NOT_FOUND));
 
     it('should not return unpublished', () =>
-      request.get('/api/articles/publishAt-article-1').expect(404));
+      request.get('/api/articles/publishAt-article-1').expect(HttpStatus.NOT_FOUND));
 
     it('should fail to create an article due to lack of permissions', () =>
-      request.post('/api/articles').expect(403));
+      request.post('/api/articles').expect(HttpStatus.FORBIDDEN));
 
     it('should fail to update an article due to lack of permissions', () =>
-      request.put('/api/articles/article-1').expect(403));
+      request.put('/api/articles/article-1').expect(HttpStatus.FORBIDDEN));
 
     it('should fail to remove an article due to lack of permissions', () =>
-      request.delete('/api/articles/article-1').expect(403));
+      request.delete('/api/articles/article-1').expect(HttpStatus.FORBIDDEN));
 
     it('should return 9 articles (published and unpublished)', () =>
       request
         .get('/api/articles')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, total } }) => {
           const totalNumber = numberPublished + numberUnpublished;
           expect(total).to.equal(totalNumber);
@@ -116,7 +118,7 @@ describe('Articles API', () => {
       request
         .get(`/api/articles/${dbArticles[numberPublished].locales.en.slug}`)
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { locales } }) => {
           expect(locales.en.slug).equal(articleUnpublished.locales.en.slug);
           expect(locales.be.slug).equal(articleUnpublished.locales.be.slug);
@@ -133,7 +135,7 @@ describe('Articles API', () => {
           imagePreviewUrl: 'image-url',
           type: 'text',
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.publishAt).to.be.null();
           expect(body.createdAt).to.be.not.null();
@@ -144,7 +146,7 @@ describe('Articles API', () => {
       request
         .get('/api/articles')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, total } }) => {
           expect(total).to.equal(10);
           expect(data).has.length(10);
@@ -154,7 +156,7 @@ describe('Articles API', () => {
     it('should not contain a newly created article if querying with no permissions', () =>
       request
         .get('/api/articles')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => {
           expect(res.body.data).has.length(8);
           expect(res.body.data.map(({ _id }) => _id)).not.includes(newArticleId);
@@ -166,7 +168,7 @@ describe('Articles API', () => {
         .post(`/api/articles/localize/${newArticleId}`)
         .send({ title: 'title-new', subtitle: 'subtitle-new', slug: 'article-new', locale: 'en' })
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => {
           expect(res.body.title).equal('title-new');
         }));
@@ -181,7 +183,7 @@ describe('Articles API', () => {
           locales: { en: {} }, // This is for server to keep the locale.
         })
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           articleId = body._id;
           expect(body.imagePreviewUrl).to.equal('new-image-url');
@@ -190,36 +192,36 @@ describe('Articles API', () => {
         }));
 
     it('should not get an article by ID', () =>
-      request.get(`/api/articles/${articleId}`).expect(404));
+      request.get(`/api/articles/${articleId}`).expect(HttpStatus.NOT_FOUND));
 
     it('should get an article by ID with permissions', () =>
       request
         .get(`/api/articles/${articleId}`)
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.imagePreviewUrl).equal('new-image-url');
           expect(body.locales.en.slug).to.equal('article-new');
         }));
 
     it('should fail to get an article due to invalid ID', () =>
-      request.get(`/api/articles/${articleId}X`).expect(404));
+      request.get(`/api/articles/${articleId}X`).expect(HttpStatus.NOT_FOUND));
 
     it('should remove an article by ID', () =>
       request
         .delete(`/api/articles/${articleId}`)
         .set('Cookie', sessionCookie)
-        .expect(200));
+        .expect(HttpStatus.OK));
 
     it('should fail to get removed article by ID', () =>
-      request.get(`/api/articles/${articleId}`).expect(404));
+      request.get(`/api/articles/${articleId}`).expect(HttpStatus.NOT_FOUND));
 
     it('should recover an article by ID', () =>
       request
         .put(`/api/articles/${articleId}`)
         .send({ active: true, locales: { en: {} } })
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.imagePreviewUrl).to.equal('new-image-url');
           expect(body.active).to.equal(true);
@@ -229,7 +231,7 @@ describe('Articles API', () => {
       request
         .get(`/api/articles/article-new`)
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => {
           expect(res.body.locales.en.slug).to.equal('article-new');
         }));
@@ -238,13 +240,13 @@ describe('Articles API', () => {
       request
         .delete('/api/articles/article-new')
         .set('Cookie', sessionCookie)
-        .expect(200));
+        .expect(HttpStatus.OK));
 
     it('should not contain a removed article', () =>
       request
         .get('/api/articles')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, total } }) => {
           expect(total).to.equal(9);
           expect(data).has.length(9);
@@ -291,7 +293,7 @@ describe('Articles Bundled API', () => {
       .send({
         imagePreviewUrl: 'ololo',
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error).not.empty();
         expect(res.body.error.type).to.include('error');
@@ -310,7 +312,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error).not.empty();
         expect(res.body.error.locales.be.slug).to.include('error');
@@ -331,7 +333,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error).not.empty();
         expect(res.body.error.locales.be.slug).to.include('failedMatchRegex');
@@ -353,7 +355,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error).not.empty();
         expect(res.body.error.localeConsistency).to.include('error');
@@ -375,7 +377,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error.brand).to.contain('forbidden');
       }));
@@ -389,7 +391,7 @@ describe('Articles Bundled API', () => {
         type: 'text',
         videoUrl: validYoutubeLink,
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error.video).to.contain('forbiddenForTypeText');
       }));
@@ -403,7 +405,7 @@ describe('Articles Bundled API', () => {
         type: 'video',
         videoUrl: validVimeoLink,
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error).to.contain('badVideoUrl');
       }));
@@ -417,7 +419,7 @@ describe('Articles Bundled API', () => {
         type: 'video',
         videoUrl: badYoutubeLink,
       })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error).to.contain('badVideoUrl');
       }));
@@ -445,7 +447,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body: { _id, locales, imagePreviewUrl, video, color, textColorTheme } }) => {
         articleId = _id;
         expect(imagePreviewUrl).to.equal('some-image-url');
@@ -461,7 +463,7 @@ describe('Articles Bundled API', () => {
   it('should return an article by ID', () =>
     request
       .get(`/api/articles/${articleId}`)
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(res => {
         expect(res.body.imagePreviewUrl).to.equal('some-image-url');
         expect(Object.keys(res.body.locales)).has.length(1);
@@ -476,7 +478,7 @@ describe('Articles Bundled API', () => {
       .send({
         videoUrl: validYoutubeLink,
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(res => {
         expect(res.body.video.platform).to.equal('youtube');
         expect(res.body.video.videoId).to.equal(validYoutubeID);
@@ -490,7 +492,7 @@ describe('Articles Bundled API', () => {
       .send({
         type: 'text',
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(res => {
         expect(res.body.type).to.equal('text');
         expect(res.body.video).to.be.undefined();
@@ -514,7 +516,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body: { imagePreviewUrl, locales, color } }) => {
         expect(imagePreviewUrl).to.equal('new-image-url');
         expect(Object.keys(locales)).has.length(1);
@@ -526,7 +528,7 @@ describe('Articles Bundled API', () => {
   it('should return an article with new image & title & color', () =>
     request
       .get(`/api/articles/${articleId}`)
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body: { imagePreviewUrl, locales, color } }) => {
         expect(imagePreviewUrl).to.equal('new-image-url');
         expect(Object.keys(locales)).has.length(1);
@@ -550,7 +552,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(res => {
         expect(Object.keys(res.body.locales)).has.length(2);
         expect(res.body.locales.en.title).to.equal('en-title');
@@ -560,7 +562,7 @@ describe('Articles Bundled API', () => {
   it('should return the article again by ID', () =>
     request
       .get(`/api/articles/${articleId}`)
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(res => {
         expect(res.body.imagePreviewUrl).to.equal('new-image-url');
         expect(Object.keys(res.body.locales)).has.length(2);
@@ -575,14 +577,14 @@ describe('Articles Bundled API', () => {
       .send({
         locales: { en: {} },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(res => {
         expect(Object.keys(res.body.locales)).has.length(1);
         expect(res.body.locales.en.subtitle).to.equal('en-subtitle');
       }));
 
   it('should not find an article with removed localization', () =>
-    request.get('/api/articles/be-slug').expect(404));
+    request.get('/api/articles/be-slug').expect(HttpStatus.NOT_FOUND));
 
   it('should add two new locales and update existent one', () =>
     request
@@ -609,7 +611,7 @@ describe('Articles Bundled API', () => {
           },
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(res => {
         expect(Object.keys(res.body.locales)).has.length(3);
         expect(res.body.locales.fr.slug).to.equal('slug-fr');
@@ -629,7 +631,7 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
       .send({ type: '' })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error.type).to.contain('error');
       }));
@@ -639,7 +641,7 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
       .send({ brandSlug: '' })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error.brandSlug).to.contain('error');
       }));
@@ -649,7 +651,7 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
       .send({ collection: 'ololo', collectionSlug: '' })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(res => {
         expect(res.body.error.collection).to.include('forbidden');
       }));
@@ -659,12 +661,12 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
       .send({ imagePreviewUrl: '' })
-      .expect(400));
+      .expect(HttpStatus.BAD_REQUEST));
 
   it('should fail to remove localization title', () =>
     request
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
       .send({ locales: { de: { title: '' } } })
-      .expect(400));
+      .expect(HttpStatus.BAD_REQUEST));
 });
