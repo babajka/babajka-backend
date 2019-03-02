@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import keyBy from 'lodash/keyBy';
 
 import {
@@ -49,7 +51,7 @@ describe('Tag model', () => {
     })
       .save()
       .catch(({ status, message: { errors } }) => {
-        expect(status).to.equal(400);
+        expect(status).to.equal(HttpStatus.BAD_REQUEST);
         expect(errors).to.not.empty();
         expect(errors.title).to.include('required');
       }));
@@ -68,7 +70,7 @@ describe('Tag model', () => {
     })
       .save()
       .catch(({ status, message: { errors } }) => {
-        expect(status).to.equal(400);
+        expect(status).to.equal(HttpStatus.BAD_REQUEST);
         expect(errors).to.not.empty();
         expect(errors.title.be).to.include('required');
       }));
@@ -88,7 +90,7 @@ describe('Tag model', () => {
     })
       .save()
       .catch(({ status, message: { errors } }) => {
-        expect(status).to.equal(400);
+        expect(status).to.equal(HttpStatus.BAD_REQUEST);
         expect(errors).to.not.empty();
         expect(errors.color).to.include('regex');
       }));
@@ -164,7 +166,7 @@ describe('Tags API', () => {
   it('should get locations tags by topic', () =>
     request
       .get('/api/tags/by-topic/locations')
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body }) => {
         expect(body).to.have.length(1);
         const tag = body[0];
@@ -177,7 +179,7 @@ describe('Tags API', () => {
   it('should get times tags by topic', () =>
     request
       .get('/api/tags/by-topic/times')
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body }) => {
         expect(body).to.have.length(1);
         const tag = body[0];
@@ -190,7 +192,7 @@ describe('Tags API', () => {
   it('should get an error for unsupported topic', () =>
     request
       .get('/api/tags/by-topic/randomTopic')
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(({ body: { error } }) => {
         expect(error.topic).to.contain('not supported');
       }));
@@ -198,7 +200,7 @@ describe('Tags API', () => {
   it('should return article with two tags populated', () =>
     request
       .get(`/api/articles/${articleTwoTags}`)
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body }) => {
         expect(body.tags).to.have.length(2);
         expect(body.tags.map(({ slug }) => slug)).to.deep.equal(['miensk', 'xx-century']);
@@ -207,7 +209,7 @@ describe('Tags API', () => {
   it('should return two articles by tag', () =>
     request
       .get('/api/tags/articles/miensk')
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body }) => {
         expect(body).to.have.length(2);
         expect(body.map(({ _id }) => _id)).to.deep.equal([articleOneTag, articleTwoTags]);
@@ -216,7 +218,7 @@ describe('Tags API', () => {
   it('should return one article by tag', () =>
     request
       .get('/api/tags/articles/xx-century')
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body }) => {
         expect(body).to.have.length(1);
         expect(body[0]._id).to.equal(articleTwoTags);

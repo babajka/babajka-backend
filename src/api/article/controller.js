@@ -1,5 +1,6 @@
 import omit from 'lodash/omit';
 import set from 'lodash/set';
+import HttpStatus from 'http-status-codes';
 
 import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
@@ -73,7 +74,7 @@ export const create = async ({ body, user }, res, next) => {
     const articleBrand = await ArticleBrand.findOne({
       slug: body.brandSlug,
     }).exec();
-    checkIsFound(articleBrand, 400); // Brand is required.
+    checkIsFound(articleBrand, HttpStatus.BAD_REQUEST); // Brand is required.
     const brandId = articleBrand._id;
 
     const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
@@ -235,5 +236,5 @@ export const remove = ({ params: { slugOrId }, user }, res, next) =>
     .then(articleId =>
       Article.updateOne({ _id: articleId }, mergeWithUpdateMetadata({ active: false }, user._id))
     )
-    .then(() => res.sendStatus(200))
+    .then(() => res.sendStatus(HttpStatus.OK))
     .catch(next);

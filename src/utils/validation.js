@@ -1,4 +1,6 @@
 import HttpError from 'node-http-error';
+import HttpStatus from 'http-status-codes';
+
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 import mongoose from 'mongoose';
@@ -7,7 +9,7 @@ import Joi from 'joi';
 import { MAIN_PAGE_DATA_SCHEMA } from 'constants/storage';
 
 export function ValidationError(message) {
-  return HttpError(400, message);
+  return HttpError(HttpStatus.BAD_REQUEST, message);
 }
 
 export const validatePassword = password => {
@@ -84,10 +86,37 @@ const setMainPageValidator = ({ body }, res, next) => {
   return next(!valid && new ValidationError({ mainPageEntities: 'not valid' }));
 };
 
+const mailRequestValidator = ({ body }, res, next) => {
+  const errors = {};
+  const validUserStatuses = ['subscribed', 'unsubscribed'];
+  const validLanguages = ['be', 'ru', 'en'];
+
+  const validators = {
+    emailAddress: emailAddress => emailAddress,
+    userStatus: status => validUserStatuses.includes(status),
+    language: language => validLanguages.includes(language),
+  };
+
+  Object.keys(validators).forEach(field => {
+    if (!validators[field](body[field])) {
+      errors[field] = `value '${body[field]}' is not valid.`;
+    }
+  });
+
+  const valid = Object.keys(errors).length === 0;
+  return next(
+    !valid &&
+      new ValidationError({
+        mailRequest: errors,
+      })
+  );
+};
+
 export const precheck = {
   createArticle: createArticleValidator,
   updateArticle: updateArticleValidator,
   setMainPage: setMainPageValidator,
+  mailRequest: mailRequestValidator,
 };
 
 export const requireFields = (...fields) => (req, res, next) => {
@@ -102,7 +131,7 @@ export const requireFields = (...fields) => (req, res, next) => {
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
-export const checkIsFound = (object, code = 404) => {
+export const checkIsFound = (object, code = HttpStatus.NOT_FOUND) => {
   if (!object) {
     throw new HttpError(code);
   }

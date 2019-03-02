@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import { supertest, expect, dropData } from 'utils/testing';
 
 import app from 'server';
@@ -52,7 +54,7 @@ describe('Diary API', () => {
     it('should return an existing diary with prev and next', () =>
       request
         .get('/api/specials/diary/be/02/28/')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, prev, next } }) => {
           expect(data.author).to.equal('Author3');
           expect(data.year).to.equal('2018');
@@ -67,7 +69,7 @@ describe('Diary API', () => {
     it('should return the first diary of the year', () =>
       request
         .get('/api/specials/diary/be/01/15')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, prev, next } }) => {
           expect(data.author).to.equal('Author1');
           expect(data.month).to.equal('01');
@@ -81,7 +83,7 @@ describe('Diary API', () => {
     it('should return the last diary of the year', () =>
       request
         .get('/api/specials/diary/be/05/17')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, prev, next } }) => {
           expect(data.author).to.equal('Author5');
           expect(data.month).to.equal('05');
@@ -95,7 +97,7 @@ describe('Diary API', () => {
     it('should return noting when request unexisting diary', () =>
       request
         .get('/api/specials/diary/be/04/15')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { data, prev, next } }) => {
           expect(data).to.be.empty();
           expect(prev.month).to.equal('03');
@@ -107,7 +109,8 @@ describe('Diary API', () => {
 });
 
 describe('Diary API with no data', () => {
-  it('should get no data', () => request.get('/api/specials/diary/be/03/10').expect(204));
+  it('should get no data', () =>
+    request.get('/api/specials/diary/be/03/10').expect(HttpStatus.NO_CONTENT));
 });
 
 describe('Diary API with lack of data', () => {
@@ -125,7 +128,7 @@ describe('Diary API with lack of data', () => {
   it('should return one diary three times', () =>
     request
       .get('/api/specials/diary/be/10/27')
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body: { data, prev, next } }) => {
         expect(data.month).to.equal('10');
         expect(prev.month).to.equal('10');

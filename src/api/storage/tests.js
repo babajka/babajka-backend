@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import {
   supertest,
   expect,
@@ -83,14 +85,14 @@ describe('Storage API', () => {
     request
       .post('/api/storage/main-page')
       .send(validMainPageState)
-      .expect(403));
+      .expect(HttpStatus.FORBIDDEN));
 
   it('should fail to push main page state with invalid entities', () =>
     request
       .post('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .send({ blocks: [], data: { badEntity: ['x'] } })
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .expect(({ body }) => {
         expect(body).not.empty();
         expect(body.error).not.empty();
@@ -98,14 +100,14 @@ describe('Storage API', () => {
       }));
 
   it('should not found main page state as it was never initialized', () =>
-    request.get('/api/storage/main-page').expect(404));
+    request.get('/api/storage/main-page').expect(HttpStatus.NOT_FOUND));
 
   it('should succeed in pushing main page state', () =>
     request
       .post('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .send(validMainPageState)
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body: { blocks, data: { articles, brands, tags } } }) => {
         expect(blocks).to.deep.equal(validMainPageState.blocks);
         expect(articles).has.length(3);
@@ -117,7 +119,7 @@ describe('Storage API', () => {
     request
       .get('/api/storage/main-page')
       .set('Cookie', sessionCookie)
-      .expect(200)
+      .expect(HttpStatus.OK)
       .expect(({ body: { blocks, data: { articles, brands, topics, latestArticles } } }) => {
         expect(blocks).to.deep.equal(validMainPageState.blocks);
 
