@@ -966,55 +966,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "Mail",
-			"item": [
-				{
-					"name": "Mail: update status",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "emailAddress",
-									"value": "mail@wir.by",
-									"type": "text"
-								},
-								{
-									"key": "userStatus",
-									"value": "subscribed",
-									"type": "text"
-								},
-								{
-									"key": "language",
-									"value": "be",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/mail",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"mail"
-							]
-						}
-					},
-					"response": []
-				}
-			]
 		}
 	]
 }
