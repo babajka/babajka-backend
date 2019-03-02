@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import { supertest, expect, dropData, loginTestAdmin, addBrand } from 'utils/testing';
 
 import app from 'server';
@@ -29,7 +31,7 @@ describe('Authors API', () => {
     it('should return all authors available', () =>
       request
         .get('/api/articles/authors')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(res => {
           expect(res.body).has.length(2);
         }));
@@ -38,7 +40,7 @@ describe('Authors API', () => {
       request
         .post('/api/articles/authors')
         .send({ bio: 'new bio' })
-        .expect(403));
+        .expect(HttpStatus.FORBIDDEN));
 
     const generateAuthor = i => {
       it(`should generate an author ${i}`, () =>
@@ -46,7 +48,7 @@ describe('Authors API', () => {
           .post('/api/articles/authors')
           .send({ firstName: `Name ${i}` })
           .set('Cookie', sessionCookie)
-          .expect(200)
+          .expect(HttpStatus.OK)
           .expect(res => {
             expect(res.body.email).equal(`generated-author-${i}@wir.by`);
             expect(res.body.firstName).equal(`Name ${i}`);
@@ -70,7 +72,7 @@ describe('Authors API', () => {
             videoUrl: 'https://www.youtube.com/watch?v=1234567890x',
           })
           .set('Cookie', sessionCookie)
-          .expect(200)
+          .expect(HttpStatus.OK)
           .expect(res => {
             expect(res.body.type).equal('video');
             expect(res.body.brand.slug).equal('wir');

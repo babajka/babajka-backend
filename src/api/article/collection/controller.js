@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
@@ -34,5 +36,5 @@ export const update = ({ params: { slug }, body }, res, next) =>
 export const remove = ({ params: { slug } }, res, next) =>
   ArticleCollection.findOneAndUpdate({ slug }, { active: false }, { new: true })
     .then(checkIsFound)
-    .then(() => res.sendStatus(200))
+    .then(() => res.sendStatus(HttpStatus.OK))
     .catch(next);

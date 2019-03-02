@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
+import HttpStatus from 'http-status-codes';
 
 import api from 'api';
 import config from 'config';
@@ -43,7 +44,7 @@ app.use((err, req, res, next) => {
       console.error(err.stack);
     }
   }
-  sendJson(res, err.status || 500)({ error: err.message });
+  sendJson(res, err.status || HttpStatus.INTERNAL_SERVER_ERROR)({ error: err.message });
 });
 
 export default app;
