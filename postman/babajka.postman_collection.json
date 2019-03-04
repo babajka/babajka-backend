@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "eb2d903b-35e1-481b-9571-2176aa7a7822",
+		"_postman_id": "767053da-7ac7-4d94-ae64-12df73c20d82",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -195,28 +195,14 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "type",
-									"value": "text",
-									"type": "text"
-								},
-								{
-									"key": "brand",
-									"value": "wir",
-									"type": "text"
-								},
-								{
-									"key": "collectionSlug",
-									"value": "collection0",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"text\",\n\t\"brandSlug\": \"wir\",\n\t\"collectionSlug\": \"collection0\",\n\t\"images\": {\n\t\t\"horizontal\": \"url\",\n\t\t\"vertical\": \"url\",\n\t\t\"page\": \"url\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles",
@@ -237,23 +223,14 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "type",
-									"value": "text",
-									"type": "text"
-								},
-								{
-									"key": "brand",
-									"value": "wir",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"text\",\n\t\"brandSlug\": \"wir\",\n\t\"images\": {\n\t\t\"horizontal\": \"url\",\n\t\t\"vertical\": \"url\",\n\t\t\"page\": \"url\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles",
@@ -435,28 +412,14 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "type",
-									"value": "video",
-									"type": "text"
-								},
-								{
-									"key": "brand",
-									"value": "wir",
-									"type": "text"
-								},
-								{
-									"key": "authorEmail",
-									"value": "very-first-author@wir.by",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"text\",\n\t\"authorEmail\": \"very-first-author@babajka.io\",\n\t\"brandSlug\": \"wir\",\n\t\"images\": {\n\t\t\"horizontal\": \"url\",\n\t\t\"vertical\": \"url\",\n\t\t\"page\": \"url\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles",
@@ -511,29 +474,14 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "brand",
-									"value": "wir",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "text",
-									"type": "text"
-								},
-								{
-									"key": "publishAt",
-									"value": "2025-01-01T18:25:43.511Z",
-									"description": "a date from far future",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"text\",\n\t\"publishAt\": \"2025-01-01T18:25:43.511Z\",\n\t\"brandSlug\": \"wir\",\n\t\"images\": {\n\t\t\"horizontal\": \"url\",\n\t\t\"vertical\": \"url\",\n\t\t\"page\": \"url\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles",
@@ -720,28 +668,14 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "firstName",
-									"value": "author-first-name",
-									"type": "text"
-								},
-								{
-									"key": "lastName",
-									"value": "author-last-name",
-									"type": "text"
-								},
-								{
-									"key": "bio",
-									"value": "Here is a short bio for a new author.",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": "{\n\t\"firstName\": {\n\t\t\"en\": \"First Name\"\n\t},\n\t\"lastName\": {\n\t\t\"en\": \"Last Name\"\n\t},\n\t\"bio\": {\n\t\t\"en\": \"Here a short bio goes\"\n\t}\n}"
 						},
 						"url": {
 							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
