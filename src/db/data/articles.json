@@ -17,8 +17,11 @@
       }
     },
     "authorEmail": "albert@babajka.io",
-    "imagePreviewUrl": "/test/images/gradient-1.jpg",
-    "imageFolderUrl": "/test/images/gradient-1.jpg"
+    "images": {
+      "page": "/test/images/gradient-1.jpg",
+      "horizontal": "/test/images/gradient-1.jpg",
+      "vertical": "/test/images/gradient-1.jpg"
+    }
   },
   {
     "type": "video",
@@ -78,8 +81,10 @@
     },
     "authorEmail": "curie@babajka.io",
     "videoId": "SPauxWv1Rnk",
-    "imagePreviewUrl": "/test/images/gradient-2.png",
-    "imageFolderUrl": "/test/images/seattle.jpg"
+    "images": {
+      "page": "/test/images/seattle.jpg",
+      "horizontal": "/test/images/gradient-2.jpg"
+    }
   },
   {
     "type": "video",
@@ -101,8 +106,10 @@
     },
     "authorEmail": "albert@babajka.io",
     "videoId": "SPauxWv1Rnk",
-    "imagePreviewUrl": "/test/images/gradient-3.png",
-    "imageFolderUrl": "/test/images/seattle.jpg"
+    "images": {
+      "page": "/test/images/seattle.jpg",
+      "horizontal": "/test/images/gradient-3.jpg"
+    }
   },
   {
     "type": "text",
@@ -123,8 +130,11 @@
       }
     },
     "authorEmail": "curie@babajka.io",
-    "imagePreviewUrl": "/test/images/seattle.jpg",
-    "imageFolderUrl": "/test/images/seattle.jpg"
+    "images": {
+      "page": "/test/images/seattle.jpg",
+      "horizontal": "/test/images/seattle.jpg",
+      "vertical": "/test/images/seattle.jpg"
+    }
   },
   {
     "type": "video",
@@ -145,8 +155,10 @@
       }
     },
     "videoId": "OUGvR8UVlSU",
-    "imagePreviewUrl": "/test/images/gradient-5.jpg",
-    "imageFolderUrl": "/test/images/gradient-1.jpg"
+    "images": {
+      "page": "/test/images/gradient-1.jpg",
+      "horizontal": "/test/images/gradient-5.jpg"
+    }
   },
   {
     "type": "text",
@@ -172,6 +184,10 @@
         "slug": "slug5-en"
       }
     },
-    "imagePreviewUrl": "/test/images/gradient-3.png"
+    "images": {
+      "page": "/test/images/gradient-3.jpg",
+      "horizontal": "/test/images/gradient-3.jpg",
+      "vertical": "/test/images/gradient-3.jpg"
+    }
   }
 ]

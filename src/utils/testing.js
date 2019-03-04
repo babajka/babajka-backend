@@ -47,6 +47,17 @@ export const TEST_DATA = {
       slug: 'wir',
     },
   },
+  articleImages: {
+    text: {
+      page: 'page-url',
+      horizontal: 'horizontal-url',
+      vertical: 'vertical-url',
+    },
+    video: {
+      page: 'page-url',
+      horizontal: 'horizontal-url',
+    },
+  },
 };
 
 export const addUser = async data => {
@@ -104,7 +115,7 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
       return new Article({
         brand: articleBrandId,
         type: 'text',
-        imagePreviewUrl: 'image-url',
+        images: TEST_DATA.articleImages.text,
         metadata: defaultMetadata,
         publishAt: date,
       })

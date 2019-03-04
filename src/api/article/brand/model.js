@@ -25,7 +25,6 @@ const ArticleBrandSchema = new Schema({
   },
 });
 
-// eslint-disable-next-line func-names
 ArticleBrandSchema.statics.customQuery = function({ query = {} } = {}) {
   return this.find(query).select('-__v');
 };

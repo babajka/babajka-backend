@@ -7,12 +7,18 @@ import {
   addBrand,
   addAuthorUser,
   addArticles,
+  TEST_DATA,
 } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
 
 const request = supertest.agent(app.listen());
+
+const validYoutubeID = 'ABCABCABCAB';
+const validYoutubeLink = `https://www.youtube.com/watch?v=${validYoutubeID}`;
+const badYoutubeLink = 'https://www.youtube.com/watch?v=BAD-ID';
+const validVimeoLink = 'https://vimeo.com/197700533';
 
 describe('Articles API', () => {
   let brandSlug;
@@ -130,7 +136,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .send({
           brandSlug,
-          imagePreviewUrl: 'image-url',
+          images: TEST_DATA.articleImages.text,
           type: 'text',
         })
         .expect(200)
@@ -177,14 +183,17 @@ describe('Articles API', () => {
       request
         .put('/api/articles/article-new')
         .send({
-          imagePreviewUrl: 'new-image-url',
+          images: {
+            ...TEST_DATA.articleImages.text,
+            page: 'new-image-url',
+          },
           locales: { en: {} }, // This is for server to keep the locale.
         })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(({ body }) => {
           articleId = body._id;
-          expect(body.imagePreviewUrl).to.equal('new-image-url');
+          expect(body.images.page).to.equal('new-image-url');
           expect(body.active).to.equal(true);
           expect(body.locales.en.title).to.equal('title-new');
         }));
@@ -198,7 +207,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(({ body }) => {
-          expect(body.imagePreviewUrl).equal('new-image-url');
+          expect(body.images.page).equal('new-image-url');
           expect(body.locales.en.slug).to.equal('article-new');
         }));
 
@@ -221,7 +230,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(({ body }) => {
-          expect(body.imagePreviewUrl).to.equal('new-image-url');
+          expect(body.images.page).to.equal('new-image-url');
           expect(body.active).to.equal(true);
         }));
 
@@ -249,6 +258,35 @@ describe('Articles API', () => {
           expect(total).to.equal(9);
           expect(data).has.length(9);
         }));
+
+    it('should not create text article due to invalid images', () =>
+      request
+        .post('/api/articles')
+        .send({
+          brandSlug,
+          type: 'text',
+          images: TEST_DATA.articleImages.video,
+        })
+        .set('Cookie', sessionCookie)
+        .expect(400)
+        .expect(({ body: { error } }) => {
+          expect(error.errors.images.vertical).to.contain('required');
+        }));
+
+    it('should not create video article due to invalid images', () =>
+      request
+        .post('/api/articles')
+        .send({
+          brandSlug,
+          type: 'video',
+          images: TEST_DATA.articleImages.text,
+          videoUrl: validYoutubeLink,
+        })
+        .set('Cookie', sessionCookie)
+        .expect(400)
+        .expect(({ body: { error } }) => {
+          expect(error.errors.images.vertical).to.contain('Unknown');
+        }));
   });
 });
 
@@ -258,14 +296,9 @@ describe('Articles Bundled API', () => {
   let sessionCookie;
   let defaultMetadata;
 
-  const validYoutubeID = 'ABCABCABCAB';
-  const validYoutubeLink = `https://www.youtube.com/watch?v=${validYoutubeID}`;
-  const badYoutubeLink = 'https://www.youtube.com/watch?v=BAD-ID';
-  const validVimeoLink = 'https://vimeo.com/197700533';
-
   const articleBase = {
     type: 'text',
-    imagePreviewUrl: 'abc',
+    images: TEST_DATA.articleImages.text,
   };
 
   before(async () => {
@@ -289,7 +322,10 @@ describe('Articles Bundled API', () => {
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        imagePreviewUrl: 'ololo',
+        images: {
+          ...TEST_DATA.articleImages.text,
+          horizontal: 'ololo',
+        },
       })
       .expect(400)
       .expect(res => {
@@ -430,7 +466,7 @@ describe('Articles Bundled API', () => {
         brandSlug,
         collectionSlug: 'precreated-collection',
         type: 'video',
-        imagePreviewUrl: 'some-image-url',
+        images: TEST_DATA.articleImages.video,
         authorEmail,
         publishAt: Date.now(),
         videoUrl: validYoutubeLink,
@@ -447,9 +483,10 @@ describe('Articles Bundled API', () => {
         },
       })
       .expect(200)
-      .expect(({ body: { _id, locales, imagePreviewUrl, video, color, textColorTheme } }) => {
+      .expect(({ body: { _id, locales, images, video, color, textColorTheme } }) => {
         articleId = _id;
-        expect(imagePreviewUrl).to.equal('some-image-url');
+        expect(images.horizontal).to.equal(TEST_DATA.articleImages.video.horizontal);
+        expect(images.page).to.equal(TEST_DATA.articleImages.video.page);
         expect(video.platform).to.equal('youtube');
         expect(video.videoId).to.equal(validYoutubeID);
         expect(video.videoUrl).to.equal(validYoutubeLink);
@@ -465,11 +502,11 @@ describe('Articles Bundled API', () => {
     request
       .get(`/api/articles/${articleId}`)
       .expect(200)
-      .expect(res => {
-        expect(res.body.imagePreviewUrl).to.equal('some-image-url');
-        expect(Object.keys(res.body.locales)).has.length(1);
-        expect(res.body.locales.be.title).to.equal('be-title');
-        expect(res.body.locales.be.slug).to.equal('be-slug');
+      .expect(({ body: { images, locales } }) => {
+        expect(images.page).to.equal(TEST_DATA.articleImages.video.page);
+        expect(Object.keys(locales)).has.length(1);
+        expect(locales.be.title).to.equal('be-title');
+        expect(locales.be.slug).to.equal('be-slug');
       }));
 
   it('should update article video reference', () =>
@@ -510,12 +547,13 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         type: 'text',
+        images: TEST_DATA.articleImages.text,
       })
       .expect(200)
-      .expect(res => {
-        expect(res.body.type).to.equal('text');
-        expect(res.body.video).to.be.undefined();
-        expect(Date.parse(res.body.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
+      .expect(({ body }) => {
+        expect(body.type).to.equal('text');
+        expect(body.video).to.be.undefined();
+        expect(Date.parse(body.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
       }));
 
   // TODO(uladbohdan): to find a way to test duplication of slugs. The problem
@@ -526,7 +564,10 @@ describe('Articles Bundled API', () => {
       .put('/api/articles/be-slug')
       .set('Cookie', sessionCookie)
       .send({
-        imagePreviewUrl: 'new-image-url',
+        images: {
+          ...TEST_DATA.articleImages.text,
+          horizontal: 'new-image-url',
+        },
         color: '123456',
         locales: {
           be: {
@@ -536,8 +577,8 @@ describe('Articles Bundled API', () => {
         },
       })
       .expect(200)
-      .expect(({ body: { imagePreviewUrl, locales, color } }) => {
-        expect(imagePreviewUrl).to.equal('new-image-url');
+      .expect(({ body: { images, locales, color } }) => {
+        expect(images.horizontal).to.equal('new-image-url');
         expect(Object.keys(locales)).has.length(1);
         expect(locales.be.title).to.equal('new-be-title');
         expect(locales.be.subtitle).to.equal('new-be-subtitle');
@@ -548,8 +589,8 @@ describe('Articles Bundled API', () => {
     request
       .get(`/api/articles/${articleId}`)
       .expect(200)
-      .expect(({ body: { imagePreviewUrl, locales, color } }) => {
-        expect(imagePreviewUrl).to.equal('new-image-url');
+      .expect(({ body: { images, locales, color } }) => {
+        expect(images.horizontal).to.equal('new-image-url');
         expect(Object.keys(locales)).has.length(1);
         expect(locales.be.title).to.equal('new-be-title');
         expect(color).to.equal('123456');
@@ -572,21 +613,21 @@ describe('Articles Bundled API', () => {
         },
       })
       .expect(200)
-      .expect(res => {
-        expect(Object.keys(res.body.locales)).has.length(2);
-        expect(res.body.locales.en.title).to.equal('en-title');
-        expect(res.body.locales.en.slug).to.equal('en-slug');
+      .expect(({ body: { locales } }) => {
+        expect(Object.keys(locales)).has.length(2);
+        expect(locales.en.title).to.equal('en-title');
+        expect(locales.en.slug).to.equal('en-slug');
       }));
 
   it('should return the article again by ID', () =>
     request
       .get(`/api/articles/${articleId}`)
       .expect(200)
-      .expect(res => {
-        expect(res.body.imagePreviewUrl).to.equal('new-image-url');
-        expect(Object.keys(res.body.locales)).has.length(2);
-        expect(res.body.locales.be.title).to.equal('new-be-title');
-        expect(res.body.locales.en.title).to.equal('en-title');
+      .expect(({ body: { images, locales } }) => {
+        expect(images.horizontal).to.equal('new-image-url');
+        expect(Object.keys(locales)).has.length(2);
+        expect(locales.be.title).to.equal('new-be-title');
+        expect(locales.en.title).to.equal('en-title');
       }));
 
   it('should remove BE locale due to absense in update request', () =>
@@ -597,9 +638,9 @@ describe('Articles Bundled API', () => {
         locales: { en: {} },
       })
       .expect(200)
-      .expect(res => {
-        expect(Object.keys(res.body.locales)).has.length(1);
-        expect(res.body.locales.en.subtitle).to.equal('en-subtitle');
+      .expect(({ body: { locales } }) => {
+        expect(Object.keys(locales)).has.length(1);
+        expect(locales.en.subtitle).to.equal('en-subtitle');
       }));
 
   it('should not find an article with removed localization', () =>
@@ -631,18 +672,16 @@ describe('Articles Bundled API', () => {
         },
       })
       .expect(200)
-      .expect(res => {
-        expect(Object.keys(res.body.locales)).has.length(3);
-        expect(res.body.locales.fr.slug).to.equal('slug-fr');
-        expect(res.body.locales.de.slug).to.equal('slug-de');
-        expect(res.body.locales.en.slug).to.equal('new-en-slug');
+      .expect(({ body: { locales, metadata } }) => {
+        expect(Object.keys(locales)).has.length(3);
+        expect(locales.fr.slug).to.equal('slug-fr');
+        expect(locales.de.slug).to.equal('slug-de');
+        expect(locales.en.slug).to.equal('new-en-slug');
 
         // Below are the tests for object metadata.
-        expect(Date.parse(res.body.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
-        expect(Date.parse(res.body.locales.en.metadata.updatedAt)).to.be.above(
-          defaultMetadata.updatedAt
-        );
-        expect(res.body.locales.en.metadata.updatedBy.email).to.contain('@babajka');
+        expect(Date.parse(metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
+        expect(Date.parse(locales.en.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
+        expect(locales.en.metadata.updatedBy.email).to.contain('@babajka');
       }));
 
   it('should fail to remove article type', () =>
@@ -651,8 +690,8 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({ type: '' })
       .expect(400)
-      .expect(res => {
-        expect(res.body.error.type).to.contain('error');
+      .expect(({ body }) => {
+        expect(body.error.type).to.contain('error');
       }));
 
   it('should fail to remove article brand', () =>
@@ -661,8 +700,8 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({ brandSlug: '' })
       .expect(400)
-      .expect(res => {
-        expect(res.body.error.brandSlug).to.contain('error');
+      .expect(({ body }) => {
+        expect(body.error.brandSlug).to.contain('error');
       }));
 
   it('should fail to remove article collection due to forbidden collection field', () =>
@@ -671,15 +710,15 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({ collection: 'ololo', collectionSlug: '' })
       .expect(400)
-      .expect(res => {
-        expect(res.body.error.collection).to.include('forbidden');
+      .expect(({ body }) => {
+        expect(body.error.collection).to.include('forbidden');
       }));
 
-  it('should fail to remove article imagePreviewUrl', () =>
+  it('should fail to remove article images', () =>
     request
       .put('/api/articles/new-en-slug')
       .set('Cookie', sessionCookie)
-      .send({ imagePreviewUrl: '' })
+      .send({ images: {} })
       .expect(400));
 
   it('should fail to remove localization title', () =>

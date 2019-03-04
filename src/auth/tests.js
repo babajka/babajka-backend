@@ -10,7 +10,6 @@ const request = supertest.agent(app.listen());
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(200));
 
 describe('Auth API', () => {
-  // eslint-disable-next-line func-names
   before(async function() {
     this.timeout(5000);
     await dropData();

@@ -32,7 +32,6 @@ const TagSchema = new Schema({
   },
 });
 
-// eslint-disable-next-line func-names
 TagSchema.pre('validate', async function(next) {
   const topic = await Topic.findOne({ _id: this.topic });
 
@@ -49,7 +48,6 @@ TagSchema.pre('validate', async function(next) {
   next();
 });
 
-// eslint-disable-next-line func-names
 TagSchema.statics.customQuery = function({ query = {} } = {}) {
   return this.find(query)
     .select('-__v -metadata')

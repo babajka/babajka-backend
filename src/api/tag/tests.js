@@ -8,6 +8,7 @@ import {
   addBrand,
   addTopics,
   defaultObjectMetadata,
+  TEST_DATA,
 } from 'utils/testing';
 
 import app from 'server';
@@ -24,7 +25,6 @@ describe('Tag model', () => {
   let defaultMetadata;
   let topics;
 
-  // eslint-disable-next-line func-names
   before(async function() {
     this.timeout(5000);
     await dropData();
@@ -95,7 +95,6 @@ describe('Tags API', () => {
   let articleTwoTags;
   let articleOneTag;
 
-  // eslint-disable-next-line func-names
   before(async function() {
     this.timeout(5000);
     await dropData();
@@ -135,7 +134,7 @@ describe('Tags API', () => {
     articleTwoTags = await Article({
       brand: brand._id,
       type: 'text',
-      imagePreviewUrl: 'image-url',
+      images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
       publishAt: new Date('2018-01-21T16:25:43.511Z'),
       tags: [tags.miensk, tags['xx-century']],
@@ -146,7 +145,7 @@ describe('Tags API', () => {
     articleOneTag = await Article({
       brand: brand._id,
       type: 'text',
-      imagePreviewUrl: 'image-url',
+      images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
       publishAt: new Date('2018-01-22T16:25:43.511Z'),
       tags: [tags.miensk],

@@ -40,6 +40,8 @@ module.exports = {
     'no-console': ['error', { allow: ['warn', 'error'] }],
     // `_id` comes from Mongo
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
+
+    'func-names': 'off',
   },
   settings: {
     'import/resolver': {

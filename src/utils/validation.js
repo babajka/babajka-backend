@@ -54,7 +54,7 @@ const createArticleValidator = ({ body }, res, next) => {
 const updateArticleValidator = ({ body }, res, next) => {
   const errors = checkForbiddenFields(body);
 
-  ['brandSlug', 'type', 'imagePreviewUrl'].forEach(field => {
+  ['brandSlug', 'type', 'images'].forEach(field => {
     if (body[field] === '') {
       errors[field] = 'errors.fieldUnremovable';
     }

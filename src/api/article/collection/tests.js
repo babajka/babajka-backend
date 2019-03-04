@@ -5,6 +5,7 @@ import {
   loginTestAdmin,
   defaultObjectMetadata,
   addBrand,
+  TEST_DATA,
 } from 'utils/testing';
 
 import app from 'server';
@@ -19,7 +20,8 @@ const request = supertest.agent(app.listen());
 describe('Collections API', () => {
   let sessionCookie;
 
-  before(async () => {
+  before(async function() {
+    this.timeout(5000);
     await dropData();
 
     const { _id: articleBrandId } = await addBrand();
@@ -34,7 +36,7 @@ describe('Collections API', () => {
       articlePromises.push(
         new Article({
           type: 'text',
-          imagePreviewUrl: 'image-url',
+          images: TEST_DATA.articleImages.text,
           brand: articleBrandId,
           metadata: defaultMetadata,
         }).save()
@@ -64,16 +66,16 @@ describe('Collections API', () => {
       request
         .get('/api/articles/collections')
         .expect(200)
-        .expect(res => {
-          expect(res.body).has.length(5);
+        .expect(({ body }) => {
+          expect(body).has.length(5);
         }));
 
     it('should return a collection', () =>
       request
         .get('/api/articles/collections/collection-2')
         .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-2');
+        .expect(({ body }) => {
+          expect(body.slug).equals('collection-2');
         }));
 
     it('should not found a collection', () =>
@@ -100,16 +102,16 @@ describe('Collections API', () => {
           name: { en: 'New Collection' },
         })
         .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-6');
+        .expect(({ body }) => {
+          expect(body.slug).equals('collection-6');
         }));
 
     it('should include a newly created collection', () =>
       request
         .get('/api/articles/collections')
         .expect(200)
-        .expect(res => {
-          expect(res.body).has.length(6);
+        .expect(({ body }) => {
+          expect(body).has.length(6);
         }));
 
     it('should associate regular article with the collection', () =>
@@ -119,7 +121,10 @@ describe('Collections API', () => {
         .send({
           brandSlug: 'wir',
           type: 'text',
-          imagePreviewUrl: 'ololo',
+          images: {
+            ...TEST_DATA.articleImages.text,
+            vertical: 'ololo',
+          },
           publishAt: Date.now(),
           collectionSlug: 'collection-6',
           locales: {
@@ -132,9 +137,9 @@ describe('Collections API', () => {
           },
         })
         .expect(200)
-        .expect(res => {
-          expect(res.body.imagePreviewUrl).equals('ololo');
-          expect(res.body.locales.be.slug).equals('slug-new1-be');
+        .expect(({ body: { images, locales } }) => {
+          expect(images.vertical).equals('ololo');
+          expect(locales.be.slug).equals('slug-new1-be');
         }));
 
     it('should associate postponed article with the collection', () =>
@@ -144,7 +149,10 @@ describe('Collections API', () => {
         .send({
           brandSlug: 'wir',
           type: 'text',
-          imagePreviewUrl: 'ololo2',
+          images: {
+            ...TEST_DATA.articleImages.text,
+            vertical: 'ololo2',
+          },
           publishAt: new Date('2025-01-01T18:25:43.511Z'),
           collectionSlug: 'collection-6',
           locales: {
@@ -157,9 +165,9 @@ describe('Collections API', () => {
           },
         })
         .expect(200)
-        .expect(res => {
-          expect(res.body.imagePreviewUrl).equals('ololo2');
-          expect(res.body.locales.be.slug).equals('slug-new2-be');
+        .expect(({ body: { images, locales } }) => {
+          expect(images.vertical).equals('ololo2');
+          expect(locales.be.slug).equals('slug-new2-be');
         }));
 
     it('should return both articles in the collection when querying with permissions', () =>
@@ -167,21 +175,21 @@ describe('Collections API', () => {
         .get('/api/articles/collections/collection-6')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-6');
-          expect(res.body.articles).has.length(2);
-          expect(res.body.articles[0].imagePreviewUrl).equals('ololo');
-          expect(res.body.articles[1].imagePreviewUrl).equals('ololo2');
+        .expect(({ body }) => {
+          expect(body.slug).equals('collection-6');
+          expect(body.articles).has.length(2);
+          expect(body.articles[0].images.vertical).equals('ololo');
+          expect(body.articles[1].images.vertical).equals('ololo2');
         }));
 
     it('should return only article in the collection when querying without permissions', () =>
       request
         .get('/api/articles/collections/collection-6')
         .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-6');
-          expect(res.body.articles).has.length(1);
-          expect(res.body.articles[0].imagePreviewUrl).equals('ololo');
+        .expect(({ body }) => {
+          expect(body.slug).equals('collection-6');
+          expect(body.articles).has.length(1);
+          expect(body.articles[0].images.vertical).equals('ololo');
         }));
 
     it('should return collection.next when querying with permissions', () =>
@@ -189,18 +197,18 @@ describe('Collections API', () => {
         .get('/api/articles/slug-new1-be')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.locales.be.slug).equals('slug-new1-be');
-          expect(res.body.collection.slug).equals('collection-6');
-          expect(res.body.collection.next.locales.be.slug).equals('slug-new2-be');
+        .expect(({ body }) => {
+          expect(body.locales.be.slug).equals('slug-new1-be');
+          expect(body.collection.slug).equals('collection-6');
+          expect(body.collection.next.locales.be.slug).equals('slug-new2-be');
         }));
 
     it('should not return collection.next when querying without permissions', () =>
       request
         .get('/api/articles/slug-new1-be')
         .expect(200)
-        .expect(res => {
-          expect(res.body.collection.next).to.be.null();
+        .expect(({ body }) => {
+          expect(body.collection.next).to.be.null();
         }));
 
     it('should return collection.prev when querying with permissions', () =>
@@ -208,10 +216,10 @@ describe('Collections API', () => {
         .get('/api/articles/slug-new2-be')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.locales.be.slug).equals('slug-new2-be');
-          expect(res.body.collection.slug).equals('collection-6');
-          expect(res.body.collection.prev.locales.be.slug).equals('slug-new1-be');
+        .expect(({ body }) => {
+          expect(body.locales.be.slug).equals('slug-new2-be');
+          expect(body.collection.slug).equals('collection-6');
+          expect(body.collection.prev.locales.be.slug).equals('slug-new1-be');
         }));
 
     it('should remove a collection', () =>
@@ -224,8 +232,8 @@ describe('Collections API', () => {
       request
         .get('/api/articles/collections')
         .expect(200)
-        .expect(res => {
-          expect(res.body).has.length(5);
+        .expect(({ body }) => {
+          expect(body).has.length(5);
         }));
 
     it('should recover a collection using update', () =>
@@ -234,18 +242,18 @@ describe('Collections API', () => {
         .send({ active: true, description: { en: 'desc-new' } })
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-6');
-          expect(res.body.description.en).equals('desc-new');
+        .expect(({ body }) => {
+          expect(body.slug).equals('collection-6');
+          expect(body.description.en).equals('desc-new');
         }));
 
     it('should return a recovered collection', () =>
       request
         .get('/api/articles/collections')
         .expect(200)
-        .expect(res => {
-          expect(res.body).has.length(6);
-          expect(res.body.map(({ slug }) => slug)).to.include('collection-6');
+        .expect(({ body }) => {
+          expect(body).has.length(6);
+          expect(body.map(({ slug }) => slug)).to.include('collection-6');
         }));
 
     it('should change the collection for the article', () =>
@@ -256,8 +264,8 @@ describe('Collections API', () => {
         })
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.collection.slug).equals('collection-5');
+        .expect(({ body }) => {
+          expect(body.collection.slug).equals('collection-5');
         }));
 
     it('should remove an article from the old collection', () =>
@@ -265,10 +273,10 @@ describe('Collections API', () => {
         .get('/api/articles/collections/collection-6')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-6');
-          expect(res.body.articles).has.length(1);
-          expect(res.body.articles[0].locales.be.slug).equals('slug-new1-be');
+        .expect(({ body }) => {
+          expect(body.slug).equals('collection-6');
+          expect(body.articles).has.length(1);
+          expect(body.articles[0].locales.be.slug).equals('slug-new1-be');
         }));
 
     it('should add an article into a new collection', () =>
@@ -276,10 +284,10 @@ describe('Collections API', () => {
         .get('/api/articles/collections/collection-5')
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.slug).equals('collection-5');
-          expect(res.body.articles).has.length(2);
-          expect(res.body.articles[1].locales.be.slug).equals('slug-new2-be');
+        .expect(({ body }) => {
+          expect(body.slug).equals('collection-5');
+          expect(body.articles).has.length(2);
+          expect(body.articles[1].locales.be.slug).equals('slug-new2-be');
         }));
   });
 });

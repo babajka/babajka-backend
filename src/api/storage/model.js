@@ -30,12 +30,10 @@ const StorageEntitySchema = new Schema({
   },
 });
 
-// eslint-disable-next-line func-names
 StorageEntitySchema.statics.getValue = function(key) {
   return this.findOne({ key });
 };
 
-// eslint-disable-next-line func-names
 StorageEntitySchema.statics.setValue = function(key, value, userId) {
   return this.findOneAndUpdate({ key }, mergeWithUpdateMetadata({ document: value }, userId), {
     new: true,

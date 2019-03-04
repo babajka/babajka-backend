@@ -22,8 +22,8 @@ describe('Brands API', () => {
       request
         .get('/api/articles/brands')
         .expect(200)
-        .expect(res => {
-          expect(res.body).has.length(brandSlugs.length);
+        .expect(({ body }) => {
+          expect(body).has.length(brandSlugs.length);
         }));
   });
 });

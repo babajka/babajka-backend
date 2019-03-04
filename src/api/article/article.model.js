@@ -1,6 +1,8 @@
 import HttpError from 'node-http-error';
+import Joi from 'joi';
 import mongoose from 'mongoose';
 import get from 'lodash/get';
+import set from 'lodash/set';
 import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
 
@@ -71,16 +73,10 @@ const ArticleSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    imagePreviewUrl: {
-      // Image to be shown on article preview (i.e. on index page).
-      // Usually a smaller one and with fixed aspect ratio.
-      type: String,
+    images: {
+      // Images are as described in 'covers' guide by Vitalik.
+      type: Schema.Types.Mixed,
       required: true,
-    },
-    imageFolderUrl: {
-      // Image to be shown on article page. Wide and not height.
-      // Optional: article may be rendered without it.
-      type: String,
     },
     video: {
       // Can only be present when Article type is video.
@@ -113,7 +109,7 @@ const ArticleSchema = new Schema(
   }
 );
 
-ArticleSchema.pre('validate', function validateArticleType(next) {
+ArticleSchema.pre('validate', function(next) {
   if (this.type === 'video') {
     ['video.platform', 'video.videoId'].forEach(path => {
       if (!get(this, path)) {
@@ -129,6 +125,31 @@ ArticleSchema.pre('validate', function validateArticleType(next) {
   }
   if (this.type === 'text' && this.video) {
     next(new ValidationError('video must be absent if article type is text'));
+  }
+  next();
+});
+
+const IMAGES_SCHEMA = {
+  text: Joi.object().keys({
+    page: Joi.string().required(),
+    horizontal: Joi.string().required(),
+    vertical: Joi.string().required(),
+  }),
+  video: Joi.object().keys({
+    page: Joi.string().required(),
+    horizontal: Joi.string().required(),
+  }),
+};
+
+ArticleSchema.pre('validate', function(next) {
+  const { error } = Joi.validate(this.images, IMAGES_SCHEMA[this.type]);
+  if (error !== null) {
+    const errors = {};
+    error.details.forEach(({ path, type }) => {
+      set(errors, ['images', ...path], type);
+    });
+
+    next(new ValidationError({ errors }));
   }
   next();
 });
@@ -266,7 +287,6 @@ export const DEFAULT_ARTICLE_QUERY = user => ({
   ],
 });
 
-// eslint-disable-next-line func-names
 ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
   return this.find(query)
     .populate('author', POPULATE_OPTIONS.author)

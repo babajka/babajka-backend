@@ -1,4 +1,4 @@
-import { supertest, expect, dropData, loginTestAdmin, addBrand } from 'utils/testing';
+import { supertest, expect, dropData, loginTestAdmin, addBrand, TEST_DATA } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -10,7 +10,8 @@ const request = supertest.agent(app.listen());
 describe('Authors API', () => {
   let sessionCookie;
 
-  before(async () => {
+  before(async function() {
+    this.timeout(5000);
     await dropData();
 
     await addBrand();
@@ -30,8 +31,8 @@ describe('Authors API', () => {
       request
         .get('/api/articles/authors')
         .expect(200)
-        .expect(res => {
-          expect(res.body).has.length(2);
+        .expect(({ body }) => {
+          expect(body).has.length(2);
         }));
 
     it('should fail to create an author due to lack of permissions', () =>
@@ -47,9 +48,9 @@ describe('Authors API', () => {
           .send({ firstName: `Name ${i}` })
           .set('Cookie', sessionCookie)
           .expect(200)
-          .expect(res => {
-            expect(res.body.email).equal(`generated-author-${i}@wir.by`);
-            expect(res.body.firstName).equal(`Name ${i}`);
+          .expect(({ body: { email, firstName } }) => {
+            expect(email).equal(`generated-author-${i}@wir.by`);
+            expect(firstName).equal(`Name ${i}`);
           }));
     };
 
@@ -64,20 +65,20 @@ describe('Authors API', () => {
           .post('/api/articles')
           .send({
             brandSlug: 'wir',
-            imagePreviewUrl: 'image-url',
             type: 'video',
+            images: TEST_DATA.articleImages.video,
             authorEmail: 'generated-author-11@wir.by',
             videoUrl: 'https://www.youtube.com/watch?v=1234567890x',
           })
           .set('Cookie', sessionCookie)
           .expect(200)
-          .expect(res => {
-            expect(res.body.type).equal('video');
-            expect(res.body.brand.slug).equal('wir');
-            expect(res.body.author.email).equal('generated-author-11@wir.by');
-            expect(res.body.author.firstName).equal('Name 11');
-            expect(res.body.video.platform).equal('youtube');
-            expect(res.body.video.videoId).equal('1234567890x');
+          .expect(({ body }) => {
+            expect(body.type).equal('video');
+            expect(body.brand.slug).equal('wir');
+            expect(body.author.email).equal('generated-author-11@wir.by');
+            expect(body.author.firstName).equal('Name 11');
+            expect(body.video.platform).equal('youtube');
+            expect(body.video.videoId).equal('1234567890x');
           }));
     });
   });
