@@ -6,6 +6,11 @@ const LOCALIZED_TEXT_SCHEMA_BE_REQUIRED = Joi.object().keys({
   ru: Joi.string(),
 });
 
+// const IMAGES_TWO_SIZES = Joi.object().keys({
+//   small: Joi.string().required(),
+//   large: Joi.string().required(),
+// });
+
 // Tag Content Schemas must be consistent with the data in our Google Spreadsheet.
 export const TAG_CONTENT_SCHEMA = {
   locations: Joi.object().keys({
@@ -26,6 +31,11 @@ export const TAG_CONTENT_SCHEMA = {
   }),
   times: Joi.object().keys({
     title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED,
+  }),
+  brands: Joi.object().keys({
+    title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    image: Joi.string().required(),
+    // images: IMAGES_TWO_SIZES.required(),
   }),
 };
 

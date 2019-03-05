@@ -1,22 +1,22 @@
 [
   {
     "topicSlug": "locations",
-    "slug": "minsk",
+    "slug": "belarus",
     "content": {
       "title": {
-        "be": "Мінск",
-        "en": "Minsk"
+        "be": "Беларусь",
+        "en": "Belarus"
       },
       "image": "random-url"
     }
   },
   {
     "topicSlug": "times",
-    "slug": "middle-ages",
+    "slug": "xx-century",
     "content": {
       "title": {
-        "be": "Сярэднявечча",
-        "en": "Middle Ages"
+        "be": "XX Стагоддзе",
+        "en": "XX Century"
       }
     }
   },
@@ -46,6 +46,17 @@
       "description": {
         "be": "Брытанскі рок-музыка, аўтар песень, прадзюсар, гукарэжысёр, мастак і акцёр"
       }
+    }
+  },
+  {
+    "topicSlug": "brands",
+    "slug": "libra",
+    "content": {
+      "title": {
+        "be": "Выставачная зала Libra",
+        "en": "Libra Exhibition Hall"
+      },
+      "image": "random-url"
     }
   }
 ]
