@@ -5,7 +5,7 @@ import {
   loginTestAdmin,
   addAdminUser,
   addArticles,
-  addTag,
+  addThemesTag,
   addTopics,
   defaultObjectMetadata,
 } from 'utils/testing';
@@ -65,7 +65,7 @@ describe('Storage API', () => {
 
     await addTopics(metadata);
 
-    const tag = await addTag(metadata);
+    const tag = await addThemesTag(metadata);
     const tagId = tag._id;
 
     validMainPageState = {

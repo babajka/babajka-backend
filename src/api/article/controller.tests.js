@@ -6,6 +6,9 @@ import {
   defaultObjectMetadata,
   addAuthorUser,
   addArticles,
+  addBrandsTag,
+  addThemesTag,
+  addTopics,
   TEST_DATA,
 } from 'utils/testing';
 
@@ -23,6 +26,9 @@ describe('Articles API', () => {
   let dbArticles;
   let sessionCookie;
 
+  let brandsTag;
+  let themesTag;
+
   let articleUnpublished;
 
   const numberPublished = 8;
@@ -32,6 +38,13 @@ describe('Articles API', () => {
     await dropData();
 
     sessionCookie = await loginTestAdmin();
+
+    const metadata = await defaultObjectMetadata();
+
+    await addTopics(metadata);
+
+    brandsTag = await addBrandsTag(metadata);
+    themesTag = await addThemesTag(metadata);
 
     dbArticles = await addArticles(numberPublished, numberUnpublished);
 
@@ -278,6 +291,34 @@ describe('Articles API', () => {
         .expect(400)
         .expect(({ body: { error } }) => {
           expect(error.errors.images.vertical).to.contain('Unknown');
+        }));
+
+    it('should create an article with brand-as-tag', () =>
+      request
+        .post('/api/articles')
+        .send({ type: 'text', images: TEST_DATA.articleImages.text, tags: [brandsTag._id] })
+        .set('Cookie', sessionCookie)
+        .expect(200)
+        .expect(({ body }) => {
+          articleId = body._id;
+          expect(body.tags).to.have.length(1);
+          expect(body.tags[0].slug).to.equal(brandsTag.slug);
+        }));
+
+    it('should add a tag to an article', () =>
+      request
+        .put(`/api/articles/${articleId}`)
+        .send({
+          type: 'text',
+          images: TEST_DATA.articleImages.text,
+          tags: [brandsTag._id, themesTag._id],
+        })
+        .set('Cookie', sessionCookie)
+        .expect(200)
+        .expect(({ body }) => {
+          expect(body.tags).to.have.length(2);
+          const tagSlugs = body.tags.map(tag => tag.slug);
+          expect(tagSlugs).to.include(themesTag.slug);
         }));
   });
 });

@@ -41,6 +41,29 @@ export const TEST_DATA = {
       role: 'author',
     },
   },
+  tags: {
+    brands: {
+      default: {
+        slug: 'libra',
+        content: {
+          title: {
+            be: 'Libra',
+          },
+          image: 'some-url',
+        },
+      },
+    },
+    themes: {
+      default: {
+        slug: 'history',
+        content: {
+          title: {
+            be: 'Гісторыя',
+          },
+        },
+      },
+    },
+  },
   articleImages: {
     text: {
       page: 'page-url',
@@ -151,18 +174,18 @@ export const addArticles = async (numberPublished, numberUnpublished) => {
 export const addTopics = metadata =>
   Promise.all(TOPIC_SLUGS.map(topicSlug => Topic({ slug: topicSlug, metadata }).save()));
 
-export const addTag = metadata =>
-  Topic.findOne({ slug: 'themes' }).then(topic =>
+const addTag = (metadata, topicSlug) =>
+  Topic.findOne({ slug: topicSlug }).then(topic =>
     Tag({
       topic: topic._id,
-      slug: 'history',
-      content: {
-        title: {
-          be: 'Гісторыя',
-        },
-      },
+      slug: TEST_DATA.tags[topicSlug].default.slug,
+      content: TEST_DATA.tags[topicSlug].default.content,
       metadata,
     }).save()
   );
+
+export const addThemesTag = metadata => addTag(metadata, 'themes');
+
+export const addBrandsTag = metadata => addTag(metadata, 'brands');
 
 export { expect, supertest };
