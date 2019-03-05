@@ -42,12 +42,6 @@ const ArticleSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'ArticleCollection',
     },
-    brand: {
-      // May be e.g. 'wir' or 'kurilka'.
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'ArticleBrand',
-    },
     type: {
       type: String,
       enum: ['text', 'video'],
@@ -244,7 +238,6 @@ export const queryUnpublished = user => {
 export const POPULATE_OPTIONS = {
   // TODO(uladbohdan): to merge with User basicFields.
   author: '-_id firstName lastName email role active bio imageUrl displayName',
-  brand: '-_id slug names imageUrl imageUrlSmall',
   collection: user => ({
     path: 'collectionId',
     select: '-_id name slug description imageUrl articles',
@@ -290,7 +283,6 @@ export const DEFAULT_ARTICLE_QUERY = user => ({
 ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
   return this.find(query)
     .populate('author', POPULATE_OPTIONS.author)
-    .populate('brand', POPULATE_OPTIONS.brand)
     .populate(POPULATE_OPTIONS.collection(user))
     .populate(POPULATE_OPTIONS.locales)
     .populate(POPULATE_OPTIONS.metadata)

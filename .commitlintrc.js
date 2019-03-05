@@ -14,7 +14,6 @@ module.exports = {
         'user',
         'article',
         'collection',
-        'brand',
         'specials',
         'config',
         'db',

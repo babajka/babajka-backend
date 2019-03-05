@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "767053da-7ac7-4d94-ae64-12df73c20d82",
+		"_postman_id": "2635ba3a-8ff9-448c-bb47-1dcadaf014d1",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -329,28 +329,6 @@
 							],
 							"path": [
 								"articles"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Articles: get all Brands",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/brands",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"brands"
 							]
 						}
 					},
@@ -845,6 +823,29 @@
 								"tags",
 								"articles",
 								"bowie"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Brands: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/by-topic/brands",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"tags",
+								"by-topic",
+								"brands"
 							]
 						}
 					},

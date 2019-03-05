@@ -66,7 +66,6 @@ describe('Main Page State Validation Tests', () => {
     expect(
       checkMainPageEntitiesFormat({
         articles: [sampleObjectId, sampleObjectId],
-        brands: [sampleObjectId],
         tags: [sampleObjectId],
       })
     ).to.be.true());

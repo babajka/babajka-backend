@@ -4,7 +4,6 @@ import {
   dropData,
   loginTestAdmin,
   defaultObjectMetadata,
-  addBrand,
   addAuthorUser,
   addArticles,
   TEST_DATA,
@@ -21,7 +20,6 @@ const badYoutubeLink = 'https://www.youtube.com/watch?v=BAD-ID';
 const validVimeoLink = 'https://vimeo.com/197700533';
 
 describe('Articles API', () => {
-  let brandSlug;
   let dbArticles;
   let sessionCookie;
 
@@ -33,12 +31,9 @@ describe('Articles API', () => {
   before(async () => {
     await dropData();
 
-    const { _id: articleBrandId, slug } = await addBrand();
-    brandSlug = slug;
-
     sessionCookie = await loginTestAdmin();
 
-    dbArticles = await addArticles(articleBrandId, numberPublished, numberUnpublished);
+    dbArticles = await addArticles(numberPublished, numberUnpublished);
 
     articleUnpublished = dbArticles[numberPublished];
   });
@@ -135,7 +130,6 @@ describe('Articles API', () => {
         .post('/api/articles')
         .set('Cookie', sessionCookie)
         .send({
-          brandSlug,
           images: TEST_DATA.articleImages.text,
           type: 'text',
         })
@@ -239,8 +233,8 @@ describe('Articles API', () => {
         .get(`/api/articles/article-new`)
         .set('Cookie', sessionCookie)
         .expect(200)
-        .expect(res => {
-          expect(res.body.locales.en.slug).to.equal('article-new');
+        .expect(({ body }) => {
+          expect(body.locales.en.slug).to.equal('article-new');
         }));
 
     it('should remove an article', () =>
@@ -263,7 +257,6 @@ describe('Articles API', () => {
       request
         .post('/api/articles')
         .send({
-          brandSlug,
           type: 'text',
           images: TEST_DATA.articleImages.video,
         })
@@ -277,7 +270,6 @@ describe('Articles API', () => {
       request
         .post('/api/articles')
         .send({
-          brandSlug,
           type: 'video',
           images: TEST_DATA.articleImages.text,
           videoUrl: validYoutubeLink,
@@ -292,7 +284,6 @@ describe('Articles API', () => {
 
 describe('Articles Bundled API', () => {
   let authorEmail;
-  let brandSlug;
   let sessionCookie;
   let defaultMetadata;
 
@@ -303,10 +294,6 @@ describe('Articles Bundled API', () => {
 
   before(async () => {
     await dropData();
-
-    const { slug } = await addBrand();
-    brandSlug = slug;
-    articleBase.brandSlug = slug;
 
     const { email } = await addAuthorUser();
     authorEmail = email;
@@ -401,7 +388,7 @@ describe('Articles Bundled API', () => {
       .set('Cookie', sessionCookie)
       .send({
         ...articleBase,
-        brand: 'xxx',
+        brandSlug: 'xxx',
         locales: {
           be: {
             title: 'be-title',
@@ -412,8 +399,8 @@ describe('Articles Bundled API', () => {
         },
       })
       .expect(400)
-      .expect(res => {
-        expect(res.body.error.brand).to.contain('forbidden');
+      .expect(({ body }) => {
+        expect(body.error.brandSlug).to.contain('forbidden');
       }));
 
   it('should fail to create a text article with video reference', () =>
@@ -463,7 +450,6 @@ describe('Articles Bundled API', () => {
       .post('/api/articles')
       .set('Cookie', sessionCookie)
       .send({
-        brandSlug,
         collectionSlug: 'precreated-collection',
         type: 'video',
         images: TEST_DATA.articleImages.video,
@@ -692,16 +678,6 @@ describe('Articles Bundled API', () => {
       .expect(400)
       .expect(({ body }) => {
         expect(body.error.type).to.contain('error');
-      }));
-
-  it('should fail to remove article brand', () =>
-    request
-      .put('/api/articles/new-en-slug')
-      .set('Cookie', sessionCookie)
-      .send({ brandSlug: '' })
-      .expect(400)
-      .expect(({ body }) => {
-        expect(body.error.brandSlug).to.contain('error');
       }));
 
   it('should fail to remove article collection due to forbidden collection field', () =>

@@ -4,7 +4,6 @@ import {
   dropData,
   loginTestAdmin,
   defaultObjectMetadata,
-  addBrand,
   TEST_DATA,
 } from 'utils/testing';
 
@@ -24,8 +23,6 @@ describe('Collections API', () => {
     this.timeout(5000);
     await dropData();
 
-    const { _id: articleBrandId } = await addBrand();
-
     sessionCookie = await loginTestAdmin();
 
     const defaultMetadata = await defaultObjectMetadata();
@@ -37,7 +34,6 @@ describe('Collections API', () => {
         new Article({
           type: 'text',
           images: TEST_DATA.articleImages.text,
-          brand: articleBrandId,
           metadata: defaultMetadata,
         }).save()
       );
@@ -119,7 +115,6 @@ describe('Collections API', () => {
         .post('/api/articles/')
         .set('Cookie', sessionCookie)
         .send({
-          brandSlug: 'wir',
           type: 'text',
           images: {
             ...TEST_DATA.articleImages.text,
@@ -147,7 +142,6 @@ describe('Collections API', () => {
         .post('/api/articles/')
         .set('Cookie', sessionCookie)
         .send({
-          brandSlug: 'wir',
           type: 'text',
           images: {
             ...TEST_DATA.articleImages.text,

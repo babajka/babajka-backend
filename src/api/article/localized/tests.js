@@ -4,7 +4,6 @@ import {
   dropData,
   loginTestAdmin,
   defaultObjectMetadata,
-  addBrand,
   TEST_DATA,
 } from 'utils/testing';
 
@@ -22,14 +21,11 @@ describe('Locales API', () => {
   before(async () => {
     await dropData();
 
-    const { _id: articleBrandId } = await addBrand();
-
     sessionCookie = await loginTestAdmin();
 
     const defaultMetadata = await defaultObjectMetadata();
 
     const article = await Article({
-      brand: articleBrandId,
       type: 'text',
       images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,

@@ -13,7 +13,6 @@ import * as permissions from 'constants/permissions';
 import { TOPIC_SLUGS } from 'constants/topic';
 
 import Article from 'api/article/article.model';
-import ArticleBrand from 'api/article/brand/model';
 import LocalizedArticle from 'api/article/localized/model';
 import User from 'api/user/model';
 import Tag from 'api/tag/model';
@@ -40,11 +39,6 @@ export const TEST_DATA = {
       password: 'password',
       permissions: permissions.author,
       role: 'author',
-    },
-  },
-  brands: {
-    default: {
-      slug: 'wir',
     },
   },
   articleImages: {
@@ -96,12 +90,10 @@ export const defaultObjectMetadata = async () => {
   };
 };
 
-export const addBrand = () => new ArticleBrand(TEST_DATA.brands.default).save();
-
 const normalizedDay = i => (i < 9 ? `0${i + 1}` : i + 1);
 
 // TODO: this method could benefit from refactoring. To consider.
-export const addArticles = async (articleBrandId, numberPublished, numberUnpublished) => {
+export const addArticles = async (numberPublished, numberUnpublished) => {
   const defaultMetadata = await defaultObjectMetadata();
   const totalNumber = numberPublished + numberUnpublished;
 
@@ -113,7 +105,6 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
       const date = i < numberPublished ? passedDate : futureDate;
 
       return new Article({
-        brand: articleBrandId,
         type: 'text',
         images: TEST_DATA.articleImages.text,
         metadata: defaultMetadata,

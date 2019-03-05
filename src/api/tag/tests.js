@@ -5,7 +5,6 @@ import {
   expect,
   dropData,
   loginTestAdmin,
-  addBrand,
   addTopics,
   defaultObjectMetadata,
   TEST_DATA,
@@ -129,10 +128,7 @@ describe('Tags API', () => {
       )
     );
 
-    const brand = await addBrand();
-
     articleTwoTags = await Article({
-      brand: brand._id,
       type: 'text',
       images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
@@ -143,7 +139,6 @@ describe('Tags API', () => {
       .then(({ _id }) => _id.toString());
 
     articleOneTag = await Article({
-      brand: brand._id,
       type: 'text',
       images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,

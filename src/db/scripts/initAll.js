@@ -25,7 +25,7 @@ import path from 'path';
 
 import connectDb from 'db';
 import { User } from 'api/user';
-import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
+import { Article, ArticleCollection, LocalizedArticle } from 'api/article';
 import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
 import { Tag } from 'api/tag';
@@ -37,7 +37,6 @@ import { addTopics } from 'utils/testing';
 const defaultDataPath = `${__dirname}/../data/`;
 const dataFilenames = {
   users: 'users.json',
-  articleBrands: 'articleBrands.json',
   articleCollections: 'articleCollections.json',
   articles: 'articles.json',
   diaries: 'diary.json',
@@ -126,20 +125,6 @@ const initUsers = () =>
     })
   );
 
-const initArticleBrands = () =>
-  Promise.all(
-    initData.articleBrands.map(async articleBrandData => new ArticleBrand(articleBrandData).save())
-  );
-
-const getArticleBrandsDict = async () => {
-  const articleBrandsDict = {};
-  const articleBrands = await ArticleBrand.find().exec();
-  await articleBrands.forEach(item => {
-    articleBrandsDict[item.slug] = item._id;
-  });
-  return articleBrandsDict;
-};
-
 const getAuthorsDict = async () => {
   const authorsDict = {};
   const authors = await User.find({ role: 'author' }).exec();
@@ -154,14 +139,13 @@ const retrieveMetadataTestingUser = async () => {
   return testingUser;
 };
 
-const initArticles = (articleBrandsDict, authorsDict, metadataTestingUser) =>
+const initArticles = (authorsDict, metadataTestingUser) =>
   Promise.all(
     initData.articles.map(async rawArticleData => {
       const commonMetadata = getInitObjectMetadata(metadataTestingUser);
 
       const articleLocales = rawArticleData.locales;
       const articleData = omit(rawArticleData, ['locales', 'videoId']);
-      articleData.brand = articleBrandsDict[articleData.brand];
       articleData.metadata = commonMetadata;
       if (articleData.authorEmail) {
         articleData.author = authorsDict[articleData.authorEmail];
@@ -230,13 +214,9 @@ const initMainPageState = metadataTestingUser =>
   Article.find()
     .then(articles => articles.map(({ _id }) => _id))
     .then(async articleIds => {
-      const brandIds = await ArticleBrand.find().then(articleBrands =>
-        articleBrands.map(({ _id }) => _id)
-      );
       const tagIds = await Tag.find().then(tags => tags.map(({ _id }) => _id));
       return {
         articles: articleIds,
-        brands: brandIds,
         tags: tagIds,
       };
     })
@@ -286,15 +266,10 @@ const initTags = async metadataTestingUser => {
     const usersCount = await User.countDocuments();
     console.log(`Mongoose: insert ${usersCount} user(s)`);
 
-    await initArticleBrands();
-    const articleBrandsCount = await ArticleBrand.countDocuments();
-    console.log(`Mongoose: insert ${articleBrandsCount} article brand(s)`);
-
-    const articleBrandsDict = await getArticleBrandsDict();
     const authorsDict = await getAuthorsDict();
     const metadataTestingUser = await retrieveMetadataTestingUser();
 
-    await initArticles(articleBrandsDict, authorsDict, metadataTestingUser);
+    await initArticles(authorsDict, metadataTestingUser);
     const articlesCount = await Article.countDocuments();
     console.log(`Mongoose: insert ${articlesCount} article(s)`);
     const articleDict = await getArticlesDict();

@@ -4,7 +4,6 @@ import {
   dropData,
   loginTestAdmin,
   addAdminUser,
-  addBrand,
   addArticles,
   addTag,
   addTopics,
@@ -51,7 +50,6 @@ describe('Storage Helpers', () => {
 });
 
 describe('Storage API', () => {
-  let articleBrandId;
   let dbArticleIds;
   let sessionCookie;
   let validMainPageState;
@@ -62,10 +60,7 @@ describe('Storage API', () => {
     sessionCookie = await loginTestAdmin();
     const metadata = await defaultObjectMetadata();
 
-    const brand = await addBrand();
-    articleBrandId = brand._id;
-
-    const rawArticles = await addArticles(articleBrandId, 3, 2);
+    const rawArticles = await addArticles(3, 2);
     dbArticleIds = rawArticles.slice(0, 3).map(({ _id }) => _id.toString());
 
     await addTopics(metadata);
@@ -75,7 +70,7 @@ describe('Storage API', () => {
 
     validMainPageState = {
       blocks: [{ type: 'featured' }, { type: 'diary' }],
-      data: { articles: dbArticleIds, brands: [articleBrandId], tags: [tagId] },
+      data: { articles: dbArticleIds, tags: [tagId] },
     };
   });
 
@@ -106,10 +101,9 @@ describe('Storage API', () => {
       .set('Cookie', sessionCookie)
       .send(validMainPageState)
       .expect(200)
-      .expect(({ body: { blocks, data: { articles, brands, tags } } }) => {
+      .expect(({ body: { blocks, data: { articles, tags } } }) => {
         expect(blocks).to.deep.equal(validMainPageState.blocks);
         expect(articles).has.length(3);
-        expect(brands).has.length(1);
         expect(tags).has.length(1);
       }));
 
@@ -118,14 +112,11 @@ describe('Storage API', () => {
       .get('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .expect(200)
-      .expect(({ body: { blocks, data: { articles, brands, topics, latestArticles } } }) => {
+      .expect(({ body: { blocks, data: { articles, topics, latestArticles } } }) => {
         expect(blocks).to.deep.equal(validMainPageState.blocks);
 
         expect(articles).has.length(3);
         expect(articles.map(({ _id }) => _id)).to.have.members(dbArticleIds);
-
-        expect(brands).has.length(1);
-        expect(brands[0]._id).to.equal(articleBrandId.toString());
 
         expect(topics).have.length(TOPIC_SLUGS.length);
 

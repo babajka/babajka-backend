@@ -1,4 +1,4 @@
-import { supertest, expect, dropData, loginTestAdmin, addBrand, TEST_DATA } from 'utils/testing';
+import { supertest, expect, dropData, loginTestAdmin, TEST_DATA } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -14,7 +14,6 @@ describe('Authors API', () => {
     this.timeout(5000);
     await dropData();
 
-    await addBrand();
     await Promise.all(
       [
         { firstName: 'Name', email: 'author1@babajka.io', role: 'author' },
@@ -64,7 +63,6 @@ describe('Authors API', () => {
         request
           .post('/api/articles')
           .send({
-            brandSlug: 'wir',
             type: 'video',
             images: TEST_DATA.articleImages.video,
             authorEmail: 'generated-author-11@wir.by',
@@ -74,7 +72,6 @@ describe('Authors API', () => {
           .expect(200)
           .expect(({ body }) => {
             expect(body.type).equal('video');
-            expect(body.brand.slug).equal('wir');
             expect(body.author.email).equal('generated-author-11@wir.by');
             expect(body.author.firstName).equal('Name 11');
             expect(body.video.platform).equal('youtube');
