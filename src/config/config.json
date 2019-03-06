@@ -36,6 +36,10 @@
       "folder": "MUST BE SET IN BABAJKA SECRET CONFIG",
       "apiKey": "MUST BE SET IN BABAJKA SECRET CONFIG",
       "apiSecret": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    },
+    "mailchimp": {
+      "apiKey": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "listId": "MUST BE SET IN BABAJKA SECRET CONFIG"
     }
   }
 }

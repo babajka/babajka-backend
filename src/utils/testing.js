@@ -7,6 +7,7 @@ import supertest from 'supertest';
 import chai from 'chai';
 import dirtyChai from 'dirty-chai';
 import flatten from 'lodash/flatten';
+import HttpStatus from 'http-status-codes';
 
 import app from 'server';
 import * as permissions from 'constants/permissions';
@@ -100,7 +101,7 @@ export const testLogin = ({ email, password }) =>
   request
     .post('/auth/login')
     .send({ email, password })
-    .expect(200)
+    .expect(HttpStatus.OK)
     .then(res => {
       expect(res.headers['set-cookie']).not.empty();
       return res.headers['set-cookie'];

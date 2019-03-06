@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+
 import {
   supertest,
   expect,
@@ -61,7 +63,7 @@ describe('Collections API', () => {
     it('should return 5 collections', () =>
       request
         .get('/api/articles/collections')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body).has.length(5);
         }));
@@ -69,25 +71,25 @@ describe('Collections API', () => {
     it('should return a collection', () =>
       request
         .get('/api/articles/collections/collection-2')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.slug).equals('collection-2');
         }));
 
     it('should not found a collection', () =>
-      request.get('/api/articles/collections/collection-12').expect(404));
+      request.get('/api/articles/collections/collection-12').expect(HttpStatus.NOT_FOUND));
 
     it('should fail to create a collection due to lack of permissions', () =>
-      request.post('/api/articles/collections').expect(403));
+      request.post('/api/articles/collections').expect(HttpStatus.FORBIDDEN));
 
     it('should fail to update a collection due to lack of permissions', () =>
       request
         .put('/api/articles/collections/collection-1')
         .send({ description: 'a completely new description' })
-        .expect(403));
+        .expect(HttpStatus.FORBIDDEN));
 
     it('should fail to remove a collection due to lack of permissions', () =>
-      request.delete('/api/articles/collections/collection-1').expect(403));
+      request.delete('/api/articles/collections/collection-1').expect(HttpStatus.FORBIDDEN));
 
     it('should create a new collection', () =>
       request
@@ -97,7 +99,7 @@ describe('Collections API', () => {
           slug: 'collection-6',
           name: { en: 'New Collection' },
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.slug).equals('collection-6');
         }));
@@ -105,7 +107,7 @@ describe('Collections API', () => {
     it('should include a newly created collection', () =>
       request
         .get('/api/articles/collections')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body).has.length(6);
         }));
@@ -131,7 +133,7 @@ describe('Collections API', () => {
             },
           },
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { images, locales } }) => {
           expect(images.vertical).equals('ololo');
           expect(locales.be.slug).equals('slug-new1-be');
@@ -158,7 +160,7 @@ describe('Collections API', () => {
             },
           },
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body: { images, locales } }) => {
           expect(images.vertical).equals('ololo2');
           expect(locales.be.slug).equals('slug-new2-be');
@@ -168,7 +170,7 @@ describe('Collections API', () => {
       request
         .get('/api/articles/collections/collection-6')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.slug).equals('collection-6');
           expect(body.articles).has.length(2);
@@ -179,7 +181,7 @@ describe('Collections API', () => {
     it('should return only article in the collection when querying without permissions', () =>
       request
         .get('/api/articles/collections/collection-6')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.slug).equals('collection-6');
           expect(body.articles).has.length(1);
@@ -190,7 +192,7 @@ describe('Collections API', () => {
       request
         .get('/api/articles/slug-new1-be')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.locales.be.slug).equals('slug-new1-be');
           expect(body.collection.slug).equals('collection-6');
@@ -200,7 +202,7 @@ describe('Collections API', () => {
     it('should not return collection.next when querying without permissions', () =>
       request
         .get('/api/articles/slug-new1-be')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.collection.next).to.be.null();
         }));
@@ -209,7 +211,7 @@ describe('Collections API', () => {
       request
         .get('/api/articles/slug-new2-be')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.locales.be.slug).equals('slug-new2-be');
           expect(body.collection.slug).equals('collection-6');
@@ -220,12 +222,12 @@ describe('Collections API', () => {
       request
         .delete('/api/articles/collections/collection-6')
         .set('Cookie', sessionCookie)
-        .expect(200));
+        .expect(HttpStatus.OK));
 
     it('should not return a removed collection', () =>
       request
         .get('/api/articles/collections')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body).has.length(5);
         }));
@@ -235,7 +237,7 @@ describe('Collections API', () => {
         .put('/api/articles/collections/collection-6')
         .send({ active: true, description: { en: 'desc-new' } })
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.slug).equals('collection-6');
           expect(body.description.en).equals('desc-new');
@@ -244,7 +246,7 @@ describe('Collections API', () => {
     it('should return a recovered collection', () =>
       request
         .get('/api/articles/collections')
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body).has.length(6);
           expect(body.map(({ slug }) => slug)).to.include('collection-6');
@@ -257,7 +259,7 @@ describe('Collections API', () => {
           collectionSlug: 'collection-5',
         })
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.collection.slug).equals('collection-5');
         }));
@@ -266,7 +268,7 @@ describe('Collections API', () => {
       request
         .get('/api/articles/collections/collection-6')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.slug).equals('collection-6');
           expect(body.articles).has.length(1);
@@ -277,7 +279,7 @@ describe('Collections API', () => {
       request
         .get('/api/articles/collections/collection-5')
         .set('Cookie', sessionCookie)
-        .expect(200)
+        .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.slug).equals('collection-5');
           expect(body.articles).has.length(2);

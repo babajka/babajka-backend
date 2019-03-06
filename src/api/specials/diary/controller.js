@@ -1,4 +1,5 @@
 import HttpError from 'node-http-error';
+import HttpStatus from 'http-status-codes';
 
 import { sendJson } from 'utils/api';
 
@@ -23,7 +24,7 @@ export const getDay = async ({ params: { locale, month, day } }, res, next) => {
         .exec();
       if (!bestPrev) {
         // We have no diaries at all.
-        throw new HttpError(204, 'errors.diariesMissing');
+        throw new HttpError(HttpStatus.NO_CONTENT, 'errors.diariesMissing');
       }
     }
 

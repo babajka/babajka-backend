@@ -12,6 +12,7 @@ module.exports = {
         'config',
         'core',
         'db',
+        'mail',
         'postman',
         'specials',
         'storage',

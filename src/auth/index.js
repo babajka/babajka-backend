@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import HttpStatus from 'http-status-codes';
+
 import { getUserResponse } from 'api/user';
 import { requireFields, validatePassword } from 'utils/validation';
 import { sendJson } from 'utils/api';
@@ -33,7 +35,7 @@ router.get('/google/callback', social.google.callback, (req, res) => res.redirec
 // eslint-disable-next-line no-unused-vars
 router.get('/logout', requireAuth, (req, res, next) => {
   req.logOut();
-  res.sendStatus(200);
+  res.sendStatus(HttpStatus.OK);
 });
 
 export { passport, requireAuth, verifyPermission };

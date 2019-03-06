@@ -1,5 +1,8 @@
 import HttpError from 'node-http-error';
+import HttpStatus from 'http-status-codes';
+
 import Joi from 'joi';
+
 import mongoose from 'mongoose';
 import get from 'lodash/get';
 import set from 'lodash/set';
@@ -208,7 +211,7 @@ export const checkIsPublished = (article, user) => {
     return article;
   }
 
-  throw new HttpError(404);
+  throw new HttpError(HttpStatus.NOT_FOUND);
 };
 
 export const queryUnpublished = user => {
