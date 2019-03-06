@@ -4,7 +4,6 @@ import {
   dropData,
   loginTestAdmin,
   defaultObjectMetadata,
-  addAuthorUser,
   addArticles,
   addBrandsTag,
   addThemesTag,
@@ -324,7 +323,6 @@ describe('Articles API', () => {
 });
 
 describe('Articles Bundled API', () => {
-  let authorEmail;
   let sessionCookie;
   let defaultMetadata;
 
@@ -335,9 +333,6 @@ describe('Articles Bundled API', () => {
 
   before(async () => {
     await dropData();
-
-    const { email } = await addAuthorUser();
-    authorEmail = email;
 
     sessionCookie = await loginTestAdmin();
     defaultMetadata = await defaultObjectMetadata();
@@ -494,7 +489,6 @@ describe('Articles Bundled API', () => {
         collectionSlug: 'precreated-collection',
         type: 'video',
         images: TEST_DATA.articleImages.video,
-        authorEmail,
         publishAt: Date.now(),
         videoUrl: validYoutubeLink,
         color: 'ababab',

@@ -33,13 +33,6 @@ export const TEST_DATA = {
       password: 'password',
       permissions: permissions.admin,
     },
-    author: {
-      firstName: { be: 'FirstName-be', en: 'FirstName-en' },
-      email: 'author@babajka.io',
-      password: 'password',
-      permissions: permissions.author,
-      role: 'author',
-    },
   },
   tags: {
     brands: {
@@ -85,8 +78,6 @@ export const addUser = async data => {
 };
 
 export const addAdminUser = () => addUser(TEST_DATA.users.admin);
-
-export const addAuthorUser = () => addUser(TEST_DATA.users.author);
 
 export const testLogin = ({ email, password }) =>
   request

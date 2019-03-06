@@ -20,7 +20,7 @@ const checkForbiddenFields = body => {
   const errors = {};
 
   // Brands are now Tags and therefore they should be passed accordingly.
-  ['brand', 'brandSlug', 'collection'].forEach(field => {
+  ['author', 'authorEmail', 'brand', 'brandSlug', 'collection'].forEach(field => {
     if (Object.prototype.hasOwnProperty.call(body, field)) {
       errors[field] = 'frontend is forbidden to send this field to backend';
     }

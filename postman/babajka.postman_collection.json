@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2635ba3a-8ff9-448c-bb47-1dcadaf014d1",
+		"_postman_id": "dc098c52-20f5-4787-a011-ba360dcf1250",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -637,64 +637,6 @@
 			]
 		},
 		{
-			"name": "Authors",
-			"item": [
-				{
-					"name": "Authors: create",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"firstName\": {\n\t\t\"en\": \"First Name\"\n\t},\n\t\"lastName\": {\n\t\t\"en\": \"Last Name\"\n\t},\n\t\"bio\": {\n\t\t\"en\": \"Here a short bio goes\"\n\t}\n}"
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"authors",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Authors: get all",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/authors/",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"authors",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Specials",
 			"item": [
 				{
@@ -823,6 +765,29 @@
 								"tags",
 								"articles",
 								"bowie"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authors: get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/tags/by-topic/authors",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"tags",
+								"by-topic",
+								"authors"
 							]
 						}
 					},

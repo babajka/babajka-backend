@@ -15,7 +15,6 @@
         "slug": "slug0-en"
       }
     },
-    "authorEmail": "albert@babajka.io",
     "images": {
       "page": "/test/images/gradient-1.jpg",
       "horizontal": "/test/images/gradient-1.jpg",
@@ -77,7 +76,6 @@
         "keywords": ["keyword", "for", "optimization"]
       }
     },
-    "authorEmail": "curie@babajka.io",
     "videoId": "SPauxWv1Rnk",
     "images": {
       "page": "/test/images/seattle.jpg",
@@ -101,7 +99,6 @@
         "slug": "slug2-en"
       }
     },
-    "authorEmail": "albert@babajka.io",
     "videoId": "SPauxWv1Rnk",
     "images": {
       "page": "/test/images/seattle.jpg",
@@ -125,7 +122,6 @@
         "slug": "slug3-en"
       }
     },
-    "authorEmail": "curie@babajka.io",
     "images": {
       "page": "/test/images/seattle.jpg",
       "horizontal": "/test/images/seattle.jpg",

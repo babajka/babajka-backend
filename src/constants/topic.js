@@ -38,9 +38,12 @@ export const TAG_CONTENT_SCHEMA = {
     // images: IMAGES_TWO_SIZES.required(),
   }),
   authors: Joi.object().keys({
-    name: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    firstName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    lastName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
     bio: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
     image: Joi.string().required(),
+    // Once we want to associate Authors-as-Tags with Users (e.g. to let authors
+    // to log in) we may add 'email' field here (which is a primary key for Users).
   }),
 };
 

@@ -118,28 +118,18 @@ const initUsers = () =>
       const user = new User(userData);
       user.permissions = permissions[permPreset];
 
-      if (userData.role !== 'author') {
-        await user.setPassword(userData.password);
-      }
+      await user.setPassword(userData.password);
+
       return user.save();
     })
   );
-
-const getAuthorsDict = async () => {
-  const authorsDict = {};
-  const authors = await User.find({ role: 'author' }).exec();
-  await authors.forEach(author => {
-    authorsDict[author.email] = author._id;
-  });
-  return authorsDict;
-};
 
 const retrieveMetadataTestingUser = async () => {
   const testingUser = await User.findOne({ email: 'admin@babajka.io' });
   return testingUser;
 };
 
-const initArticles = (authorsDict, metadataTestingUser) =>
+const initArticles = metadataTestingUser =>
   Promise.all(
     initData.articles.map(async rawArticleData => {
       const commonMetadata = getInitObjectMetadata(metadataTestingUser);
@@ -147,9 +137,6 @@ const initArticles = (authorsDict, metadataTestingUser) =>
       const articleLocales = rawArticleData.locales;
       const articleData = omit(rawArticleData, ['locales', 'videoId']);
       articleData.metadata = commonMetadata;
-      if (articleData.authorEmail) {
-        articleData.author = authorsDict[articleData.authorEmail];
-      }
       if (articleData.publishAt) {
         articleData.publishAt = new Date(articleData.publishAt);
       }
@@ -266,10 +253,9 @@ const initTags = async metadataTestingUser => {
     const usersCount = await User.countDocuments();
     console.log(`Mongoose: insert ${usersCount} user(s)`);
 
-    const authorsDict = await getAuthorsDict();
     const metadataTestingUser = await retrieveMetadataTestingUser();
 
-    await initArticles(authorsDict, metadataTestingUser);
+    await initArticles(metadataTestingUser);
     const articlesCount = await Article.countDocuments();
     console.log(`Mongoose: insert ${articlesCount} article(s)`);
     const articleDict = await getArticlesDict();

@@ -1,11 +1,4 @@
-import {
-  supertest,
-  expect,
-  dropData,
-  loginTestAdmin,
-  addAuthorUser,
-  TEST_DATA,
-} from 'utils/testing';
+import { supertest, expect, dropData, loginTestAdmin, TEST_DATA } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -18,7 +11,6 @@ describe('Users API', () => {
   before(async () => {
     await dropData();
 
-    await addAuthorUser();
     sessionCookie = await loginTestAdmin();
   });
 
@@ -49,8 +41,7 @@ describe('Users API', () => {
       .set('Cookie', sessionCookie)
       .expect(200)
       .then(({ body }) => {
-        expect(body).have.length(2);
-        expect(body[0].email).to.equal(TEST_DATA.users.author.email);
-        expect(body[1].email).to.equal(TEST_DATA.users.admin.email);
+        expect(body).have.length(1);
+        expect(body[0].email).to.equal(TEST_DATA.users.admin.email);
       }));
 });

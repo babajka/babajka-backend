@@ -20,53 +20,5 @@
     "password": "password2",
     "bio": "бла-бла-бла",
     "imageUrl": "/test/images/einstein.jpeg"
-  },
-  {
-    "email": "very-first-author@babajka.io",
-    "firstName": {
-      "en": "Very"
-    },
-    "lastName": {
-      "en": "First"
-    },
-    "bio": {
-      "en": "That is an author created by Content Managers"
-    },
-    "role": "author",
-    "imageUrl": "/test/images/curie.jpg"
-  },
-  {
-    "email": "albert@babajka.io",
-    "firstName": {
-      "en": "Albert",
-      "be": "Альберт"
-    },
-    "lastName": {
-      "en": "Einstein",
-      "be": "Эйнштэйн"
-    },
-    "bio": {
-      "en": "I am Einstein and what about you?",
-      "be": "Я - Эйнштэйн, а чаго дасягнуў ты?"
-    },
-    "role": "author",
-    "imageUrl": "/test/images/einstein.jpeg"
-  },
-  {
-    "email": "curie@babajka.io",
-    "firstName": {
-      "en": "Maria",
-      "be": "Марыя"
-    },
-    "lastName": {
-      "en": "Curie",
-      "be": "Кюры"
-    },
-    "bio": {
-      "en": "When was the last time you were X-Ray-ed?",
-      "be": "Калі табе апошні раз рабілі рэнтген?"
-    },
-    "role": "author",
-    "imageUrl": "/test/images/curie.jpg"
   }
 ]

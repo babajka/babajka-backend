@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
-import fromPairs from 'lodash/fromPairs';
+// import fromPairs from 'lodash/fromPairs';
 import pick from 'lodash/pick';
 
 import config from 'config';
@@ -10,6 +10,11 @@ import { permissionsObjectValidator, validatePassword } from 'utils/validation';
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
+  // IMPORTANT:
+  // User model has not changed much with the introduction of Authors-as-Tags.
+  // We now do not support Users with role 'author' but we do not remove 'role'
+  // either. The code below might contain some legacy concepts and ideas.
+  //
   // For a User with a role 'author' firstName, lastName and bio map locales
   // to the values. A set of locales must be the same for all of the fields mentioned.
   // For a User with a role 'regular' firstName, lastName and bio are Strings;
@@ -45,7 +50,10 @@ const UserSchema = new Schema({
   bio: Schema.Types.Mixed,
   role: {
     type: String,
-    enum: ['author', 'regular'],
+    enum: [
+      // 'author',
+      'regular',
+    ],
     required: true,
     default: 'regular',
   },
@@ -53,14 +61,15 @@ const UserSchema = new Schema({
 });
 
 UserSchema.virtual('displayName').get(function get() {
-  if (this.role === 'author') {
-    return fromPairs(
-      Object.entries(this.firstName).map(([l, firstName]) => [
-        l,
-        joinNames(firstName, this.lastName && this.lastName[l]),
-      ])
-    );
-  }
+  // if (this.role === 'author') {
+  //   return fromPairs(
+  //     Object.entries(this.firstName).map(([l, firstName]) => [
+  //       l,
+  //       joinNames(firstName, this.lastName && this.lastName[l]),
+  //     ])
+  //   );
+  // }
+
   // The role is 'regular' (default).
   return joinNames(this.firstName, this.lastName);
 });
@@ -121,7 +130,5 @@ export const checkPermissions = (user, permissions) => {
   }
   return user && user.permissions && list.every(perm => user.permissions[perm]);
 };
-
-export const GENERATED_EMAIL_RGXP = /^generated-author-(\d+)@wir.by$/;
 
 export default User;

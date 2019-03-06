@@ -21,17 +21,13 @@ const VideoReferenceSchema = new Schema({
     type: String,
   },
   videoUrl: {
-    // Url of the video as it was put by the author/admin.
+    // Url of the video as it was put by the creator.
     type: String,
   },
 });
 
 const ArticleSchema = new Schema(
   {
-    author: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
     locales: [
       {
         type: Schema.Types.ObjectId,
@@ -92,6 +88,7 @@ const ArticleSchema = new Schema(
       default: 'light',
     },
     tags: [
+      // Authors and Brands are also just Tags.
       {
         type: Schema.Types.ObjectId,
         ref: 'Tag',
@@ -211,33 +208,17 @@ export const checkIsPublished = (article, user) => {
     return article;
   }
 
-  // TODO(uladbohdan): to uncomment following code in order to make unpublished
-  // article discoverable by their authors. This can be done once users with
-  // role 'author' are allowed to login.
-  // if (checkPermissions(user, 'canCreateArticle') && article.author === user._id) {
-  //   return article;
-  // }
-
   throw new HttpError(404);
 };
 
 export const queryUnpublished = user => {
   if (!checkPermissions(user, 'canManageArticles')) {
     return { publishAt: { $lt: Date.now() } };
-
-    // TODO(uladbohdan): to uncomment following code in order to make unpublished
-    // article discoverable by their authors. This can be done once users with
-    // role 'author' are allowed to login.
-    // return checkPermissions(user, 'canCreateArticle')
-    //   ? { $or: [{ publishAt: { $lt: Date.now() } }, { author: user._id }] }
-    //   : { publishAt: { $lt: Date.now() } };
   }
   return {};
 };
 
 export const POPULATE_OPTIONS = {
-  // TODO(uladbohdan): to merge with User basicFields.
-  author: '-_id firstName lastName email role active bio imageUrl displayName',
   collection: user => ({
     path: 'collectionId',
     select: '-_id name slug description imageUrl articles',
@@ -282,7 +263,6 @@ export const DEFAULT_ARTICLE_QUERY = user => ({
 
 ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
   return this.find(query)
-    .populate('author', POPULATE_OPTIONS.author)
     .populate(POPULATE_OPTIONS.collection(user))
     .populate(POPULATE_OPTIONS.locales)
     .populate(POPULATE_OPTIONS.metadata)
