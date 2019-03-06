@@ -19,7 +19,6 @@ export const validatePassword = password => {
 const checkForbiddenFields = body => {
   const errors = {};
 
-  // Brands are now Tags and therefore they should be passed accordingly.
   ['author', 'authorEmail', 'brand', 'brandSlug', 'collection'].forEach(field => {
     if (Object.prototype.hasOwnProperty.call(body, field)) {
       errors[field] = 'frontend is forbidden to send this field to backend';

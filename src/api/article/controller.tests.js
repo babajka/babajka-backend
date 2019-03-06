@@ -278,7 +278,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(400)
         .expect(({ body: { error } }) => {
-          expect(error.errors.images.vertical).to.contain('required');
+          expect(error.images.vertical).to.contain('required');
         }));
 
     it('should not create video article due to invalid images', () =>
@@ -292,7 +292,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(400)
         .expect(({ body: { error } }) => {
-          expect(error.errors.images.vertical).to.contain('Unknown');
+          expect(error.images.vertical).to.contain('Unknown');
         }));
 
     it('should create an article with brand-as-tag', () =>

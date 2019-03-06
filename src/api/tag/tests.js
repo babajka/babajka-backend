@@ -44,10 +44,10 @@ describe('Tag model', () => {
       slug: 'slug0',
     })
       .save()
-      .catch(({ status, message: { errors } }) => {
+      .catch(({ status, message }) => {
         expect(status).to.equal(400);
-        expect(errors).to.not.empty();
-        expect(errors.title).to.include('required');
+        expect(message).to.not.empty();
+        expect(message.title).to.include('required');
       }));
 
   it('should fail to save locations tag | no BE title', () =>
@@ -63,10 +63,10 @@ describe('Tag model', () => {
       slug: 'slug1',
     })
       .save()
-      .catch(({ status, message: { errors } }) => {
+      .catch(({ status, message }) => {
         expect(status).to.equal(400);
-        expect(errors).to.not.empty();
-        expect(errors.title.be).to.include('required');
+        expect(message).to.not.empty();
+        expect(message.title.be).to.include('required');
       }));
 
   it('should fail to save personalities tag | bad color', () =>
@@ -83,10 +83,10 @@ describe('Tag model', () => {
       slug: 'kolas',
     })
       .save()
-      .catch(({ status, message: { errors } }) => {
+      .catch(({ status, message }) => {
         expect(status).to.equal(400);
-        expect(errors).to.not.empty();
-        expect(errors.color).to.include('regex');
+        expect(message).to.not.empty();
+        expect(message.color).to.include('regex');
       }));
 });
 

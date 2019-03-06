@@ -140,7 +140,7 @@ ArticleSchema.pre('validate', function(next) {
       set(errors, ['images', ...path], type);
     });
 
-    next(new ValidationError({ errors }));
+    next(new ValidationError(errors));
   }
   next();
 });

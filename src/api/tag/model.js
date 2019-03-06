@@ -42,7 +42,7 @@ TagSchema.pre('validate', async function(next) {
       set(errors, path, type);
     });
 
-    next(new ValidationError({ errors }));
+    next(new ValidationError(errors));
   }
 
   next();
