@@ -45,6 +45,10 @@ const tagScopes = {
     localized: ['title'],
     unlocalized: ['image'],
   },
+  authors: {
+    localized: ['name', 'bio'],
+    unlocalized: ['image'],
+  },
   // In addition to those specified explicitly, each Tag also has unlocalized slug.
 };
 

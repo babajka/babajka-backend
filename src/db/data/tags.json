@@ -58,5 +58,18 @@
       },
       "image": "random-url"
     }
+  },
+  {
+    "topicSlug": "authors",
+    "slug": "badziejka",
+    "content": {
+      "name": {
+        "be": "Бадзей"
+      },
+      "bio": {
+        "be": "some text here"
+      },
+      "image": "random-url"
+    }
   }
 ]

@@ -37,6 +37,11 @@ export const TAG_CONTENT_SCHEMA = {
     image: Joi.string().required(),
     // images: IMAGES_TWO_SIZES.required(),
   }),
+  authors: Joi.object().keys({
+    name: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    bio: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    image: Joi.string().required(),
+  }),
 };
 
 // This is a complete list of all topics we support.
