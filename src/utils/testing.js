@@ -35,6 +35,23 @@ export const TEST_DATA = {
     },
   },
   tags: {
+    authors: {
+      default: {
+        slug: 'albert',
+        content: {
+          firstName: {
+            be: 'Альберт',
+          },
+          lastName: {
+            be: 'Эйнштэйн',
+          },
+          bio: {
+            be: 'lol',
+          },
+          image: 'some-url',
+        },
+      },
+    },
     brands: {
       default: {
         slug: 'libra',
@@ -175,8 +192,10 @@ const addTag = (metadata, topicSlug) =>
     }).save()
   );
 
-export const addThemesTag = metadata => addTag(metadata, 'themes');
+export const addAuthorsTag = metadata => addTag(metadata, 'authors');
 
 export const addBrandsTag = metadata => addTag(metadata, 'brands');
+
+export const addThemesTag = metadata => addTag(metadata, 'themes');
 
 export { expect, supertest };

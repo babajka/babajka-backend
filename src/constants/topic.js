@@ -6,11 +6,6 @@ const LOCALIZED_TEXT_SCHEMA_BE_REQUIRED = Joi.object().keys({
   ru: Joi.string(),
 });
 
-// const IMAGES_TWO_SIZES = Joi.object().keys({
-//   small: Joi.string().required(),
-//   large: Joi.string().required(),
-// });
-
 // Tag Content Schemas must be consistent with the data in our Google Spreadsheet.
 export const TAG_CONTENT_SCHEMA = {
   locations: Joi.object().keys({
@@ -35,15 +30,14 @@ export const TAG_CONTENT_SCHEMA = {
   brands: Joi.object().keys({
     title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
     image: Joi.string().required(),
-    // images: IMAGES_TWO_SIZES.required(),
+    // TODO: to improve images validation.
   }),
   authors: Joi.object().keys({
     firstName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
     lastName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
     bio: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
     image: Joi.string().required(),
-    // Once we want to associate Authors-as-Tags with Users (e.g. to let authors
-    // to log in) we may add 'email' field here (which is a primary key for Users).
+    // TODO: to improve images validation.
   }),
 };
 

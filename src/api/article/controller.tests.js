@@ -5,6 +5,7 @@ import {
   loginTestAdmin,
   defaultObjectMetadata,
   addArticles,
+  addAuthorsTag,
   addBrandsTag,
   addThemesTag,
   addTopics,
@@ -25,6 +26,7 @@ describe('Articles API', () => {
   let dbArticles;
   let sessionCookie;
 
+  let authorsTag;
   let brandsTag;
   let themesTag;
 
@@ -42,6 +44,7 @@ describe('Articles API', () => {
 
     await addTopics(metadata);
 
+    authorsTag = await addAuthorsTag(metadata);
     brandsTag = await addBrandsTag(metadata);
     themesTag = await addThemesTag(metadata);
 
@@ -304,20 +307,21 @@ describe('Articles API', () => {
           expect(body.tags[0].slug).to.equal(brandsTag.slug);
         }));
 
-    it('should add a tag to an article', () =>
+    it('should add two tags to an article', () =>
       request
         .put(`/api/articles/${articleId}`)
         .send({
           type: 'text',
           images: TEST_DATA.articleImages.text,
-          tags: [brandsTag._id, themesTag._id],
+          tags: [brandsTag._id, themesTag._id, authorsTag._id],
         })
         .set('Cookie', sessionCookie)
         .expect(200)
         .expect(({ body }) => {
-          expect(body.tags).to.have.length(2);
+          expect(body.tags).to.have.length(3);
           const tagSlugs = body.tags.map(tag => tag.slug);
           expect(tagSlugs).to.include(themesTag.slug);
+          expect(tagSlugs).to.include(authorsTag.slug);
         }));
   });
 });
