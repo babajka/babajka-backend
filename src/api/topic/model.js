@@ -18,7 +18,6 @@ const TopicSchema = new Schema({
   },
 });
 
-// eslint-disable-next-line func-names
 TopicSchema.statics.getAll = function() {
   return this.find().select('slug');
 };

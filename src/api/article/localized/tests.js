@@ -6,7 +6,7 @@ import {
   dropData,
   loginTestAdmin,
   defaultObjectMetadata,
-  addBrand,
+  TEST_DATA,
 } from 'utils/testing';
 
 import app from 'server';
@@ -21,24 +21,21 @@ describe('Locales API', () => {
   let articleId;
 
   before(async () => {
-    const { _id: articleBrandId } = await addBrand();
+    await dropData();
 
     sessionCookie = await loginTestAdmin();
 
     const defaultMetadata = await defaultObjectMetadata();
 
     const article = await Article({
-      brand: articleBrandId,
-      imagePreviewUrl: 'image-url',
       type: 'text',
+      images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
       publishAt: Date.now(),
     }).save();
 
     articleId = article._id;
   });
-
-  after(dropData);
 
   describe('# Locales CRUD', () => {
     it('should fail to add locale due to lack of permissions', () =>
@@ -55,17 +52,17 @@ describe('Locales API', () => {
           locale: 'en',
         })
         .expect(HttpStatus.OK)
-        .expect(res => {
-          expect(res.body.slug).to.equal('slug-en');
+        .expect(({ body }) => {
+          expect(body.slug).to.equal('slug-en');
         }));
 
     it('should return article with only EN locale', () =>
       request
         .get('/api/articles/slug-en')
         .expect(HttpStatus.OK)
-        .expect(res => {
-          expect(Object.keys(res.body.locales)).has.length(1);
-          expect(res.body.locales.en.slug).equals('slug-en');
+        .expect(({ body: { locales } }) => {
+          expect(Object.keys(locales)).has.length(1);
+          expect(locales.en.slug).equals('slug-en');
         }));
 
     it('should fail to create another EN localization', () =>
@@ -86,6 +83,6 @@ describe('Locales API', () => {
         .set('Cookie', sessionCookie)
         .send({ title: 'new-title' })
         .expect(HttpStatus.OK)
-        .expect(res => expect(res.body.title).to.equal('new-title')));
+        .expect(({ body }) => expect(body.title).to.equal('new-title')));
   });
 });

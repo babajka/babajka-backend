@@ -21,7 +21,7 @@ export const validatePassword = password => {
 const checkForbiddenFields = body => {
   const errors = {};
 
-  ['brand', 'collection'].forEach(field => {
+  ['author', 'authorEmail', 'brand', 'brandSlug', 'collection'].forEach(field => {
     if (Object.prototype.hasOwnProperty.call(body, field)) {
       errors[field] = 'frontend is forbidden to send this field to backend';
     }
@@ -56,7 +56,7 @@ const createArticleValidator = ({ body }, res, next) => {
 const updateArticleValidator = ({ body }, res, next) => {
   const errors = checkForbiddenFields(body);
 
-  ['brandSlug', 'type', 'imagePreviewUrl'].forEach(field => {
+  ['type', 'images'].forEach(field => {
     if (body[field] === '') {
       errors[field] = 'errors.fieldUnremovable';
     }

@@ -34,13 +34,22 @@ const doc = new GoogleSpreadsheet('1GxVDSZOWyGvtXa_dwmaRcjzWrXq_kjgXCmZEJVrgb10'
 const locales = ['be', 'en', 'ru'];
 
 const tagScopes = {
-  themes: { localized: ['title'], unlocalized: ['slug'] },
-  locations: { localized: ['title'], unlocalized: ['slug', 'image'] },
-  times: { localized: ['title'], unlocalized: ['slug'] },
+  themes: { localized: ['title'], unlocalized: [] },
+  locations: { localized: ['title'], unlocalized: ['image'] },
+  times: { localized: ['title'], unlocalized: [] },
   personalities: {
     localized: ['name', 'dates', 'description'],
-    unlocalized: ['slug', 'color', 'image'],
+    unlocalized: ['color', 'image'],
   },
+  brands: {
+    localized: ['title'],
+    unlocalized: ['image'],
+  },
+  authors: {
+    localized: ['name', 'bio'],
+    unlocalized: ['image'],
+  },
+  // In addition to those specified explicitly, each Tag also has unlocalized slug.
 };
 
 const parseSheet = (sheet, scopesLocalized = [], scopesUnlocalized = []) =>
@@ -83,9 +92,11 @@ const getSheetsData = async info => {
 
   await Promise.all(
     Object.entries(tagScopes).map(([topic, details]) =>
-      parseSheet(sheets[topic], details.localized, details.unlocalized).then(tagRawData => {
-        data[topic] = tagRawData;
-      })
+      parseSheet(sheets[topic], details.localized, ['slug', ...details.unlocalized]).then(
+        tagRawData => {
+          data[topic] = tagRawData;
+        }
+      )
     )
   );
 

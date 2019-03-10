@@ -14,7 +14,6 @@ import * as permissions from 'constants/permissions';
 import { TOPIC_SLUGS } from 'constants/topic';
 
 import Article from 'api/article/article.model';
-import ArticleBrand from 'api/article/brand/model';
 import LocalizedArticle from 'api/article/localized/model';
 import User from 'api/user/model';
 import Tag from 'api/tag/model';
@@ -35,17 +34,56 @@ export const TEST_DATA = {
       password: 'password',
       permissions: permissions.admin,
     },
-    author: {
-      firstName: { be: 'FirstName-be', en: 'FirstName-en' },
-      email: 'author@babajka.io',
-      password: 'password',
-      permissions: permissions.author,
-      role: 'author',
+  },
+  tags: {
+    authors: {
+      default: {
+        slug: 'albert',
+        content: {
+          firstName: {
+            be: 'Альберт',
+          },
+          lastName: {
+            be: 'Эйнштэйн',
+          },
+          bio: {
+            be: 'lol',
+          },
+          image: 'some-url',
+        },
+      },
+    },
+    brands: {
+      default: {
+        slug: 'libra',
+        content: {
+          title: {
+            be: 'Libra',
+          },
+          image: 'some-url',
+        },
+      },
+    },
+    themes: {
+      default: {
+        slug: 'history',
+        content: {
+          title: {
+            be: 'Гісторыя',
+          },
+        },
+      },
     },
   },
-  brands: {
-    default: {
-      slug: 'wir',
+  articleImages: {
+    text: {
+      page: 'page-url',
+      horizontal: 'horizontal-url',
+      vertical: 'vertical-url',
+    },
+    video: {
+      page: 'page-url',
+      horizontal: 'horizontal-url',
     },
   },
 };
@@ -58,8 +96,6 @@ export const addUser = async data => {
 };
 
 export const addAdminUser = () => addUser(TEST_DATA.users.admin);
-
-export const addAuthorUser = () => addUser(TEST_DATA.users.author);
 
 export const testLogin = ({ email, password }) =>
   request
@@ -86,12 +122,10 @@ export const defaultObjectMetadata = async () => {
   };
 };
 
-export const addBrand = () => new ArticleBrand(TEST_DATA.brands.default).save();
-
 const normalizedDay = i => (i < 9 ? `0${i + 1}` : i + 1);
 
 // TODO: this method could benefit from refactoring. To consider.
-export const addArticles = async (articleBrandId, numberPublished, numberUnpublished) => {
+export const addArticles = async (numberPublished, numberUnpublished) => {
   const defaultMetadata = await defaultObjectMetadata();
   const totalNumber = numberPublished + numberUnpublished;
 
@@ -103,9 +137,8 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
       const date = i < numberPublished ? passedDate : futureDate;
 
       return new Article({
-        brand: articleBrandId,
         type: 'text',
-        imagePreviewUrl: 'image-url',
+        images: TEST_DATA.articleImages.text,
         metadata: defaultMetadata,
         publishAt: date,
       })
@@ -150,18 +183,20 @@ export const addArticles = async (articleBrandId, numberPublished, numberUnpubli
 export const addTopics = metadata =>
   Promise.all(TOPIC_SLUGS.map(topicSlug => Topic({ slug: topicSlug, metadata }).save()));
 
-export const addTag = metadata =>
-  Topic.findOne({ slug: 'themes' }).then(topic =>
+const addTag = (metadata, topicSlug) =>
+  Topic.findOne({ slug: topicSlug }).then(topic =>
     Tag({
       topic: topic._id,
-      slug: 'history',
-      content: {
-        title: {
-          be: 'Гісторыя',
-        },
-      },
+      slug: TEST_DATA.tags[topicSlug].default.slug,
+      content: TEST_DATA.tags[topicSlug].default.content,
       metadata,
     }).save()
   );
+
+export const addAuthorsTag = metadata => addTag(metadata, 'authors');
+
+export const addBrandsTag = metadata => addTag(metadata, 'brands');
+
+export const addThemesTag = metadata => addTag(metadata, 'themes');
 
 export { expect, supertest };

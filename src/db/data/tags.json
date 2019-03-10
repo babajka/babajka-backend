@@ -1,22 +1,22 @@
 [
   {
     "topicSlug": "locations",
-    "slug": "minsk",
+    "slug": "belarus",
     "content": {
       "title": {
-        "be": "Мінск",
-        "en": "Minsk"
+        "be": "Беларусь",
+        "en": "Belarus"
       },
       "image": "random-url"
     }
   },
   {
     "topicSlug": "times",
-    "slug": "middle-ages",
+    "slug": "xx-century",
     "content": {
       "title": {
-        "be": "Сярэднявечча",
-        "en": "Middle Ages"
+        "be": "XX Стагоддзе",
+        "en": "XX Century"
       }
     }
   },
@@ -46,6 +46,71 @@
       "description": {
         "be": "Брытанскі рок-музыка, аўтар песень, прадзюсар, гукарэжысёр, мастак і акцёр"
       }
+    }
+  },
+  {
+    "topicSlug": "brands",
+    "slug": "libra",
+    "content": {
+      "title": {
+        "be": "Выставачная зала Libra",
+        "en": "Libra Exhibition Hall"
+      },
+      "image": "random-url"
+    }
+  },
+  {
+    "topicSlug": "authors",
+    "slug": "badziejka",
+    "content": {
+      "firstName": {
+        "be": "Марыя"
+      },
+      "lastName": {
+        "be": "Бадзей"
+      },
+      "bio": {
+        "be": "some text here"
+      },
+      "image": "random-url"
+    }
+  },
+  {
+    "topicSlug": "authors",
+    "slug": "albert",
+    "content": {
+      "firstName": {
+        "be": "Альберт",
+        "en": "Albert"
+      },
+      "lastName": {
+        "en": "Einstein",
+        "be": "Эйнштэйн"
+      },
+      "bio": {
+        "en": "I am Einstein and what about you?",
+        "be": "Я - Эйнштэйн, а чаго дасягнуў ты?"
+      },
+      "image": "/test/images/einstein.jpeg"
+    }
+  },
+  {
+    "topicSlug": "authors",
+    "slug": "curie",
+    "content": {
+      "firstName": {
+        "en": "Maria",
+        "be": "Марыя"
+      },
+      "lastName": {
+        "en": "Curie",
+        "be": "Кюры"
+      },
+      "bio": {
+        "en": "When was the last time you were X-Ray-ed?",
+        "be": "Калі табе апошні раз рабілі рэнтген?"
+      },
+      "image": "/test/images/curie.jpg"
     }
   }
 ]

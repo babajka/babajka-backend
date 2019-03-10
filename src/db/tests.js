@@ -11,7 +11,7 @@ describe('Mongoose', () => {
   const catRawData = { name: 'Jerry' };
   const jerry = new Cat(catRawData);
 
-  after(dropData);
+  before(dropData);
 
   it('should save data', async () => {
     const data = await jerry.save();

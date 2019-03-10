@@ -11,9 +11,7 @@ import {
   mergeWithUpdateMetadata,
 } from 'api/helpers/metadata';
 
-import { User } from 'api/user';
 import Article, { checkIsPublished, DEFAULT_ARTICLE_QUERY } from './article.model';
-import ArticleBrand from './brand/model';
 import ArticleCollection from './collection/model';
 import LocalizedArticle from './localized/model';
 
@@ -71,22 +69,11 @@ const handleArticleLocalizationError = locale => err => {
 
 export const create = async ({ body, user }, res, next) => {
   try {
-    const articleBrand = await ArticleBrand.findOne({
-      slug: body.brandSlug,
-    }).exec();
-    checkIsFound(articleBrand, HttpStatus.BAD_REQUEST); // Brand is required.
-    const brandId = articleBrand._id;
-
     const articleCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
     const collectionId = articleCollection && articleCollection._id;
 
-    const author = await User.findOne({ email: body.authorEmail, role: 'author' }).exec();
-    const authorId = author && author._id;
-
     const article = Article({
       ...omit(body, ['locales', 'videoUrl']),
-      author: authorId,
-      brand: brandId,
       metadata: getInitObjectMetadata(user),
       collectionId,
     });
@@ -130,25 +117,10 @@ export const create = async ({ body, user }, res, next) => {
 export const update = async ({ params: { slugOrId }, body, user }, res, next) => {
   try {
     const articleId = await retrieveArticleId(slugOrId).catch(next);
-    const [newBrand, newCollection, newAuthor] = await Promise.all([
-      ArticleBrand.findOne({ slug: body.brandSlug }).exec(),
-      ArticleCollection.findOne({ slug: body.collectionSlug }).exec(),
-      User.findOne({ email: body.authorEmail, role: 'author' }).exec(),
-    ]);
+    const newCollection = await ArticleCollection.findOne({ slug: body.collectionSlug }).exec();
 
-    const updFields = omit(body, [
-      'author',
-      'authorEmail',
-      'brandSlug',
-      'collectionSlug',
-      'locales',
-      'videoUrl',
-    ]);
-    if (newBrand) {
-      updFields.brand = newBrand._id;
-    }
+    const updFields = omit(body, ['collectionSlug', 'locales', 'videoUrl']);
     updFields.collectionId = newCollection && newCollection._id;
-    updFields.author = newAuthor && newAuthor._id;
 
     const article = await Article.findOne({ _id: articleId }).exec();
     const oldArticleCollectionId = article.collectionId;

@@ -12,15 +12,12 @@ const request = supertest.agent(app.listen());
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(HttpStatus.OK));
 
 describe('Auth API', () => {
-  // eslint-disable-next-line func-names
   before(async function() {
     this.timeout(5000);
     await dropData();
 
     await addAdminUser();
   });
-
-  after(dropData);
 
   it('should fail to get protected resource without authorization', () =>
     request.get('/protected').expect(HttpStatus.FORBIDDEN));
@@ -57,7 +54,7 @@ describe('Auth API', () => {
       .set('Cookie', sessionCookie)
       .expect(HttpStatus.OK));
 
-  it('should logout with 200', () =>
+  it('should logout with OK', () =>
     request
       .get('/auth/logout')
       .set('Cookie', sessionCookie)

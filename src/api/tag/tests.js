@@ -7,9 +7,9 @@ import {
   expect,
   dropData,
   loginTestAdmin,
-  addBrand,
   addTopics,
   defaultObjectMetadata,
+  TEST_DATA,
 } from 'utils/testing';
 
 import app from 'server';
@@ -26,9 +26,7 @@ describe('Tag model', () => {
   let defaultMetadata;
   let topics;
 
-  // eslint-disable-next-line func-names
   before(async function() {
-    // I should probably avoid these lines.
     this.timeout(5000);
     await dropData();
 
@@ -37,8 +35,6 @@ describe('Tag model', () => {
 
     topics = keyBy(await addTopics(defaultMetadata), 'slug');
   });
-
-  after(dropData);
 
   it('should fail to save locations tag | no title', () =>
     Tag({
@@ -50,10 +46,10 @@ describe('Tag model', () => {
       slug: 'slug0',
     })
       .save()
-      .catch(({ status, message: { errors } }) => {
+      .catch(({ status, message }) => {
         expect(status).to.equal(HttpStatus.BAD_REQUEST);
-        expect(errors).to.not.empty();
-        expect(errors.title).to.include('required');
+        expect(message).to.not.empty();
+        expect(message.title).to.include('required');
       }));
 
   it('should fail to save locations tag | no BE title', () =>
@@ -69,10 +65,10 @@ describe('Tag model', () => {
       slug: 'slug1',
     })
       .save()
-      .catch(({ status, message: { errors } }) => {
+      .catch(({ status, message }) => {
         expect(status).to.equal(HttpStatus.BAD_REQUEST);
-        expect(errors).to.not.empty();
-        expect(errors.title.be).to.include('required');
+        expect(message).to.not.empty();
+        expect(message.title.be).to.include('required');
       }));
 
   it('should fail to save personalities tag | bad color', () =>
@@ -89,10 +85,10 @@ describe('Tag model', () => {
       slug: 'kolas',
     })
       .save()
-      .catch(({ status, message: { errors } }) => {
+      .catch(({ status, message }) => {
         expect(status).to.equal(HttpStatus.BAD_REQUEST);
-        expect(errors).to.not.empty();
-        expect(errors.color).to.include('regex');
+        expect(message).to.not.empty();
+        expect(message.color).to.include('regex');
       }));
 });
 
@@ -100,9 +96,7 @@ describe('Tags API', () => {
   let articleTwoTags;
   let articleOneTag;
 
-  // eslint-disable-next-line func-names
   before(async function() {
-    // I should probably avoid these lines.
     this.timeout(5000);
     await dropData();
 
@@ -136,12 +130,9 @@ describe('Tags API', () => {
       )
     );
 
-    const brand = await addBrand();
-
     articleTwoTags = await Article({
-      brand: brand._id,
       type: 'text',
-      imagePreviewUrl: 'image-url',
+      images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
       publishAt: new Date('2018-01-21T16:25:43.511Z'),
       tags: [tags.miensk, tags['xx-century']],
@@ -150,9 +141,8 @@ describe('Tags API', () => {
       .then(({ _id }) => _id.toString());
 
     articleOneTag = await Article({
-      brand: brand._id,
       type: 'text',
-      imagePreviewUrl: 'image-url',
+      images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
       publishAt: new Date('2018-01-22T16:25:43.511Z'),
       tags: [tags.miensk],
@@ -160,8 +150,6 @@ describe('Tags API', () => {
       .save()
       .then(({ _id }) => _id.toString());
   });
-
-  after(dropData);
 
   it('should get locations tags by topic', () =>
     request

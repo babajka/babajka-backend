@@ -27,6 +27,18 @@ export const TAG_CONTENT_SCHEMA = {
   times: Joi.object().keys({
     title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED,
   }),
+  brands: Joi.object().keys({
+    title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    image: Joi.string().required(),
+    // TODO: to improve images validation.
+  }),
+  authors: Joi.object().keys({
+    firstName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    lastName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    bio: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    image: Joi.string().required(),
+    // TODO: to improve images validation.
+  }),
 };
 
 // This is a complete list of all topics we support.

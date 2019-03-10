@@ -1,7 +1,11 @@
 import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
+
+import Joi from 'joi';
+
 import mongoose from 'mongoose';
 import get from 'lodash/get';
+import set from 'lodash/set';
 import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
 
@@ -20,17 +24,13 @@ const VideoReferenceSchema = new Schema({
     type: String,
   },
   videoUrl: {
-    // Url of the video as it was put by the author/admin.
+    // Url of the video as it was put by the creator.
     type: String,
   },
 });
 
 const ArticleSchema = new Schema(
   {
-    author: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
     locales: [
       {
         type: Schema.Types.ObjectId,
@@ -40,12 +40,6 @@ const ArticleSchema = new Schema(
     collectionId: {
       type: Schema.Types.ObjectId,
       ref: 'ArticleCollection',
-    },
-    brand: {
-      // May be e.g. 'wir' or 'kurilka'.
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'ArticleBrand',
     },
     type: {
       type: String,
@@ -72,16 +66,10 @@ const ArticleSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    imagePreviewUrl: {
-      // Image to be shown on article preview (i.e. on index page).
-      // Usually a smaller one and with fixed aspect ratio.
-      type: String,
+    images: {
+      // Images are as described in 'covers' guide by Vitalik.
+      type: Schema.Types.Mixed,
       required: true,
-    },
-    imageFolderUrl: {
-      // Image to be shown on article page. Wide and not height.
-      // Optional: article may be rendered without it.
-      type: String,
     },
     video: {
       // Can only be present when Article type is video.
@@ -103,6 +91,7 @@ const ArticleSchema = new Schema(
       default: 'light',
     },
     tags: [
+      // Authors and Brands are also just Tags.
       {
         type: Schema.Types.ObjectId,
         ref: 'Tag',
@@ -114,7 +103,7 @@ const ArticleSchema = new Schema(
   }
 );
 
-ArticleSchema.pre('validate', function validateArticleType(next) {
+ArticleSchema.pre('validate', function(next) {
   if (this.type === 'video') {
     ['video.platform', 'video.videoId'].forEach(path => {
       if (!get(this, path)) {
@@ -130,6 +119,31 @@ ArticleSchema.pre('validate', function validateArticleType(next) {
   }
   if (this.type === 'text' && this.video) {
     next(new ValidationError('video must be absent if article type is text'));
+  }
+  next();
+});
+
+const IMAGES_SCHEMA = {
+  text: Joi.object().keys({
+    page: Joi.string().required(),
+    horizontal: Joi.string().required(),
+    vertical: Joi.string().required(),
+  }),
+  video: Joi.object().keys({
+    page: Joi.string().required(),
+    horizontal: Joi.string().required(),
+  }),
+};
+
+ArticleSchema.pre('validate', function(next) {
+  const { error } = Joi.validate(this.images, IMAGES_SCHEMA[this.type]);
+  if (error !== null) {
+    const errors = {};
+    error.details.forEach(({ path, type }) => {
+      set(errors, ['images', ...path], type);
+    });
+
+    next(new ValidationError(errors));
   }
   next();
 });
@@ -197,34 +211,17 @@ export const checkIsPublished = (article, user) => {
     return article;
   }
 
-  // TODO(uladbohdan): to uncomment following code in order to make unpublished
-  // article discoverable by their authors. This can be done once users with
-  // role 'author' are allowed to login.
-  // if (checkPermissions(user, 'canCreateArticle') && article.author === user._id) {
-  //   return article;
-  // }
-
   throw new HttpError(HttpStatus.NOT_FOUND);
 };
 
 export const queryUnpublished = user => {
   if (!checkPermissions(user, 'canManageArticles')) {
     return { publishAt: { $lt: Date.now() } };
-
-    // TODO(uladbohdan): to uncomment following code in order to make unpublished
-    // article discoverable by their authors. This can be done once users with
-    // role 'author' are allowed to login.
-    // return checkPermissions(user, 'canCreateArticle')
-    //   ? { $or: [{ publishAt: { $lt: Date.now() } }, { author: user._id }] }
-    //   : { publishAt: { $lt: Date.now() } };
   }
   return {};
 };
 
 export const POPULATE_OPTIONS = {
-  // TODO(uladbohdan): to merge with User basicFields.
-  author: '-_id firstName lastName email role active bio imageUrl displayName',
-  brand: '-_id slug names imageUrl imageUrlSmall',
   collection: user => ({
     path: 'collectionId',
     select: '-_id name slug description imageUrl articles',
@@ -267,11 +264,8 @@ export const DEFAULT_ARTICLE_QUERY = user => ({
   ],
 });
 
-// eslint-disable-next-line func-names
 ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
   return this.find(query)
-    .populate('author', POPULATE_OPTIONS.author)
-    .populate('brand', POPULATE_OPTIONS.brand)
     .populate(POPULATE_OPTIONS.collection(user))
     .populate(POPULATE_OPTIONS.locales)
     .populate(POPULATE_OPTIONS.metadata)

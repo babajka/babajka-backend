@@ -4,7 +4,6 @@ import { checkIsFound } from 'utils/validation';
 import { MAIN_PAGE_KEY } from 'constants/storage';
 
 import { Article } from 'api/article';
-import { ArticleBrand } from 'api/article/brand';
 import { Tag } from 'api/tag';
 import { Topic } from 'api/topic';
 
@@ -12,7 +11,6 @@ import { StorageEntity } from './model';
 
 const MAIN_PAGE_ENTITIES_QUERIES = {
   articles: ({ query, user }) => Article.customQuery({ query, user }),
-  brands: ({ query }) => ArticleBrand.customQuery({ query }),
   tags: ({ query }) => Tag.customQuery({ query }),
   topics: () => Topic.getAll(),
 };
