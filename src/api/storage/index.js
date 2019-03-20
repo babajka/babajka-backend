@@ -18,4 +18,14 @@ router.post(
   controller.setMainPage
 );
 
+router.get('/sidebar', controller.getSidebar);
+
+router.post(
+  '/sidebar',
+  requireAuth,
+  verifyPermission('canManageArticles'),
+  precheck.setSidebar,
+  controller.setSidebar
+);
+
 export default router;

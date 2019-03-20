@@ -20,6 +20,7 @@ import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
 import sampleSize from 'lodash/sampleSize';
+import filter from 'lodash/filter';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,9 +30,10 @@ import { Article, ArticleCollection, LocalizedArticle } from 'api/article';
 import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
 import { Tag } from 'api/tag';
+import { Topic } from 'api/topic';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 import * as permissions from 'constants/permissions';
-import { MAIN_PAGE_KEY } from 'constants/storage';
+import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
 import { addTopics } from 'utils/testing';
 
 const defaultDataPath = `${__dirname}/../data/`;
@@ -215,6 +217,31 @@ const initMainPageState = metadataTestingUser =>
       )
     );
 
+const initSidebarState = metadataTestingUser =>
+  Tag.find()
+    .then(async tags => {
+      const topics = await Topic.find().exec();
+      const topicsBySlug = keyBy(topics, 'slug');
+
+      const blocks = ['themes', 'personalities', 'times', 'locations', 'brands', 'authors'].map(
+        topicSlug => ({
+          type: topicSlug,
+          tags: filter(tags, { topic: topicsBySlug[topicSlug]._id }).map(tag => tag._id),
+        })
+      );
+
+      return {
+        blocks,
+        data: {
+          tags: tags.map(tag => tag._id),
+          topics,
+        },
+      };
+    })
+    .then(sidebarState =>
+      StorageEntity.setValue(SIDEBAR_KEY, sidebarState, metadataTestingUser._id)
+    );
+
 const initTags = async metadataTestingUser => {
   const commonMetadata = getInitObjectMetadata(metadataTestingUser);
   const topics = keyBy(await addTopics(commonMetadata), 'slug');
@@ -273,6 +300,9 @@ const initTags = async metadataTestingUser => {
 
     await initMainPageState(metadataTestingUser);
     console.log('Mongoose: main page state pushed');
+
+    await initSidebarState(metadataTestingUser);
+    console.log('Mongoose: sidebar state pushed');
 
     // PLACEHOLDER.
   } catch (err) {

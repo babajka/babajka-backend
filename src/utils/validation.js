@@ -6,7 +6,7 @@ import set from 'lodash/set';
 import mongoose from 'mongoose';
 import Joi from 'joi';
 
-import { MAIN_PAGE_DATA_SCHEMA } from 'constants/storage';
+import { MAIN_PAGE_DATA_SCHEMA, SIDEBAR_DATA_SCHEMA } from 'constants/storage';
 
 export function ValidationError(message) {
   return HttpError(HttpStatus.BAD_REQUEST, message);
@@ -86,6 +86,13 @@ const setMainPageValidator = ({ body }, res, next) => {
   return next(!valid && new ValidationError({ mainPageEntities: 'not valid' }));
 };
 
+const checkSidebarEntitiesFormat = data => Joi.validate(data, SIDEBAR_DATA_SCHEMA).error === null;
+
+const setSidebarValidator = ({ body }, res, next) => {
+  const valid = checkSidebarEntitiesFormat(body.data);
+  return next(!valid && new ValidationError({ sidebarEntities: 'not valid' }));
+};
+
 const mailRequestValidator = ({ body }, res, next) => {
   const errors = {};
   const validUserStatuses = ['subscribed', 'unsubscribed'];
@@ -116,6 +123,7 @@ export const precheck = {
   createArticle: createArticleValidator,
   updateArticle: updateArticleValidator,
   setMainPage: setMainPageValidator,
+  setSidebar: setSidebarValidator,
   mailRequest: mailRequestValidator,
 };
 

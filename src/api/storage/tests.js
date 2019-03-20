@@ -55,6 +55,7 @@ describe('Storage API', () => {
   let dbArticleIds;
   let sessionCookie;
   let validMainPageState;
+  let validSidebarState;
 
   before(async () => {
     await dropData();
@@ -73,6 +74,11 @@ describe('Storage API', () => {
     validMainPageState = {
       blocks: [{ type: 'featured' }, { type: 'diary' }],
       data: { articles: dbArticleIds, tags: [tagId] },
+    };
+
+    validSidebarState = {
+      blocks: [{ type: 'themes', tags: [1, 2, 3] }],
+      data: { tags: [tagId] },
     };
   });
 
@@ -123,5 +129,26 @@ describe('Storage API', () => {
         expect(topics).have.length(TOPIC_SLUGS.length);
 
         expect(latestArticles).have.length(3);
+      }));
+
+  it('should succeed in pushing sidebar state', () =>
+    request
+      .post('/api/storage/sidebar')
+      .set('Cookie', sessionCookie)
+      .send(validSidebarState)
+      .expect(HttpStatus.OK)
+      .expect(({ body: { blocks, data: { tags } } }) => {
+        expect(blocks).to.deep.equal(validSidebarState.blocks);
+        expect(tags).has.length(1);
+      }));
+
+  it('should retrieve sidebar state with tags and topics', () =>
+    request
+      .get('/api/storage/sidebar')
+      .expect(HttpStatus.OK)
+      .expect(({ body: { blocks, data: { tags, topics } } }) => {
+        expect(blocks).to.deep.equal(validSidebarState.blocks);
+        expect(tags).have.length(1);
+        expect(topics).have.length(TOPIC_SLUGS.length);
       }));
 });
