@@ -7,6 +7,7 @@ import mailRoutes from 'api/mail';
 import specialsRoutes from 'api/specials';
 import storageRoutes from 'api/storage';
 import tagRoutes from 'api/tag';
+import topicRoutes from 'api/topic';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use('/mail', mailRoutes);
 router.use('/specials', specialsRoutes);
 router.use('/storage', storageRoutes);
 router.use('/tags', tagRoutes);
+router.use('/topics', topicRoutes);
 router.use('/users', userRoutes);
 
 export default router;
