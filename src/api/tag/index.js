@@ -1,10 +1,9 @@
 import { Router } from 'express';
 
+import { verifyTopicName } from 'api/topic/middlewares';
 import Tag from './model';
 
 import * as controller from './controller';
-
-import { verifyTopicName } from './middlewares';
 
 const router = Router();
 
@@ -16,6 +15,6 @@ router.get('/by-topic/:topic', verifyTopicName, controller.getByTopic);
 
 router.get('/articles/:tag', controller.getArticles);
 
-export default router;
-
 export { Tag };
+
+export default router;
