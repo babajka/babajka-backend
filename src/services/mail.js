@@ -24,9 +24,11 @@ export class MailProxy {
     )}`;
     this.mailchimp
       .put(memberURL, { email_address: emailAddress, status: userStatus, language })
-      .then(response => {
+      .then(mailRes => {
         sendJson(res)({
-          message: { userStatus: response.status, language: response.language },
+          userStatus: mailRes.status,
+          language: mailRes.language,
+          emailAddress: mailRes.email_address,
         });
       })
       .catch(next);

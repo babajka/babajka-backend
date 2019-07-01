@@ -101,7 +101,7 @@ const mailRequestValidator = ({ body }, res, next) => {
   const validators = {
     emailAddress: emailAddress => emailAddress,
     userStatus: status => validUserStatuses.includes(status),
-    language: language => validLanguages.includes(language),
+    language: language => body.userStatus === 'unsubscribed' || validLanguages.includes(language),
   };
 
   Object.keys(validators).forEach(field => {
