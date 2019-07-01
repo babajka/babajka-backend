@@ -1,7 +1,9 @@
+import pick from 'lodash/pick';
+
 import { sendJson } from 'utils/api';
 
 import { checkIsFound } from 'utils/validation';
-import { MAIN_PAGE_KEY } from 'constants/storage';
+import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
 
 import { Article } from 'api/article';
 import { Tag } from 'api/tag';
@@ -15,8 +17,10 @@ const MAIN_PAGE_ENTITIES_QUERIES = {
   topics: () => Topic.getAll(),
 };
 
-export const getMainPage = ({ user }, res, next) =>
-  StorageEntity.getValue(MAIN_PAGE_KEY)
+const SIDEBAR_ENTITIES_QUERIES = pick(MAIN_PAGE_ENTITIES_QUERIES, ['tags']);
+
+const getState = ({ user, storageKey, entitiesQueries, includeLatestArticles = false }) =>
+  StorageEntity.getValue(storageKey)
     .then(checkIsFound)
     .then(entity => entity.document)
     .then(async ({ blocks, data }) => {
@@ -25,44 +29,69 @@ export const getMainPage = ({ user }, res, next) =>
         data: {},
       };
 
-      const promises = Object.entries(MAIN_PAGE_ENTITIES_QUERIES).map(
-        ([supportedEntity, queryFunction]) =>
-          queryFunction({
-            query: {
-              _id: {
-                $in: data[supportedEntity],
-              },
-            },
-            user,
-          }).then(list => {
-            result.data[supportedEntity] = list;
-          })
-      );
-
-      promises.push(
-        Article.customQuery({
+      const promises = Object.entries(entitiesQueries).map(([supportedEntity, queryFunction]) =>
+        queryFunction({
           query: {
-            active: true,
-            locales: { $exists: true },
-            publishAt: { $lt: Date.now() },
+            _id: {
+              $in: data[supportedEntity],
+            },
           },
-          limit: 3,
-          sort: { publishAt: 'desc' },
           user,
         }).then(list => {
-          result.data.latestArticles = list;
+          result.data[supportedEntity] = list;
         })
       );
+
+      if (includeLatestArticles) {
+        promises.push(
+          Article.customQuery({
+            query: {
+              active: true,
+              locales: { $exists: true },
+              publishAt: { $lt: Date.now() },
+            },
+            limit: 3,
+            sort: { publishAt: 'desc' },
+            user,
+          }).then(list => {
+            result.data.latestArticles = list;
+          })
+        );
+      }
 
       await Promise.all(promises);
 
       return result;
-    })
+    });
+
+export const getSidebar = ({ user }, res, next) =>
+  getState({
+    user,
+    storageKey: SIDEBAR_KEY,
+    entitiesQueries: SIDEBAR_ENTITIES_QUERIES,
+    includeLatestArticles: false,
+  })
+    .then(sendJson(res))
+    .catch(next);
+
+export const getMainPage = ({ user }, res, next) =>
+  getState({
+    user,
+    storageKey: MAIN_PAGE_KEY,
+    entitiesQueries: MAIN_PAGE_ENTITIES_QUERIES,
+    includeLatestArticles: true,
+  })
     .then(sendJson(res))
     .catch(next);
 
 export const setMainPage = ({ body, user }, res, next) =>
   StorageEntity.setValue(MAIN_PAGE_KEY, body, user._id)
+    .then(entity => entity.document)
+    .then(sendJson(res))
+    .catch(next);
+
+export const setSidebar = ({ body, user }, res, next) =>
+  StorageEntity.setValue(SIDEBAR_KEY, body, user._id)
     .then(entity => entity.document)
     .then(sendJson(res))
     .catch(next);

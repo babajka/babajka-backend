@@ -19,7 +19,9 @@ import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
+import sample from 'lodash/sample';
 import sampleSize from 'lodash/sampleSize';
+import filter from 'lodash/filter';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,9 +31,11 @@ import { Article, ArticleCollection, LocalizedArticle } from 'api/article';
 import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
 import { Tag } from 'api/tag';
+import { Topic } from 'api/topic';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 import * as permissions from 'constants/permissions';
-import { MAIN_PAGE_KEY } from 'constants/storage';
+import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
+import { TOPIC_SLUGS } from 'constants/topic';
 import { addTopics } from 'utils/testing';
 
 const defaultDataPath = `${__dirname}/../data/`;
@@ -199,20 +203,105 @@ const initDiaries = () =>
 
 const initMainPageState = metadataTestingUser =>
   Article.find()
-    .then(articles => articles.map(({ _id }) => _id))
-    .then(async articleIds => {
-      const tagIds = await Tag.find().then(tags => tags.map(({ _id }) => _id));
+    .then(async articles => {
+      const topicsBySlug = keyBy(await Topic.find().exec(), 'slug');
+
+      const tags = await Tag.find().exec();
+      const tagsBySlugs = keyBy(tags, 'slug');
+
+      const tagsByTopic = {};
+      TOPIC_SLUGS.forEach(topicSlug => {
+        tagsByTopic[topicSlug] = filter(tags, { topic: topicsBySlug[topicSlug]._id }).map(
+          ({ _id }) => _id
+        );
+      });
+
+      const articlesByTag = {};
+      tags.forEach(tag => {
+        articlesByTag[tag.slug] = articles
+          .filter(art => art.tags.map(t => t.toString()).includes(tag._id.toString()))
+          .map(({ _id }) => _id);
+      });
+
       return {
-        articles: articleIds,
-        tags: tagIds,
+        articles,
+        tags,
+        tagsBySlugs,
+        tagsByTopic,
+        articlesByTag,
       };
     })
-    .then(data =>
-      StorageEntity.setValue(
-        MAIN_PAGE_KEY,
-        { blocks: [{ type: 'featured' }, { type: 'diary' }], data },
-        metadataTestingUser._id
-      )
+    .then(({ articles, tags, tagsByTopic, articlesByTag, tagsBySlugs }) => {
+      const state = {
+        blocks: [
+          { type: 'featured', articleId: null, frozen: false },
+          { type: 'diary' },
+          {
+            type: 'latestArticles',
+            articlesIds: [{ id: sample(articles), frozen: true }, { id: null, frozen: false }],
+          },
+          {
+            type: 'tagsByTopic',
+            topicSlug: 'personalities',
+            tagsIds: sampleSize(tagsByTopic.personalities, 3),
+            style: '1-2',
+          },
+          {
+            type: 'articlesByTag3',
+            tagId: tagsBySlugs['xx-century']._id,
+            articlesIds: sampleSize(articlesByTag['xx-century'], 3),
+          },
+          {
+            type: 'articlesByTag2',
+            tagId: tagsBySlugs.bowie._id,
+            articlesIds: sampleSize(articlesByTag.bowie, 2),
+          },
+          // to add "banner" block here.
+          {
+            type: 'tagsByTopic',
+            topicSlug: 'locations',
+            tagsIds: sampleSize(tagsByTopic.locations, 3),
+            style: '2-1',
+          },
+          {
+            type: 'articlesByBrand',
+            tagId: tagsBySlugs.libra._id,
+            articlesIds: sampleSize(articlesByTag.libra, 2),
+          },
+        ],
+        data: {
+          articles: articles.map(({ _id }) => _id),
+          tags: tags.map(({ _id }) => _id),
+        },
+      };
+
+      return StorageEntity.setValue(MAIN_PAGE_KEY, state, metadataTestingUser._id);
+    });
+
+const initSidebarState = metadataTestingUser =>
+  Tag.find()
+    .then(async tags => {
+      const topics = await Topic.find().exec();
+      const topicsBySlug = keyBy(topics, 'slug');
+
+      const blocks = ['themes', 'personalities', 'times', 'locations', 'brands', 'authors'].map(
+        topicSlug => ({
+          topic: topicSlug,
+          tags: tags
+            .filter(tag => tag.topic.toString() === topicsBySlug[topicSlug]._id.toString())
+            .map(tag => tag._id),
+        })
+      );
+
+      return {
+        blocks,
+        data: {
+          tags: tags.map(tag => tag._id),
+        },
+      };
+    })
+    .then(sidebarState =>
+      StorageEntity.setValue(SIDEBAR_KEY, sidebarState, metadataTestingUser._id)
     );
 
 const initTags = async metadataTestingUser => {
@@ -234,7 +323,7 @@ const initTags = async metadataTestingUser => {
   const articles = await Article.find({}).then(data => data.map(({ _id }) => _id));
   await Promise.all(
     articles.map(articleId =>
-      Article.findOneAndUpdate({ _id: articleId }, { tags: sampleSize(tags, 2) })
+      Article.findOneAndUpdate({ _id: articleId }, { tags: sampleSize(tags, 4) })
     )
   );
 
@@ -273,6 +362,9 @@ const initTags = async metadataTestingUser => {
 
     await initMainPageState(metadataTestingUser);
     console.log('Mongoose: main page state pushed');
+
+    await initSidebarState(metadataTestingUser);
+    console.log('Mongoose: sidebar state pushed');
 
     // PLACEHOLDER.
   } catch (err) {
