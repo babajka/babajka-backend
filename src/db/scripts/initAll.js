@@ -218,9 +218,9 @@ const initMainPageState = metadataTestingUser =>
 
       const articlesByTag = {};
       tags.forEach(tag => {
-        articlesByTag[tag.slug] = filter(articles, art =>
-          art.tags.map(t => t.toString()).includes(tag._id.toString())
-        ).map(({ _id }) => _id);
+        articlesByTag[tag.slug] = articles
+          .filter(art => art.tags.map(t => t.toString()).includes(tag._id.toString()))
+          .map(({ _id }) => _id);
       });
 
       return {
@@ -287,7 +287,9 @@ const initSidebarState = metadataTestingUser =>
       const blocks = ['themes', 'personalities', 'times', 'locations', 'brands', 'authors'].map(
         topicSlug => ({
           topic: topicSlug,
-          tags: filter(tags, { topic: topicsBySlug[topicSlug]._id }).map(tag => tag._id),
+          tags: tags
+            .filter(tag => tag.topic.toString() === topicsBySlug[topicSlug]._id.toString())
+            .map(tag => tag._id),
         })
       );
 

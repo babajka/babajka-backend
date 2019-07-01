@@ -19,7 +19,7 @@ const MAIN_PAGE_ENTITIES_QUERIES = {
 
 const SIDEBAR_ENTITIES_QUERIES = pick(MAIN_PAGE_ENTITIES_QUERIES, ['tags']);
 
-const getState = (user, storageKey, entitiesQueries, includeLatestArticles) =>
+const getState = ({ user, storageKey, entitiesQueries, includeLatestArticles = false }) =>
   StorageEntity.getValue(storageKey)
     .then(checkIsFound)
     .then(entity => entity.document)
@@ -65,12 +65,22 @@ const getState = (user, storageKey, entitiesQueries, includeLatestArticles) =>
     });
 
 export const getSidebar = ({ user }, res, next) =>
-  getState(user, SIDEBAR_KEY, SIDEBAR_ENTITIES_QUERIES, false)
+  getState({
+    user,
+    storageKey: SIDEBAR_KEY,
+    entitiesQueries: SIDEBAR_ENTITIES_QUERIES,
+    includeLatestArticles: false,
+  })
     .then(sendJson(res))
     .catch(next);
 
 export const getMainPage = ({ user }, res, next) =>
-  getState(user, MAIN_PAGE_KEY, MAIN_PAGE_ENTITIES_QUERIES, true)
+  getState({
+    user,
+    storageKey: MAIN_PAGE_KEY,
+    entitiesQueries: MAIN_PAGE_ENTITIES_QUERIES,
+    includeLatestArticles: true,
+  })
     .then(sendJson(res))
     .catch(next);
 
