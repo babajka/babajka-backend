@@ -146,9 +146,8 @@ describe('Storage API', () => {
     request
       .get('/api/storage/sidebar')
       .expect(HttpStatus.OK)
-      .expect(({ body: { blocks, data: { tags, topics } } }) => {
+      .expect(({ body: { blocks, data: { tags } } }) => {
         expect(blocks).to.deep.equal(validSidebarState.blocks);
         expect(tags).have.length(1);
-        expect(topics).have.length(TOPIC_SLUGS.length);
       }));
 });

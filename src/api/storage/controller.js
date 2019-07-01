@@ -17,7 +17,7 @@ const MAIN_PAGE_ENTITIES_QUERIES = {
   topics: () => Topic.getAll(),
 };
 
-const SIDEBAR_ENTITIES_QUERIES = pick(MAIN_PAGE_ENTITIES_QUERIES, ['tags', 'topics']);
+const SIDEBAR_ENTITIES_QUERIES = pick(MAIN_PAGE_ENTITIES_QUERIES, ['tags']);
 
 const getState = (user, storageKey, entitiesQueries, includeLatestArticles) =>
   StorageEntity.getValue(storageKey)
