@@ -11,11 +11,10 @@ import {
   defaultObjectMetadata,
   TEST_DATA,
 } from 'utils/testing';
+import { getId, mapIds } from 'utils/getters';
 
 import app from 'server';
-
 import 'db/connect';
-
 import { Article } from 'api/article';
 
 import Tag from './model';
@@ -138,7 +137,7 @@ describe('Tags API', () => {
       tags: [tags.miensk, tags['xx-century']],
     })
       .save()
-      .then(({ _id }) => _id.toString());
+      .then(getId);
 
     articleOneTag = await Article({
       type: 'text',
@@ -148,7 +147,7 @@ describe('Tags API', () => {
       tags: [tags.miensk],
     })
       .save()
-      .then(({ _id }) => _id.toString());
+      .then(getId);
   });
 
   it('should get locations tags by topic', () =>
@@ -200,7 +199,7 @@ describe('Tags API', () => {
       .expect(HttpStatus.OK)
       .expect(({ body }) => {
         expect(body).to.have.length(2);
-        expect(body.map(({ _id }) => _id)).to.deep.equal([articleOneTag, articleTwoTags]);
+        expect(mapIds(body)).to.deep.equal([articleOneTag, articleTwoTags]);
       }));
 
   it('should return one article by tag', () =>

@@ -5,6 +5,7 @@ import HttpStatus from 'http-status-codes';
 import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import { parseVideoUrl } from 'utils/networks';
+import { getId } from 'utils/getters';
 import {
   getInitObjectMetadata,
   updateObjectMetadata,
@@ -36,9 +37,9 @@ const retrieveArticleId = (slugOrId, options) =>
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound);
 
-const getArticleById = (articleId, user) =>
+const getArticleById = (_id, user) =>
   Article.customQuery({
-    query: { _id: articleId, active: true },
+    query: { _id, active: true },
     user,
     limit: 1,
   }).then(articles => articles[0]);
@@ -93,7 +94,7 @@ export const create = async ({ body, user }, res, next) => {
             metadata: getInitObjectMetadata(user),
           })
             .save()
-            .then(({ _id }) => _id)
+            .then(getId)
             .catch(handleArticleLocalizationError(locale))
         )
       );
@@ -162,7 +163,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
                   metadata: getInitObjectMetadata(user),
                 }).save()
             )
-            .then(({ _id }) => _id)
+            .then(getId)
             .catch(handleArticleLocalizationError(locale))
         )
       );

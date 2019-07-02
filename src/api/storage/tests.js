@@ -11,6 +11,7 @@ import {
   addTopics,
   defaultObjectMetadata,
 } from 'utils/testing';
+import { mapIds } from 'utils/getters';
 
 import app from 'server';
 import 'db/connect';
@@ -64,7 +65,7 @@ describe('Storage API', () => {
     const metadata = await defaultObjectMetadata();
 
     const rawArticles = await addArticles(3, 2);
-    dbArticleIds = rawArticles.slice(0, 3).map(({ _id }) => _id.toString());
+    dbArticleIds = mapIds(rawArticles.slice(0, 3));
 
     await addTopics(metadata);
 

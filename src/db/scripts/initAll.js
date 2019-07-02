@@ -14,6 +14,8 @@
 // * to populate remote db with golden data from Google Drive:
 //   npm run init-db -- '/home/user/secret.json' '${GOOGLE_DRIVE}/Wir/golden-data/'
 
+import fs from 'fs';
+import path from 'path';
 import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
@@ -21,9 +23,6 @@ import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
 import sample from 'lodash/sample';
 import sampleSize from 'lodash/sampleSize';
-import filter from 'lodash/filter';
-import fs from 'fs';
-import path from 'path';
 
 import connectDb from 'db';
 import { User } from 'api/user';
@@ -33,10 +32,14 @@ import { Diary } from 'api/specials';
 import { Tag } from 'api/tag';
 import { Topic } from 'api/topic';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
+
 import * as permissions from 'constants/permissions';
 import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
-import { TOPIC_SLUGS } from 'constants/topic';
+
 import { addTopics } from 'utils/testing';
+import { getId, mapIds, getTagsByTopic, getArticlesByTag } from 'utils/getters';
+
+const SIDEBAR_BLOCKS = ['themes', 'personalities', 'times', 'locations', 'brands', 'authors'];
 
 const defaultDataPath = `${__dirname}/../data/`;
 const dataFilenames = {
@@ -128,10 +131,7 @@ const initUsers = () =>
     })
   );
 
-const retrieveMetadataTestingUser = async () => {
-  const testingUser = await User.findOne({ email: 'admin@babajka.io' });
-  return testingUser;
-};
+const retrieveMetadataTestingUser = async () => User.findOne({ email: 'admin@babajka.io' });
 
 const initArticles = metadataTestingUser =>
   Promise.all(
@@ -175,134 +175,99 @@ const initArticles = metadataTestingUser =>
 const getArticlesDict = async () => {
   const articlesDict = {};
   const articles = await Article.find().populate('locales', ['slug']);
-  await articles.forEach(item => {
-    item.locales.forEach(localization => {
-      articlesDict[localization.slug] = item._id;
+  articles.forEach(item => {
+    item.locales.forEach(({ slug }) => {
+      articlesDict[slug] = item._id;
     });
   });
   return articlesDict;
 };
 
-const initArticleCollections = articlesDict => {
-  const createCollection = async collectionData => {
-    const subDict = pick(articlesDict, collectionData.articleSlugs);
-    const body = { ...collectionData, articles: Object.values(subDict) };
-    const collection = await new ArticleCollection(body).save();
-    await Promise.all(
-      Object.values(subDict).map(id =>
-        Article.findOneAndUpdate({ _id: id }, { collectionId: collection._id }).exec()
-      )
-    );
-  };
-
-  return Promise.all(initData.articleCollections.map(createCollection));
-};
+const initArticleCollections = articlesDict =>
+  Promise.all(
+    initData.articleCollections.map(async collectionData => {
+      const subDict = pick(articlesDict, collectionData.articleSlugs);
+      const body = { ...collectionData, articles: Object.values(subDict) };
+      const collection = await new ArticleCollection(body).save();
+      await Promise.all(
+        Object.values(subDict).map(_id =>
+          Article.findOneAndUpdate({ _id }, { collectionId: collection._id }).exec()
+        )
+      );
+    })
+  );
 
 const initDiaries = () =>
   Promise.all(initData.diaries.map(async diaryData => new Diary(diaryData).save()));
 
-const initMainPageState = metadataTestingUser =>
-  Article.find()
-    .then(async articles => {
-      const topicsBySlug = keyBy(await Topic.find().exec(), 'slug');
+const initMainPageState = async metadataTestingUser => {
+  const articles = await Article.find();
+  const topics = await Topic.find().exec();
+  const tags = await Tag.find().exec();
+  const tagsById = keyBy(tags, '_id');
+  const tagsBySlug = keyBy(tags, 'slug');
+  const tagsByTopic = getTagsByTopic({ tags, topics });
+  const articlesByTag = getArticlesByTag({ articles, tagsById });
 
-      const tags = await Tag.find().exec();
-      const tagsBySlugs = keyBy(tags, 'slug');
+  const state = {
+    blocks: [
+      { type: 'featured', articleId: null, frozen: false },
+      { type: 'diary' },
+      {
+        type: 'latestArticles',
+        articlesIds: [{ id: sample(articles), frozen: true }, { id: null, frozen: false }],
+      },
+      {
+        type: 'tagsByTopic',
+        topicSlug: 'personalities',
+        tagsIds: sampleSize(tagsByTopic.personalities, 3),
+        style: '1-2',
+      },
+      {
+        type: 'articlesByTag3',
+        tagId: tagsBySlug['xx-century']._id,
+        articlesIds: sampleSize(articlesByTag['xx-century'], 3),
+      },
+      {
+        type: 'articlesByTag2',
+        tagId: tagsBySlug.bowie._id,
+        articlesIds: sampleSize(articlesByTag.bowie, 2),
+      },
+      // to add "banner" block here.
+      {
+        type: 'tagsByTopic',
+        topicSlug: 'locations',
+        tagsIds: sampleSize(tagsByTopic.locations, 3),
+        style: '2-1',
+      },
+      {
+        type: 'articlesByBrand',
+        tagId: tagsBySlug.libra._id,
+        articlesIds: sampleSize(articlesByTag.libra, 2),
+      },
+    ],
+    data: {
+      articles: mapIds(articles),
+      tags: mapIds(tags),
+    },
+  };
 
-      const tagsByTopic = {};
-      TOPIC_SLUGS.forEach(topicSlug => {
-        tagsByTopic[topicSlug] = filter(tags, { topic: topicsBySlug[topicSlug]._id }).map(
-          ({ _id }) => _id
-        );
-      });
+  return StorageEntity.setValue(MAIN_PAGE_KEY, state, metadataTestingUser._id);
+};
 
-      const articlesByTag = {};
-      tags.forEach(tag => {
-        articlesByTag[tag.slug] = articles
-          .filter(art => art.tags.map(t => t.toString()).includes(tag._id.toString()))
-          .map(({ _id }) => _id);
-      });
+const initSidebarState = async metadataTestingUser => {
+  const tags = await Tag.find();
+  const topics = await Topic.find().exec();
+  const tagsByTopic = getTagsByTopic({ tags, topics });
 
-      return {
-        articles,
-        tags,
-        tagsBySlugs,
-        tagsByTopic,
-        articlesByTag,
-      };
-    })
-    .then(({ articles, tags, tagsByTopic, articlesByTag, tagsBySlugs }) => {
-      const state = {
-        blocks: [
-          { type: 'featured', articleId: null, frozen: false },
-          { type: 'diary' },
-          {
-            type: 'latestArticles',
-            articlesIds: [{ id: sample(articles), frozen: true }, { id: null, frozen: false }],
-          },
-          {
-            type: 'tagsByTopic',
-            topicSlug: 'personalities',
-            tagsIds: sampleSize(tagsByTopic.personalities, 3),
-            style: '1-2',
-          },
-          {
-            type: 'articlesByTag3',
-            tagId: tagsBySlugs['xx-century']._id,
-            articlesIds: sampleSize(articlesByTag['xx-century'], 3),
-          },
-          {
-            type: 'articlesByTag2',
-            tagId: tagsBySlugs.bowie._id,
-            articlesIds: sampleSize(articlesByTag.bowie, 2),
-          },
-          // to add "banner" block here.
-          {
-            type: 'tagsByTopic',
-            topicSlug: 'locations',
-            tagsIds: sampleSize(tagsByTopic.locations, 3),
-            style: '2-1',
-          },
-          {
-            type: 'articlesByBrand',
-            tagId: tagsBySlugs.libra._id,
-            articlesIds: sampleSize(articlesByTag.libra, 2),
-          },
-        ],
-        data: {
-          articles: articles.map(({ _id }) => _id),
-          tags: tags.map(({ _id }) => _id),
-        },
-      };
+  const blocks = SIDEBAR_BLOCKS.map(topic => ({
+    topic,
+    tags: tagsByTopic[topic],
+  }));
 
-      return StorageEntity.setValue(MAIN_PAGE_KEY, state, metadataTestingUser._id);
-    });
-
-const initSidebarState = metadataTestingUser =>
-  Tag.find()
-    .then(async tags => {
-      const topics = await Topic.find().exec();
-      const topicsBySlug = keyBy(topics, 'slug');
-
-      const blocks = ['themes', 'personalities', 'times', 'locations', 'brands', 'authors'].map(
-        topicSlug => ({
-          topic: topicSlug,
-          tags: tags
-            .filter(tag => tag.topic.toString() === topicsBySlug[topicSlug]._id.toString())
-            .map(tag => tag._id),
-        })
-      );
-
-      return {
-        blocks,
-        data: {
-          tags: tags.map(tag => tag._id),
-        },
-      };
-    })
-    .then(sidebarState =>
-      StorageEntity.setValue(SIDEBAR_KEY, sidebarState, metadataTestingUser._id)
-    );
+  const state = { blocks, data: { tags: mapIds(tags) } };
+  return StorageEntity.setValue(SIDEBAR_KEY, state, metadataTestingUser._id);
+};
 
 const initTags = async metadataTestingUser => {
   const commonMetadata = getInitObjectMetadata(metadataTestingUser);
@@ -315,22 +280,20 @@ const initTags = async metadataTestingUser => {
         metadata: commonMetadata,
       })
         .save()
-        .then(({ _id }) => _id)
+        .then(getId)
     )
   );
 
   // Randomly applying tags to articles.
-  const articles = await Article.find({}).then(data => data.map(({ _id }) => _id));
+  const articles = await Article.find({}).then(mapIds);
   await Promise.all(
-    articles.map(articleId =>
-      Article.findOneAndUpdate({ _id: articleId }, { tags: sampleSize(tags, 4) })
-    )
+    articles.map(_id => Article.findOneAndUpdate({ _id }, { tags: sampleSize(tags, 4) }))
   );
 
   return tags.length;
 };
 
-(async () => {
+const run = async () => {
   try {
     getData();
 
@@ -373,4 +336,6 @@ const initTags = async metadataTestingUser => {
     process.exit();
   }
   process.exit();
-})();
+};
+
+run();

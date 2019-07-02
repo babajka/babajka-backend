@@ -12,6 +12,7 @@ import omit from 'lodash/omit';
 import { checkPermissions } from 'api/user';
 import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
 import { ValidationError, colorValidator } from 'utils/validation';
+import { mapIds, getId } from 'utils/getters';
 import { ObjectMetadata } from 'api/helpers/metadata';
 
 const { Schema } = mongoose;
@@ -158,7 +159,7 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
     collectionNavigation.next = null;
 
     const { articles } = article.collectionId;
-    const idx = articles.map(a => a._id.toString()).indexOf(article._id.toString());
+    const idx = mapIds(articles).indexOf(getId(article));
 
     if (idx > 0) {
       const a = articles[idx - 1].toObject();
