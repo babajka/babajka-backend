@@ -91,7 +91,7 @@ describe('Tag model', () => {
       }));
 });
 
-describe('Tags API', () => {
+describe('Tags/Topics API', () => {
   let articleTwoTags;
   let articleOneTag;
 
@@ -209,5 +209,18 @@ describe('Tags API', () => {
       .expect(({ body }) => {
         expect(body).to.have.length(1);
         expect(body[0]._id).to.equal(articleTwoTags);
+      }));
+
+  it('should return articles by topic', () =>
+    request
+      .get('/api/topics/articles/locations')
+      .expect(HttpStatus.OK)
+      .expect(({ body: { articles, articlesByTag, tags, topic } }) => {
+        expect(topic.slug).to.equal('locations');
+        expect(articles).to.have.length(2);
+        expect(tags).to.have.length(1);
+        expect(tags[0].slug).to.equal('miensk');
+        expect(Object.keys(articlesByTag)).to.eql(['miensk']);
+        expect(articlesByTag.miensk).to.eql(mapIds(articles));
       }));
 });

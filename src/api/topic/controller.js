@@ -29,7 +29,7 @@ export const getArticles = async ({ params: { topic: slug }, user }, res, next) 
       sort: { publishAt: 'desc' },
     });
     checkIsFound(articles);
-    const articlesByTag = getArticlesByTag({ articles });
+    const articlesByTag = getArticlesByTag({ articles, tags, tagBy: '_id' });
     return sendJson(res)({ tags, topic, articles, articlesByTag });
   } catch (err) {
     return next(err);

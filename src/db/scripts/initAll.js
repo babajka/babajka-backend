@@ -204,10 +204,9 @@ const initMainPageState = async metadataTestingUser => {
   const articles = await Article.find();
   const topics = await Topic.find().exec();
   const tags = await Tag.find().exec();
-  const tagsById = keyBy(tags, '_id');
   const tagsBySlug = keyBy(tags, 'slug');
   const tagsByTopic = getTagsByTopic({ tags, topics });
-  const articlesByTag = getArticlesByTag({ articles, tagsById });
+  const articlesByTag = getArticlesByTag({ articles, tags });
 
   const state = {
     blocks: [
