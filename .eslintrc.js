@@ -21,8 +21,12 @@ module.exports = {
     'mocha/no-skipped-tests': 'error',
     'mocha/no-synchronous-tests': 'error',
     'mocha/no-top-level-hooks': 'error',
-    'mocha/valid-suite-description': ['warn', '^[A-Z#]'],
-    'mocha/valid-test-description': 'warn',
+    'mocha/valid-suite-description': ['warn', /^[A-Z#]/],
+    // valid cases:
+    // it('should bla')
+    // it('[prefix] should boo')
+    // prettier-ignore
+    'mocha/valid-test-description': ['warn', /^(\[.+\] )?should/],
 
     // we use named export in utils
     'import/prefer-default-export': 'off',
