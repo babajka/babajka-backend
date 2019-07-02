@@ -5,6 +5,8 @@ import { Topic } from 'api/topic';
 import { Tag } from 'api/tag';
 import { Article, queryUnpublished } from 'api/article';
 
+import { mapIds, getArticlesByTag } from 'utils/getters';
+
 export const getArticles = async ({ params: { topic: slug }, user }, res, next) => {
   try {
     const topic = await Topic.findOne({ slug });
@@ -13,14 +15,13 @@ export const getArticles = async ({ params: { topic: slug }, user }, res, next) 
     const tags = await Tag.find({ topic: topic._id });
     checkIsFound(tags);
 
-    const tagsIds = tags.map(({ _id }) => _id.toString());
     const articles = await Article.customQuery({
       query: {
         $and: [
           {
             active: true,
             locales: { $exists: true },
-            tags: { $in: tagsIds },
+            tags: { $in: mapIds(tags) },
           },
           queryUnpublished(user),
         ],
@@ -28,13 +29,7 @@ export const getArticles = async ({ params: { topic: slug }, user }, res, next) 
       sort: { publishAt: 'desc' },
     });
     checkIsFound(articles);
-    const articlesByTag = articles.reduce((acc, cur) => {
-      cur.tags.filter(({ _id }) => tagsIds.includes(_id.toString())).forEach(({ _id }) => {
-        acc[_id] = acc[_id] || [];
-        acc[_id].push(cur._id);
-      });
-      return acc;
-    }, {});
+    const articlesByTag = getArticlesByTag({ articles });
     return sendJson(res)({ tags, topic, articles, articlesByTag });
   } catch (err) {
     return next(err);
