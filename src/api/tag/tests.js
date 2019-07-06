@@ -103,10 +103,7 @@ describe('Tags/Topics API', () => {
     const defaultMetadata = await defaultObjectMetadata();
 
     const topics = keyBy(await addTopics(defaultMetadata), 'slug');
-
-    const tags = {};
-
-    await Promise.all(
+    const tags = await Promise.all(
       [
         {
           topic: topics.locations._id,
@@ -120,21 +117,19 @@ describe('Tags/Topics API', () => {
           content: { title: { be: 'ХХ стагоддзе', en: 'XX century' } },
           metadata: defaultMetadata,
         },
-      ].map(data =>
-        Tag(data)
-          .save()
-          .then(({ _id, slug }) => {
-            tags[slug] = _id;
-          })
-      )
+      ].map(data => Tag(data).save())
     );
+    const tagsIds = tags.reduce((acc, { _id, slug }) => {
+      acc[slug] = _id;
+      return acc;
+    }, {});
 
     articleTwoTags = await Article({
       type: 'text',
       images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
       publishAt: new Date('2018-01-21T16:25:43.511Z'),
-      tags: [tags.miensk, tags['xx-century']],
+      tags: [tagsIds.miensk, tagsIds['xx-century']],
     })
       .save()
       .then(getId);
@@ -144,7 +139,7 @@ describe('Tags/Topics API', () => {
       images: TEST_DATA.articleImages.text,
       metadata: defaultMetadata,
       publishAt: new Date('2018-01-22T16:25:43.511Z'),
-      tags: [tags.miensk],
+      tags: [tagsIds.miensk],
     })
       .save()
       .then(getId);
@@ -197,18 +192,19 @@ describe('Tags/Topics API', () => {
     request
       .get('/api/tags/articles/miensk')
       .expect(HttpStatus.OK)
-      .expect(({ body }) => {
-        expect(body).to.have.length(2);
-        expect(mapIds(body)).to.deep.equal([articleOneTag, articleTwoTags]);
+      .expect(({ body: { articles, tag } }) => {
+        expect(tag.slug).to.equal('miensk');
+        expect(articles).to.have.length(2);
+        expect(mapIds(articles)).to.deep.equal([articleOneTag, articleTwoTags]);
       }));
 
   it('should return one article by tag', () =>
     request
       .get('/api/tags/articles/xx-century')
       .expect(HttpStatus.OK)
-      .expect(({ body }) => {
-        expect(body).to.have.length(1);
-        expect(body[0]._id).to.equal(articleTwoTags);
+      .expect(({ body: { articles } }) => {
+        expect(articles).to.have.length(1);
+        expect(articles[0]._id).to.equal(articleTwoTags);
       }));
 
   it('should return articles by topic', () =>
