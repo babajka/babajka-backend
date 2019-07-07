@@ -11,6 +11,28 @@
     }
   },
   {
+    "topicSlug": "locations",
+    "slug": "minsk",
+    "content": {
+      "title": {
+        "be": "Менск",
+        "en": "Minsk"
+      },
+      "image": "random-url"
+    }
+  },
+  {
+    "topicSlug": "locations",
+    "slug": "palessie",
+    "content": {
+      "title": {
+        "be": "Палессе",
+        "en": "Palessie"
+      },
+      "image": "random-url"
+    }
+  },
+  {
     "topicSlug": "times",
     "slug": "xx-century",
     "content": {
@@ -37,6 +59,42 @@
       "name": {
         "be": "Дэвід Боўі",
         "en": "David Bowie"
+      },
+      "dates": {
+        "be": "1947 - 2016"
+      },
+      "image": "random-url",
+      "color": "1234ab",
+      "description": {
+        "be": "Брытанскі рок-музыка, аўтар песень, прадзюсар, гукарэжысёр, мастак і акцёр"
+      }
+    }
+  },
+  {
+    "topicSlug": "personalities",
+    "slug": "bowie2",
+    "content": {
+      "name": {
+        "be": "Дэвід Боўі 2",
+        "en": "David Bowie 2"
+      },
+      "dates": {
+        "be": "1947 - 2016"
+      },
+      "image": "random-url",
+      "color": "1234ab",
+      "description": {
+        "be": "Брытанскі рок-музыка, аўтар песень, прадзюсар, гукарэжысёр, мастак і акцёр"
+      }
+    }
+  },
+  {
+    "topicSlug": "personalities",
+    "slug": "bowie3",
+    "content": {
+      "name": {
+        "be": "Дэвід Боўі 3",
+        "en": "David Bowie 3"
       },
       "dates": {
         "be": "1947 - 2016"

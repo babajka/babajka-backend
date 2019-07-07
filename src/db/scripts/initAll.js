@@ -208,13 +208,21 @@ const initMainPageState = async metadataTestingUser => {
   const tagsByTopic = getTagsByTopic({ tags, topics });
   const articlesByTag = getArticlesByTag({ articles, tags });
 
+  if (tagsByTopic.personalities.length < 3) {
+    throw new Error(`Not enoght personalities tags ${tagsByTopic.personalities.length}/3!`);
+  }
+
+  if (tagsByTopic.locations.length < 3) {
+    throw new Error(`Not enoght locations tags ${tagsByTopic.locations.length}/3!`);
+  }
+
   const state = {
     blocks: [
       { type: 'featured', articleId: null, frozen: false },
       { type: 'diary' },
       {
         type: 'latestArticles',
-        articlesIds: [{ id: sample(articles), frozen: true }, { id: null, frozen: false }],
+        articlesIds: [{ id: getId(sample(articles)), frozen: true }, { id: null, frozen: false }],
       },
       {
         type: 'tagsByTopic',
