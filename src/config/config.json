@@ -40,6 +40,10 @@
     "mailchimp": {
       "apiKey": "MUST BE SET IN BABAJKA SECRET CONFIG",
       "listId": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    },
+    "fibery": {
+      "host": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "token": "MUST BE SET IN BABAJKA SECRET CONFIG"
     }
   }
 }

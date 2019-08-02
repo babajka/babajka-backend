@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
 import userRoutes from 'api/user';
-import articleRoutes from 'api/article';
+// FIXME
+import articleRoutes from 'api/article/new-index';
 import coreRoutes from 'api/core';
 import mailRoutes from 'api/mail';
 import specialsRoutes from 'api/specials';

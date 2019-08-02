@@ -12,6 +12,7 @@ module.exports = {
         'config',
         'core',
         'db',
+        'fibery',
         'mail',
         'postman',
         'specials',
