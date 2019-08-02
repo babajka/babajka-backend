@@ -35,6 +35,8 @@ module.exports = {
     'no-console': ['error', { allow: ['warn', 'error'] }],
     // `_id` comes from Mongo
     'no-underscore-dangle': ['error', { allow: ['_id', '_doc'] }],
+    // we use '_' placeholder, for example in array desctruction:  [_, second] = arr
+    'no-unused-vars': ['error', { varsIgnorePattern: '^_+', argsIgnorePattern: '^_+' }],
 
     'func-names': 'off',
   },
