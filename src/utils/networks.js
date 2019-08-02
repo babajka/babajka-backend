@@ -6,14 +6,13 @@ export const VIDEO_PLATFORMS = {
   youtube: id => /^[a-zA-Z0-9_-]{11}$/.test(id),
 };
 
-export const VIDEO_PLATFORMS_LIST = Object.keys(VIDEO_PLATFORMS);
-
-const YOUTUBE_VIDEO_URL = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
+const YOUTUBE_URL_REGEX = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
 
 export const parseVideoUrl = videoUrl => {
-  const youtubeMatch = YOUTUBE_VIDEO_URL.exec(videoUrl);
-  if (youtubeMatch) {
-    return { platform: 'youtube', videoId: youtubeMatch[1], videoUrl };
+  const match = YOUTUBE_URL_REGEX.exec(videoUrl);
+  if (!match) {
+    throw new ValidationError('errors.badVideoUrl');
   }
-  throw new ValidationError('errors.badVideoUrl');
+  const [_, videoId] = match;
+  return { platform: 'youtube', videoId, videoUrl };
 };

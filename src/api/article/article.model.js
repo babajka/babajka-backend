@@ -8,7 +8,7 @@ import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
-import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
+import { VIDEO_PLATFORMS } from 'utils/networks';
 import { ValidationError } from 'utils/validation';
 import { mapIds, getId } from 'utils/getters';
 import Joi, { joiToMongoose } from 'utils/joi';
@@ -71,10 +71,12 @@ ArticleSchema.pre('validate', function(next) {
         next(new ValidationError(`Missing ${path} field for Video Article type`));
       }
     });
-    if (!VIDEO_PLATFORMS_LIST.includes(this.video.platform)) {
+    const { platform, videoId } = this.video;
+    const validateId = VIDEO_PLATFORMS[platform];
+    if (!validateId) {
       next(new ValidationError('video platform is not supported'));
     }
-    if (!VIDEO_PLATFORMS[this.video.platform](this.video.videoId)) {
+    if (!validateId(videoId)) {
       next(new ValidationError('bad videoId for selected platform'));
     }
   }
@@ -99,66 +101,50 @@ const IMAGES_SCHEMA = {
 ArticleSchema.pre('validate', function(next) {
   const { error } = Joi.validate(this.images, IMAGES_SCHEMA[this.type].required());
   if (error !== null) {
-    const errors = {};
-    error.details.forEach(({ path, type }) => {
-      set(errors, ['images', ...path], type);
-    });
+    const errors = error.details.reduce((acc, { path, type }) => {
+      set(acc, ['images', ...path], type);
+      return acc;
+    }, {});
 
     next(new ValidationError(errors));
   }
   next();
 });
 
+const formatArticle = article =>
+  article
+    ? {
+        ...omit(article.toObject(), [
+          '__v',
+          'collectionId',
+          'video._id',
+          'metadata._id',
+          'metadata.createdBy._id',
+          'metadata.createdBy.displayName',
+          'metadata.updatedBy._id',
+          'metadata.updatedBy.displayName',
+        ]),
+        locales: keyBy(article.locales, 'locale'),
+      }
+    : null;
+
 // includeCollection flag here is to be able to avoid including collections
-// in case we're serializing an article into the ArticleCollection object..
+// in case we're serializing an article into the ArticleCollection object.
 export const serializeArticle = (article, { includeCollection = true } = {}) => {
-  const collectionNavigation = {};
+  const result = formatArticle(article);
 
-  if (includeCollection && article.collectionId) {
-    collectionNavigation.prev = null;
-    collectionNavigation.next = null;
-
-    const { articles } = article.collectionId;
-    const idx = mapIds(articles).indexOf(getId(article));
-
-    if (idx > 0) {
-      const a = articles[idx - 1].toObject();
-      collectionNavigation.prev = {
-        ...omit(a, ['locales']),
-        locales: keyBy(a.locales, 'locale'),
-      };
-    }
-
-    if (idx !== articles.length - 1) {
-      const a = articles[idx + 1].toObject();
-      collectionNavigation.next = {
-        ...omit(a, ['locales']),
-        locales: keyBy(a.locales, 'locale'),
-      };
-    }
+  if (!includeCollection || !article.collectionId) {
+    return result;
   }
 
-  const result = {
-    ...omit(article.toObject(), [
-      '__v',
-      'collectionId',
-      'video._id',
-      'metadata._id',
-      'metadata.createdBy._id',
-      'metadata.createdBy.displayName',
-      'metadata.updatedBy._id',
-      'metadata.updatedBy.displayName',
-    ]),
-    locales: keyBy(article.locales, 'locale'),
+  const { articles } = article.collectionId;
+  const articleIndex = mapIds(articles).indexOf(getId(article));
+  result.collection = {
+    ...omit(article.collectionId.toObject(), ['articles']),
+    prev: formatArticle(articles[articleIndex - 1]),
+    next: formatArticle(articles[articleIndex + 1]),
+    articleIndex,
   };
-
-  if (includeCollection) {
-    result.collection = article.collectionId && {
-      ...omit(article.collectionId.toObject(), ['articles']),
-      ...collectionNavigation,
-    };
-  }
-
   return result;
 };
 
