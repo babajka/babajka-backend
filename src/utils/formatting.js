@@ -4,3 +4,5 @@ export const joinNames = (firstName, lastName) => {
   const postfix = lastName ? ` ${lastName}` : '';
   return `${firstName}${postfix}`;
 };
+
+export const lowerFirst = key => `${key[0].toLowerCase()}${key.slice(1)}`;
