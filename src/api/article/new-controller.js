@@ -1,7 +1,7 @@
 import { checkIsFound, isValidId } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import { getArticleData } from 'services/fibery';
+import fibery from 'services/fibery';
 
 import Article, { checkIsPublished, DEFAULT_ARTICLE_QUERY } from './article.model';
 import LocalizedArticle from './localized/model';
@@ -45,7 +45,7 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
 export const fiberyImport = async ({ body }, res, next) => {
   try {
     const { url } = body;
-    const data = await getArticleData(url);
+    const data = await fibery.getArticleData(url);
 
     /* some magic */
 

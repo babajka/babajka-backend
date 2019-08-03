@@ -11,6 +11,7 @@ export const TAG_CONTENT_SCHEMA = {
   }),
   personalities: Joi.object({
     name: Joi.localizedText().required(),
+    // TODO: rename to `subtitle`
     dates: Joi.localizedText().required(),
     image: Joi.string().required(),
     color: Joi.color().required(),
@@ -34,5 +35,4 @@ export const TAG_CONTENT_SCHEMA = {
 };
 
 // This is a complete list of all topics we support.
-// This must be synced with 'topic' tab of our i18n spreadsheet.
 export const TOPIC_SLUGS = Object.keys(TAG_CONTENT_SCHEMA);
