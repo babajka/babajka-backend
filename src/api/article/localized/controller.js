@@ -35,7 +35,7 @@ export const create = async ({ params: { articleId }, user, body }, res, next) =
 };
 
 export const update = ({ params: { slug }, user, body }, res, next) =>
-  LocalizedArticle.findOneAndUpdate({ slug }, mergeWithUpdateMetadata(body, user._id), {
+  LocalizedArticle.findOneAndUpdate({ slug }, mergeWithUpdateMetadata(body, user), {
     new: true,
   })
     .then(checkIsFound)

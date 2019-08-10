@@ -149,7 +149,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
               locale,
               articleId,
             },
-            mergeWithUpdateMetadata(localeData, user._id),
+            mergeWithUpdateMetadata(localeData, user),
             { new: true }
           )
             // unless found, create a new one.
@@ -174,7 +174,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
       localesToUpdate.map(_id =>
         LocalizedArticle.findOneAndUpdate(
           { _id },
-          mergeWithUpdateMetadata({ active: false }, user._id)
+          mergeWithUpdateMetadata({ active: false }, user)
         ).catch(next)
       )
     );
@@ -207,7 +207,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
 export const remove = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
     .then(articleId =>
-      Article.updateOne({ _id: articleId }, mergeWithUpdateMetadata({ active: false }, user._id))
+      Article.updateOne({ _id: articleId }, mergeWithUpdateMetadata({ active: false }, user))
     )
     .then(() => res.sendStatus(HttpStatus.OK))
     .catch(next);

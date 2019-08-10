@@ -1,48 +1,36 @@
 import mongoose from 'mongoose';
 
-const { Schema } = mongoose;
+import { Joi, joiToMongoose, joiSchemas } from 'validation';
+
+export const joiMetadataSchema = Joi.object({
+  createdAt: Joi.date().required(),
+  updatedAt: Joi.date().required(),
+  createdBy: joiSchemas.userRef.required(),
+  updatedBy: joiSchemas.userRef.required(),
+});
 
 // ObjectMetadataSchema model is a general-purpose object to be used across the project.
-const ObjectMetadataSchema = new Schema({
-  createdAt: {
-    type: Date,
-    required: true,
-  },
-  createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  updatedAt: {
-    type: Date,
-    required: true,
-  },
-  updatedBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-});
+const ObjectMetadataSchema = joiToMongoose(joiMetadataSchema);
 
 export const ObjectMetadata = mongoose.model('ObjectMetadata', ObjectMetadataSchema);
 
-export const getInitObjectMetadata = userId => ({
+export const getInitObjectMetadata = ({ _id }) => ({
   createdAt: Date.now(),
-  createdBy: userId,
+  createdBy: _id,
   updatedAt: Date.now(),
-  updatedBy: userId,
+  updatedBy: _id,
 });
 
-export const updateObjectMetadata = (oldMetadata, userId) => ({
+export const updateObjectMetadata = (oldMetadata, { _id }) => ({
   ...oldMetadata,
   updatedAt: Date.now(),
-  updatedBy: userId,
+  updatedBy: _id,
 });
 
-export const mergeWithUpdateMetadata = (data, userId) => ({
+export const mergeWithUpdateMetadata = (data, { _id }) => ({
   $set: {
     ...data,
-    'metadata.updatedBy': userId,
+    'metadata.updatedBy': _id,
     'metadata.updatedAt': Date.now(),
   },
 });

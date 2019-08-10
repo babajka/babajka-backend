@@ -1,36 +1,25 @@
 import mongoose from 'mongoose';
 import set from 'lodash/set';
 
-import Joi from 'joi';
-
-import { ObjectMetadata } from 'api/helpers/metadata';
+import { joiMetadataSchema } from 'api/helpers/metadata';
 import { Topic } from 'api/topic';
 import { TAG_CONTENT_SCHEMA } from 'constants/topic';
 import { ValidationError } from 'utils/validation';
+import { Joi, joiToMongoose } from 'validation';
 
-const { Schema } = mongoose;
-
-const TagSchema = new Schema({
-  topic: {
-    type: Schema.Types.ObjectId,
-    ref: 'Topic',
-    required: true,
-  },
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  content: {
-    // Content depends on which Topic this Tag belongs to.
-    type: Schema.Types.Mixed,
-    required: true,
-  },
-  metadata: {
-    type: ObjectMetadata.schema,
-    required: true,
-  },
+const joiTagSchema = Joi.object({
+  topic: Joi.string()
+    .meta({ type: 'ObjectId', ref: 'Topic' })
+    .required(),
+  slug: Joi.string()
+    .required()
+    .meta({ unique: true }),
+  // content depends on which `Topic` this `Tag` belongs to.
+  content: Joi.object().required(),
+  metadata: joiMetadataSchema.required(),
 });
+
+const TagSchema = joiToMongoose(joiTagSchema);
 
 TagSchema.pre('validate', async function(next) {
   const topic = await Topic.findOne({ _id: this.topic });

@@ -1,41 +1,31 @@
 import mongoose from 'mongoose';
 
 import {
-  ObjectMetadata,
+  joiMetadataSchema,
   getInitObjectMetadata,
   mergeWithUpdateMetadata,
 } from 'api/helpers/metadata';
+import { Joi, joiToMongoose } from 'validation';
 
-const { Schema } = mongoose;
-
-const StorageEntitySchema = new Schema({
-  key: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  document: {
-    type: Schema.Types.Mixed,
-    required: true,
-  },
-  accessPolicy: {
-    type: String,
-    enum: ['public'],
-    default: 'public',
-    required: true,
-  },
-  metadata: {
-    type: ObjectMetadata.schema,
-    required: true,
-  },
+const joiStorageEntitySchema = Joi.object({
+  key: Joi.string()
+    .required()
+    .meta({ unique: true }),
+  document: Joi.object().required(),
+  accessPolicy: Joi.string()
+    .valid('public')
+    .default('public'),
+  metadata: joiMetadataSchema.required(),
 });
+
+const StorageEntitySchema = joiToMongoose(joiStorageEntitySchema);
 
 StorageEntitySchema.statics.getValue = function(key) {
   return this.findOne({ key });
 };
 
-StorageEntitySchema.statics.setValue = function(key, value, userId) {
-  return this.findOneAndUpdate({ key }, mergeWithUpdateMetadata({ document: value }, userId), {
+StorageEntitySchema.statics.setValue = function(key, value, _id) {
+  return this.findOneAndUpdate({ key }, mergeWithUpdateMetadata({ document: value }, { _id }), {
     new: true,
   }).then(
     entity =>
@@ -43,7 +33,7 @@ StorageEntitySchema.statics.setValue = function(key, value, userId) {
       this({
         key,
         document: value,
-        metadata: getInitObjectMetadata(userId),
+        metadata: getInitObjectMetadata({ _id }),
       }).save()
   );
 };

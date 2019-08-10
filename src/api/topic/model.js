@@ -1,22 +1,18 @@
 import mongoose from 'mongoose';
 
-import { ObjectMetadata } from 'api/helpers/metadata';
+import { joiMetadataSchema } from 'api/helpers/metadata';
+import { Joi, joiToMongoose } from 'validation';
 import { TOPIC_SLUGS } from 'constants/topic';
 
-const { Schema } = mongoose;
-
-const TopicSchema = new Schema({
-  slug: {
-    type: String,
-    required: true,
-    unique: true,
-    enum: TOPIC_SLUGS,
-  },
-  metadata: {
-    type: ObjectMetadata.schema,
-    required: true,
-  },
+const joiTopicSchema = Joi.object({
+  slug: Joi.string()
+    .valid(TOPIC_SLUGS)
+    .required()
+    .meta({ unique: true }),
+  metadata: joiMetadataSchema.required(),
 });
+
+const TopicSchema = joiToMongoose(joiTopicSchema);
 
 TopicSchema.statics.getAll = function() {
   return this.find().select('slug');

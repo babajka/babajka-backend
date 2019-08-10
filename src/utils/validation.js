@@ -6,7 +6,7 @@ import set from 'lodash/set';
 import mongoose from 'mongoose';
 import Joi from 'joi';
 
-import { MAIN_PAGE_DATA_SCHEMA, SIDEBAR_DATA_SCHEMA } from 'constants/storage';
+import { joiMainPageDataSchema, joiSidebarDataSchema } from 'constants/storage';
 
 export function ValidationError(message) {
   return HttpError(HttpStatus.BAD_REQUEST, message);
@@ -79,14 +79,14 @@ const updateArticleValidator = ({ body }, res, next) => {
 };
 
 export const checkMainPageEntitiesFormat = data =>
-  Joi.validate(data, MAIN_PAGE_DATA_SCHEMA).error === null;
+  Joi.validate(data, joiMainPageDataSchema).error === null;
 
 const setMainPageValidator = ({ body }, res, next) => {
   const valid = checkMainPageEntitiesFormat(body.data);
   return next(!valid && new ValidationError({ mainPageEntities: 'not valid' }));
 };
 
-const checkSidebarEntitiesFormat = data => Joi.validate(data, SIDEBAR_DATA_SCHEMA).error === null;
+const checkSidebarEntitiesFormat = data => Joi.validate(data, joiSidebarDataSchema).error === null;
 
 const setSidebarValidator = ({ body }, res, next) => {
   const valid = checkSidebarEntitiesFormat(body.data);
@@ -173,6 +173,7 @@ export const permissionsObjectValidator = {
   message: 'errors.badPermissions',
 };
 
+// TODO: replace with `joiSchemas.color`
 export const colorValidator = {
   validator: v => /^[0-9a-fA-F]{6}$/.test(v),
   message: 'errors.failedMatchRegex',
