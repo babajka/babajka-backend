@@ -1,43 +1,36 @@
-import Joi from 'joi';
+import { Joi, joiSchemas } from 'validation';
 
-const LOCALIZED_TEXT_SCHEMA_BE_REQUIRED = Joi.object().keys({
-  be: Joi.string().required(),
-  en: Joi.string(),
-  ru: Joi.string(),
-});
-
-// Tag Content Schemas must be consistent with the data in our Google Spreadsheet.
 export const TAG_CONTENT_SCHEMA = {
-  locations: Joi.object().keys({
-    title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+  locations: Joi.object({
+    title: joiSchemas.localizedText.required(),
     image: Joi.string().required(),
   }),
-  themes: Joi.object().keys({
-    title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+  themes: Joi.object({
+    title: joiSchemas.localizedText.required(),
   }),
-  personalities: Joi.object().keys({
-    name: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
-    dates: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+  personalities: Joi.object({
+    name: joiSchemas.localizedText.required(),
+    dates: joiSchemas.localizedText.required(),
     image: Joi.string().required(),
     color: Joi.string()
       .regex(/^[0-9a-fA-F]{6}$/)
       .required(),
-    description: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
+    description: joiSchemas.localizedText.required(),
   }),
-  times: Joi.object().keys({
-    title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED,
+  times: Joi.object({
+    title: joiSchemas.localizedText,
   }),
-  brands: Joi.object().keys({
-    title: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
-    image: Joi.string().required(),
+  brands: Joi.object({
+    title: joiSchemas.localizedText.required(),
     // TODO: to improve images validation.
-  }),
-  authors: Joi.object().keys({
-    firstName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
-    lastName: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
-    bio: LOCALIZED_TEXT_SCHEMA_BE_REQUIRED.required(),
     image: Joi.string().required(),
+  }),
+  authors: Joi.object({
+    firstName: joiSchemas.localizedText.required(),
+    lastName: joiSchemas.localizedText.required(),
+    bio: joiSchemas.localizedText.required(),
     // TODO: to improve images validation.
+    image: Joi.string().required(),
   }),
 };
 

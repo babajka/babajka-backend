@@ -40,6 +40,7 @@
     "http-status-codes": "^1.3.0",
     "joi": "^14.3.1",
     "joi-objectid": "^2.0.0",
+    "joigoose": "^4.0.8",
     "lodash": "^4.17.15",
     "mailchimp-api-v3": "^1.12.1",
     "md5": "^2.2.1",
