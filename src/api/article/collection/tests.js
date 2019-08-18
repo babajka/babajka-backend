@@ -18,6 +18,9 @@ import ArticleCollection from './model';
 
 const request = supertest.agent(app.listen());
 
+const NEW_IMAGE_URL = 'https://new-image-url.jpg';
+const NEW_IMAGE_URL2 = 'https://new-image-url2.jpg';
+
 describe('Collections API', () => {
   let sessionCookie;
 
@@ -120,7 +123,7 @@ describe('Collections API', () => {
           type: 'text',
           images: {
             ...TEST_DATA.articleImages.text,
-            vertical: 'ololo',
+            vertical: NEW_IMAGE_URL,
           },
           publishAt: Date.now(),
           collectionSlug: 'collection-6',
@@ -135,7 +138,7 @@ describe('Collections API', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body: { images, locales } }) => {
-          expect(images.vertical).equals('ololo');
+          expect(images.vertical).equals(NEW_IMAGE_URL);
           expect(locales.be.slug).equals('slug-new1-be');
         }));
 
@@ -147,7 +150,7 @@ describe('Collections API', () => {
           type: 'text',
           images: {
             ...TEST_DATA.articleImages.text,
-            vertical: 'ololo2',
+            vertical: NEW_IMAGE_URL2,
           },
           publishAt: new Date('2025-01-01T18:25:43.511Z'),
           collectionSlug: 'collection-6',
@@ -162,7 +165,7 @@ describe('Collections API', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body: { images, locales } }) => {
-          expect(images.vertical).equals('ololo2');
+          expect(images.vertical).equals(NEW_IMAGE_URL2);
           expect(locales.be.slug).equals('slug-new2-be');
         }));
 
@@ -174,8 +177,8 @@ describe('Collections API', () => {
         .expect(({ body }) => {
           expect(body.slug).equals('collection-6');
           expect(body.articles).has.length(2);
-          expect(body.articles[0].images.vertical).equals('ololo');
-          expect(body.articles[1].images.vertical).equals('ololo2');
+          expect(body.articles[0].images.vertical).equals(NEW_IMAGE_URL);
+          expect(body.articles[1].images.vertical).equals(NEW_IMAGE_URL2);
         }));
 
     it('should return only article in the collection when querying without permissions', () =>
@@ -185,7 +188,7 @@ describe('Collections API', () => {
         .expect(({ body }) => {
           expect(body.slug).equals('collection-6');
           expect(body.articles).has.length(1);
-          expect(body.articles[0].images.vertical).equals('ololo');
+          expect(body.articles[0].images.vertical).equals(NEW_IMAGE_URL);
         }));
 
     it('should return collection.next when querying with permissions', () =>

@@ -19,10 +19,11 @@ import 'db/connect';
 
 const request = supertest.agent(app.listen());
 
-const validYoutubeID = 'ABCABCABCAB';
-const validYoutubeLink = `https://www.youtube.com/watch?v=${validYoutubeID}`;
+const validYoutubeID = TEST_DATA.youtubeId;
+const validYoutubeLink = TEST_DATA.youtubeLink;
 const badYoutubeLink = 'https://www.youtube.com/watch?v=BAD-ID';
 const validVimeoLink = 'https://vimeo.com/197700533';
+const NEW_IMAGE_URL = 'https://new-image-url.jpg';
 
 describe('Articles API', () => {
   let dbArticles;
@@ -196,7 +197,7 @@ describe('Articles API', () => {
         .send({
           images: {
             ...TEST_DATA.articleImages.text,
-            page: 'new-image-url',
+            page: NEW_IMAGE_URL,
           },
           locales: { en: {} }, // This is for server to keep the locale.
         })
@@ -204,7 +205,7 @@ describe('Articles API', () => {
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
           articleId = body._id;
-          expect(body.images.page).to.equal('new-image-url');
+          expect(body.images.page).to.equal(NEW_IMAGE_URL);
           expect(body.active).to.equal(true);
           expect(body.locales.en.title).to.equal('title-new');
         }));
@@ -218,7 +219,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
-          expect(body.images.page).equal('new-image-url');
+          expect(body.images.page).equal(NEW_IMAGE_URL);
           expect(body.locales.en.slug).to.equal('article-new');
         }));
 
@@ -241,7 +242,7 @@ describe('Articles API', () => {
         .set('Cookie', sessionCookie)
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
-          expect(body.images.page).to.equal('new-image-url');
+          expect(body.images.page).to.equal(NEW_IMAGE_URL);
           expect(body.active).to.equal(true);
         }));
 
@@ -580,7 +581,7 @@ describe('Articles Bundled API', () => {
       .expect(({ body }) => {
         expect(body.type).to.equal('text');
         expect(body.video).to.be.undefined();
-        expect(Date.parse(body.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
+        expect(body.metadata.updatedAt).to.be.above(defaultMetadata.updatedAt);
       }));
 
   // TODO(uladbohdan): to find a way to test duplication of slugs. The problem
@@ -593,7 +594,7 @@ describe('Articles Bundled API', () => {
       .send({
         images: {
           ...TEST_DATA.articleImages.text,
-          horizontal: 'new-image-url',
+          horizontal: NEW_IMAGE_URL,
         },
         color: '123456',
         locales: {
@@ -605,7 +606,7 @@ describe('Articles Bundled API', () => {
       })
       .expect(HttpStatus.OK)
       .expect(({ body: { images, locales, color } }) => {
-        expect(images.horizontal).to.equal('new-image-url');
+        expect(images.horizontal).to.equal(NEW_IMAGE_URL);
         expect(Object.keys(locales)).has.length(1);
         expect(locales.be.title).to.equal('new-be-title');
         expect(locales.be.subtitle).to.equal('new-be-subtitle');
@@ -617,7 +618,7 @@ describe('Articles Bundled API', () => {
       .get(`/api/articles/${articleId}`)
       .expect(HttpStatus.OK)
       .expect(({ body: { images, locales, color } }) => {
-        expect(images.horizontal).to.equal('new-image-url');
+        expect(images.horizontal).to.equal(NEW_IMAGE_URL);
         expect(Object.keys(locales)).has.length(1);
         expect(locales.be.title).to.equal('new-be-title');
         expect(color).to.equal('123456');
@@ -651,7 +652,7 @@ describe('Articles Bundled API', () => {
       .get(`/api/articles/${articleId}`)
       .expect(HttpStatus.OK)
       .expect(({ body: { images, locales } }) => {
-        expect(images.horizontal).to.equal('new-image-url');
+        expect(images.horizontal).to.equal(NEW_IMAGE_URL);
         expect(Object.keys(locales)).has.length(2);
         expect(locales.be.title).to.equal('new-be-title');
         expect(locales.en.title).to.equal('en-title');
@@ -706,7 +707,7 @@ describe('Articles Bundled API', () => {
         expect(locales.en.slug).to.equal('new-en-slug');
 
         // Below are the tests for object metadata.
-        expect(Date.parse(metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
+        expect(metadata.updatedAt).to.be.above(defaultMetadata.updatedAt);
         expect(Date.parse(locales.en.metadata.updatedAt)).to.be.above(defaultMetadata.updatedAt);
         expect(locales.en.metadata.updatedBy.email).to.contain('@babajka');
       }));
