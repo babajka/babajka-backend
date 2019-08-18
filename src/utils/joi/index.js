@@ -7,13 +7,9 @@ import color from './color';
 import userRef from './userRef';
 import localizedText from './localizedText';
 import colloquialDateHash from './colloquialDateHash';
+import metadata from './metadata';
 
-const Joi = baseJoi
-  .extend(objectid)
-  .extend(color)
-  .extend(userRef)
-  .extend(localizedText)
-  .extend(colloquialDateHash);
+const Joi = baseJoi.extend([objectid, color, userRef, localizedText, colloquialDateHash, metadata]);
 
 const Joigoose = getJoigoose(mongoose);
 const joiToMongoose = (model, options) => new mongoose.Schema(Joigoose.convert(model), options);

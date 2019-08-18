@@ -3,6 +3,7 @@ import Joi from 'utils/joi';
 export const TAG_CONTENT_SCHEMA = {
   locations: Joi.object({
     title: Joi.localizedText().required(),
+    // TODO: to improve images validation. (Joi.image)
     image: Joi.string().required(),
   }),
   themes: Joi.object({
@@ -12,9 +13,7 @@ export const TAG_CONTENT_SCHEMA = {
     name: Joi.localizedText().required(),
     dates: Joi.localizedText().required(),
     image: Joi.string().required(),
-    color: Joi.string()
-      .regex(/^[0-9a-fA-F]{6}$/)
-      .required(),
+    color: Joi.color().required(),
     description: Joi.localizedText().required(),
   }),
   times: Joi.object({
@@ -22,14 +21,14 @@ export const TAG_CONTENT_SCHEMA = {
   }),
   brands: Joi.object({
     title: Joi.localizedText().required(),
-    // TODO: to improve images validation.
+    // TODO: to improve images validation. (Joi.image)
     image: Joi.string().required(),
   }),
   authors: Joi.object({
     firstName: Joi.localizedText().required(),
     lastName: Joi.localizedText().required(),
     bio: Joi.localizedText().required(),
-    // TODO: to improve images validation.
+    // TODO: to improve images validation. (Joi.image)
     image: Joi.string().required(),
   }),
 };

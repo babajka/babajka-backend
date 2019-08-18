@@ -3,13 +3,6 @@ import {
   getInitObjectMetadata,
   updateObjectMetadata,
   mergeWithUpdateMetadata,
-  joiMetadataSchema,
 } from './model';
 
-export {
-  ObjectMetadata,
-  getInitObjectMetadata,
-  updateObjectMetadata,
-  mergeWithUpdateMetadata,
-  joiMetadataSchema,
-};
+export { ObjectMetadata, getInitObjectMetadata, updateObjectMetadata, mergeWithUpdateMetadata };

@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-import { joiMetadataSchema } from 'api/helpers/metadata';
 import Joi, { joiToMongoose } from 'utils/joi';
 import { TOPIC_SLUGS } from 'constants/topic';
 
@@ -9,7 +8,7 @@ const joiTopicSchema = Joi.object({
     .valid(TOPIC_SLUGS)
     .required()
     .meta({ unique: true }),
-  metadata: joiMetadataSchema.required(),
+  metadata: Joi.metadata().required(),
 });
 
 const TopicSchema = joiToMongoose(joiTopicSchema);

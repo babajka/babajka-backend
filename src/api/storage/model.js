@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 
-import {
-  joiMetadataSchema,
-  getInitObjectMetadata,
-  mergeWithUpdateMetadata,
-} from 'api/helpers/metadata';
+import { getInitObjectMetadata, mergeWithUpdateMetadata } from 'api/helpers/metadata';
 import Joi, { joiToMongoose } from 'utils/joi';
 
 const joiStorageEntitySchema = Joi.object({
@@ -15,7 +11,7 @@ const joiStorageEntitySchema = Joi.object({
   accessPolicy: Joi.string()
     .valid('public')
     .default('public'),
-  metadata: joiMetadataSchema.required(),
+  metadata: Joi.metadata().required(),
 });
 
 const StorageEntitySchema = joiToMongoose(joiStorageEntitySchema);
