@@ -179,7 +179,7 @@ export const update = async ({ params: { slugOrId }, body, user }, res, next) =>
       )
     );
 
-    article.metadata = updateObjectMetadata(article.metadata.toObject(), user);
+    article.metadata = updateObjectMetadata(article.metadata, user);
     await article.save();
 
     if (oldArticleCollectionId !== article.collectionId) {

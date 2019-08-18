@@ -1,8 +1,6 @@
 import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
 
-import Joi from 'utils/joi';
-
 import mongoose from 'mongoose';
 import get from 'lodash/get';
 import set from 'lodash/set';
@@ -11,99 +9,61 @@ import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 import { VIDEO_PLATFORMS, VIDEO_PLATFORMS_LIST } from 'utils/networks';
-import { ValidationError, colorValidator } from 'utils/validation';
+import { ValidationError } from 'utils/validation';
 import { mapIds, getId } from 'utils/getters';
-import { ObjectMetadata } from 'api/helpers/metadata';
+import Joi, { joiToMongoose } from 'utils/joi';
 
-const { Schema } = mongoose;
+const joiVideoSchema = Joi.object({
+  platform: Joi.string(),
+  videoId: Joi.string(),
+  // Url of the video as it was put by the creator.
+  videoUrl: Joi.string().uri(),
+}).meta({ type: Object });
 
-const VideoReferenceSchema = new Schema({
-  platform: {
-    type: String,
-  },
-  videoId: {
-    type: String,
-  },
-  videoUrl: {
-    // Url of the video as it was put by the creator.
-    type: String,
-  },
+const joiArticleSchema = Joi.object({
+  type: Joi.string()
+    .valid(['text', 'video'])
+    .required(),
+  collectionId: Joi.string()
+    .allow(null)
+    .meta({ type: 'ObjectId', ref: 'ArticleCollection' }),
+
+  // FIXME:
+  // ValidationError: locales.0: Validator failed for path `locales` with value `{ active: true, keywords: [], _id: 5d59905f08e579144c779faa }`
+  locales: Joi.array().items(Joi.string().meta({ type: 'ObjectId', ref: 'LocalizedArticle' })),
+
+  metadata: Joi.metadata().required(),
+  // publishAt contains date and time for the article to be published.
+  // Two possible values of the field are:
+  // * null - makes an article a 'draft'. That means article will never be
+  //    published unless the field is updated. 'null' is a default value
+  //    which makes behavior safe: one must explicitly set the date in order
+  //    to make article publicly discoverable.
+  // * date value - specifies the date after which the article is available
+  //    publicly. Must be set explicitly.
+  publishAt: Joi.date()
+    .allow(null)
+    .default(null),
+  active: Joi.boolean().default(true),
+  // Images are as described in 'covers' guide by Vitalik.
+  images: Joi.object().required(),
+  // Can only be present when Article type is video.
+  video: joiVideoSchema,
+  color: Joi.color().default('000000'),
+  // Text on article card may be rendered in one of the following ways.
+  // This depends on the color and is set manually.
+  textColorTheme: Joi.string()
+    .valid(['light', 'dark'])
+    .default('light'),
+  // Authors and Brands are also just Tags.
+  tags: Joi.array().items(Joi.string().meta({ type: 'ObjectId', ref: 'Tag' })),
 });
 
-const ArticleSchema = new Schema(
-  {
-    locales: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'LocalizedArticle',
-      },
-    ],
-    collectionId: {
-      type: Schema.Types.ObjectId,
-      ref: 'ArticleCollection',
-    },
-    type: {
-      type: String,
-      enum: ['text', 'video'],
-      required: true,
-    },
-    metadata: {
-      type: ObjectMetadata.schema,
-      required: true,
-    },
-    publishAt: {
-      // publishAt contains date and time for the article to be published.
-      // Two possible values of the field are:
-      // * null - makes an article a 'draft'. That means article will never be
-      //    published unless the field is updated. 'null' is a default value
-      //    which makes behavior safe: one must explicitly set the date in order
-      //    to make article publicly discoverable.
-      // * date value - specifies the date after which the article is available
-      //    publicly. Must be set explicitly.
-      type: Date,
-      default: null,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
-    images: {
-      // Images are as described in 'covers' guide by Vitalik.
-      type: Schema.Types.Mixed,
-      required: true,
-    },
-    video: {
-      // Can only be present when Article type is video.
-      type: VideoReferenceSchema,
-    },
-    color: {
-      // Articles have colors to be rendered on the main page.
-      type: String,
-      validate: colorValidator,
-      required: true,
-      default: '000000',
-    },
-    textColorTheme: {
-      // Text on article card may be rendered in one of the following ways.
-      // This depends on the color and is set manually.
-      type: String,
-      required: true,
-      enum: ['light', 'dark'],
-      default: 'light',
-    },
-    tags: [
-      // Authors and Brands are also just Tags.
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Tag',
-      },
-    ],
-  },
-  {
-    usePushEach: true,
-  }
-);
+const ArticleSchema = joiToMongoose(joiArticleSchema, {
+  usePushEach: true,
+});
 
+// TODO: replace with joi?
 ArticleSchema.pre('validate', function(next) {
   if (this.type === 'video') {
     ['video.platform', 'video.videoId'].forEach(path => {
@@ -125,19 +85,19 @@ ArticleSchema.pre('validate', function(next) {
 });
 
 const IMAGES_SCHEMA = {
-  text: Joi.object().keys({
-    page: Joi.string().required(),
-    horizontal: Joi.string().required(),
-    vertical: Joi.string().required(),
+  text: Joi.object({
+    page: Joi.image(),
+    horizontal: Joi.image(),
+    vertical: Joi.image(),
   }),
-  video: Joi.object().keys({
-    page: Joi.string().required(),
-    horizontal: Joi.string().required(),
+  video: Joi.object({
+    page: Joi.image(),
+    horizontal: Joi.image(),
   }),
 };
 
 ArticleSchema.pre('validate', function(next) {
-  const { error } = Joi.validate(this.images, IMAGES_SCHEMA[this.type]);
+  const { error } = Joi.validate(this.images, IMAGES_SCHEMA[this.type].required());
   if (error !== null) {
     const errors = {};
     error.details.forEach(({ path, type }) => {

@@ -1,5 +1,6 @@
 import { checkIsFound, ValidationError } from 'utils/validation';
 import { sendJson } from 'utils/api';
+import { mapIds } from 'utils/getters';
 
 import Article from 'api/article/article.model';
 
@@ -26,7 +27,7 @@ export const create = async ({ params: { articleId }, user, body }, res, next) =
       articleId: article._id,
       metadata: getInitObjectMetadata(user),
     }).save();
-    article.locales.push(localized._id);
+    article.locales = mapIds(article.locales).concat(localized._id);
     await article.save();
     return sendJson(res)(localized);
   } catch (err) {

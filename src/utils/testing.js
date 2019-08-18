@@ -28,7 +28,14 @@ export const dropData = () => mongoose.connection.db.dropDatabase();
 
 const request = supertest.agent(app.listen());
 
+const IMAGE_URL =
+  'http://res.cloudinary.com/dhgy4yket/image/upload/v1522525517/babajka-dev/kino.jpg';
+const YOUTUBE_ID = 'ABCABCABCAB';
+const YOUTUBE_LINK = `https://www.youtube.com/watch?v=${YOUTUBE_ID}`;
 export const TEST_DATA = {
+  imageUrl: IMAGE_URL,
+  youtubeId: YOUTUBE_ID,
+  youtubeLink: YOUTUBE_LINK,
   users: {
     admin: {
       firstName: 'Name',
@@ -51,7 +58,7 @@ export const TEST_DATA = {
           bio: {
             be: 'lol',
           },
-          image: 'some-url',
+          image: IMAGE_URL,
         },
       },
     },
@@ -62,7 +69,7 @@ export const TEST_DATA = {
           title: {
             be: 'Libra',
           },
-          image: 'some-url',
+          image: IMAGE_URL,
         },
       },
     },
@@ -79,13 +86,13 @@ export const TEST_DATA = {
   },
   articleImages: {
     text: {
-      page: 'page-url',
-      horizontal: 'horizontal-url',
-      vertical: 'vertical-url',
+      page: IMAGE_URL,
+      horizontal: IMAGE_URL,
+      vertical: IMAGE_URL,
     },
     video: {
-      page: 'page-url',
-      horizontal: 'horizontal-url',
+      page: IMAGE_URL,
+      horizontal: IMAGE_URL,
     },
   },
 };
