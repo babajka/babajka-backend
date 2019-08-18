@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import { joiMetadataSchema } from 'api/helpers/metadata';
-import { Joi, joiToMongoose } from 'validation';
+import Joi, { joiToMongoose } from 'utils/joi';
 import { TOPIC_SLUGS } from 'constants/topic';
 
 const joiTopicSchema = Joi.object({

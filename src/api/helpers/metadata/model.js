@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
-import { Joi, joiToMongoose, joiSchemas } from 'validation';
+import Joi, { joiToMongoose } from 'utils/joi';
 
 export const joiMetadataSchema = Joi.object({
   createdAt: Joi.date().required(),
   updatedAt: Joi.date().required(),
-  createdBy: joiSchemas.userRef.required(),
-  updatedBy: joiSchemas.userRef.required(),
+  createdBy: Joi.userRef().required(),
+  updatedBy: Joi.userRef().required(),
 });
 
 // ObjectMetadataSchema model is a general-purpose object to be used across the project.

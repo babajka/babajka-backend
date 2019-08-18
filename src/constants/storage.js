@@ -1,4 +1,4 @@
-import { Joi } from 'validation';
+import Joi from 'utils/joi';
 
 export const MAIN_PAGE_KEY = 'main-page-key';
 export const SIDEBAR_KEY = 'sidebar-key';

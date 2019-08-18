@@ -4,7 +4,7 @@ import HttpStatus from 'http-status-codes';
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 import mongoose from 'mongoose';
-import Joi from 'joi';
+import Joi from 'utils/joi';
 
 import { joiMainPageDataSchema, joiSidebarDataSchema } from 'constants/storage';
 
@@ -148,19 +148,11 @@ export const checkIsFound = (object, code = HttpStatus.NOT_FOUND) => {
 
 export const isValidId = id => mongoose.Types.ObjectId.isValid(id);
 
+// TODO: replace all validator with Joi extensions
+
 export const slugValidator = {
   validator: v => /^[a-zA-Z0-9_-]+$/.test(v),
   message: 'errors.failedMatchRegex',
-};
-
-export const colloquialDateHashValidator = {
-  // Colloquial Date Hash has MMDD format.
-  validator: v => {
-    const month = Math.floor(parseInt(v, 10) / 100);
-    const day = Math.floor(parseInt(v, 10) % 100);
-    return month >= 0 && month <= 12 && day >= 0 && day <= 31;
-  },
-  message: 'errors.failedMatchDateHashFormat',
 };
 
 export const permissionsObjectValidator = {
@@ -173,7 +165,6 @@ export const permissionsObjectValidator = {
   message: 'errors.badPermissions',
 };
 
-// TODO: replace with `joiSchemas.color`
 export const colorValidator = {
   validator: v => /^[0-9a-fA-F]{6}$/.test(v),
   message: 'errors.failedMatchRegex',

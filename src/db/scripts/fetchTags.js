@@ -10,7 +10,7 @@
 // * npm run fetch-tags
 // * npm run fetch-tags -- secret-dev.json
 
-import Joi from 'joi';
+import Joi from 'utils/joi';
 
 import Tag from 'api/tag/model';
 import Topic from 'api/topic/model';

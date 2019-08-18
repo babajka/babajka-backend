@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import supertest from 'supertest';
 import chai from 'chai';
 import dirtyChai from 'dirty-chai';
+import spies from 'chai-spies';
 import flatten from 'lodash/flatten';
 import HttpStatus from 'http-status-codes';
 
@@ -19,8 +20,9 @@ import User from 'api/user/model';
 import Tag from 'api/tag/model';
 import Topic from 'api/topic/model';
 
-const { expect } = chai;
 chai.use(dirtyChai);
+chai.use(spies);
+const { expect, spy } = chai;
 
 export const dropData = () => mongoose.connection.db.dropDatabase();
 
@@ -199,4 +201,4 @@ export const addBrandsTag = metadata => addTag(metadata, 'brands');
 
 export const addThemesTag = metadata => addTag(metadata, 'themes');
 
-export { expect, supertest };
+export { expect, supertest, spy };

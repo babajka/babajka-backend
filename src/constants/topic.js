@@ -1,34 +1,34 @@
-import { Joi, joiSchemas } from 'validation';
+import Joi from 'utils/joi';
 
 export const TAG_CONTENT_SCHEMA = {
   locations: Joi.object({
-    title: joiSchemas.localizedText.required(),
+    title: Joi.localizedText().required(),
     image: Joi.string().required(),
   }),
   themes: Joi.object({
-    title: joiSchemas.localizedText.required(),
+    title: Joi.localizedText().required(),
   }),
   personalities: Joi.object({
-    name: joiSchemas.localizedText.required(),
-    dates: joiSchemas.localizedText.required(),
+    name: Joi.localizedText().required(),
+    dates: Joi.localizedText().required(),
     image: Joi.string().required(),
     color: Joi.string()
       .regex(/^[0-9a-fA-F]{6}$/)
       .required(),
-    description: joiSchemas.localizedText.required(),
+    description: Joi.localizedText().required(),
   }),
   times: Joi.object({
-    title: joiSchemas.localizedText,
+    title: Joi.localizedText(),
   }),
   brands: Joi.object({
-    title: joiSchemas.localizedText.required(),
+    title: Joi.localizedText().required(),
     // TODO: to improve images validation.
     image: Joi.string().required(),
   }),
   authors: Joi.object({
-    firstName: joiSchemas.localizedText.required(),
-    lastName: joiSchemas.localizedText.required(),
-    bio: joiSchemas.localizedText.required(),
+    firstName: Joi.localizedText().required(),
+    lastName: Joi.localizedText().required(),
+    bio: Joi.localizedText().required(),
     // TODO: to improve images validation.
     image: Joi.string().required(),
   }),
