@@ -5,7 +5,7 @@ import { joiMetadataSchema } from 'api/helpers/metadata';
 import { Topic } from 'api/topic';
 import { TAG_CONTENT_SCHEMA } from 'constants/topic';
 import { ValidationError } from 'utils/validation';
-import { Joi, joiToMongoose } from 'validation';
+import Joi, { joiToMongoose } from 'utils/joi';
 
 const joiTagSchema = Joi.object({
   topic: Joi.string()

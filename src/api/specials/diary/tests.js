@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status-codes';
 
-import { supertest, expect, dropData } from 'utils/testing';
+import { supertest, expect, dropData, spy } from 'utils/testing';
 
 import app from 'server';
 import 'db/connect';
@@ -8,6 +8,27 @@ import 'db/connect';
 import Diary from './model';
 
 const request = supertest.agent(app.listen());
+
+describe('Diary Model', () => {
+  before(dropData);
+
+  it('should fail to create diary with invalid date', async () => {
+    const errorHandler = spy(err => {
+      expect(Object.keys(err.errors)).to.deep.equal(['colloquialDateHash']);
+    });
+
+    await Diary({
+      author: 'George Orwell',
+      text: 'Big brother is watching you',
+      colloquialDateHash: '1984',
+      locale: 'en',
+    })
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+  });
+});
 
 describe('Diary API', () => {
   before(async () => {

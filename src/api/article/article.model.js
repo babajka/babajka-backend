@@ -1,7 +1,7 @@
 import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
 
-import Joi from 'joi';
+import Joi from 'utils/joi';
 
 import mongoose from 'mongoose';
 import get from 'lodash/get';

@@ -5,7 +5,7 @@ import {
   getInitObjectMetadata,
   mergeWithUpdateMetadata,
 } from 'api/helpers/metadata';
-import { Joi, joiToMongoose } from 'validation';
+import Joi, { joiToMongoose } from 'utils/joi';
 
 const joiStorageEntitySchema = Joi.object({
   key: Joi.string()
