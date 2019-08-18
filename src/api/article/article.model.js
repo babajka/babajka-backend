@@ -46,7 +46,18 @@ const joiArticleSchema = Joi.object({
     .default(null),
   active: Joi.boolean().default(true),
   // Images are as described in 'covers' guide by Vitalik.
-  images: Joi.object().required(),
+  images: Joi.object({
+    page: Joi.image(),
+    horizontal: Joi.image(),
+  })
+    .when('type', {
+      is: 'text',
+      then: Joi.object({
+        vertical: Joi.image(),
+      }),
+    })
+    .meta({ type: 'Object' })
+    .required(),
   // Can only be present when Article type is video.
   video: joiVideoSchema,
   color: Joi.color().default('000000'),
@@ -61,6 +72,20 @@ const joiArticleSchema = Joi.object({
 
 const ArticleSchema = joiToMongoose(joiArticleSchema, {
   usePushEach: true,
+});
+
+ArticleSchema.pre('validate', function(next) {
+  // eslint-disable-next-line no-underscore-dangle
+  const { error } = Joi.validate(omit(this._doc, '_id'), joiArticleSchema);
+  if (error) {
+    const errors = {};
+    error.details.forEach(({ path, type }) => {
+      set(errors, path, type);
+    });
+
+    next(new ValidationError(errors));
+  }
+  next();
 });
 
 // TODO: replace with joi?
@@ -80,31 +105,6 @@ ArticleSchema.pre('validate', function(next) {
   }
   if (this.type === 'text' && this.video) {
     next(new ValidationError('video must be absent if article type is text'));
-  }
-  next();
-});
-
-const IMAGES_SCHEMA = {
-  text: Joi.object({
-    page: Joi.image(),
-    horizontal: Joi.image(),
-    vertical: Joi.image(),
-  }),
-  video: Joi.object({
-    page: Joi.image(),
-    horizontal: Joi.image(),
-  }),
-};
-
-ArticleSchema.pre('validate', function(next) {
-  const { error } = Joi.validate(this.images, IMAGES_SCHEMA[this.type].required());
-  if (error !== null) {
-    const errors = {};
-    error.details.forEach(({ path, type }) => {
-      set(errors, ['images', ...path], type);
-    });
-
-    next(new ValidationError(errors));
   }
   next();
 });
