@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import set from 'lodash/set';
 
-import { joiMetadataSchema } from 'api/helpers/metadata';
 import { Topic } from 'api/topic';
 import { TAG_CONTENT_SCHEMA } from 'constants/topic';
 import { ValidationError } from 'utils/validation';
@@ -15,8 +14,11 @@ const joiTagSchema = Joi.object({
     .required()
     .meta({ unique: true }),
   // content depends on which `Topic` this `Tag` belongs to.
+  // TODO: add `topicSlug` field and validate content against it
+  // with Joi.when
+  // https://github.com/hapijs/joi/blob/v15/API.md#anywhencondition-options
   content: Joi.object().required(),
-  metadata: joiMetadataSchema.required(),
+  metadata: Joi.metadata().required(),
 });
 
 const TagSchema = joiToMongoose(joiTagSchema);

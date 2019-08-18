@@ -10,6 +10,7 @@ import {
   addTopics,
   defaultObjectMetadata,
   TEST_DATA,
+  spy,
 } from 'utils/testing';
 import { getId, mapIds } from 'utils/getters';
 
@@ -22,7 +23,7 @@ import Tag from './model';
 const request = supertest.agent(app.listen());
 
 describe('Tag model', () => {
-  let defaultMetadata;
+  let metadata;
   let topics;
 
   before(async function() {
@@ -30,48 +31,64 @@ describe('Tag model', () => {
     await dropData();
 
     await loginTestAdmin();
-    defaultMetadata = await defaultObjectMetadata();
+    metadata = await defaultObjectMetadata();
 
-    topics = keyBy(await addTopics(defaultMetadata), 'slug');
+    topics = keyBy(await addTopics(metadata), 'slug');
   });
 
-  it('should fail to save locations tag | no title', () =>
-    Tag({
+  it('should fail to save locations tag | no title', async () => {
+    const errorHandler = spy(({ status, message }) => {
+      expect(status).to.equal(HttpStatus.BAD_REQUEST);
+      expect(message).to.not.empty();
+      expect(message.title).to.include('required');
+    });
+
+    await Tag({
       topic: topics.locations._id,
       content: {
-        images: 'imageurl',
+        image: 'imageurl',
       },
-      metadata: defaultMetadata,
+      metadata,
       slug: 'slug0',
     })
       .save()
-      .catch(({ status, message }) => {
-        expect(status).to.equal(HttpStatus.BAD_REQUEST);
-        expect(message).to.not.empty();
-        expect(message.title).to.include('required');
-      }));
+      .catch(errorHandler);
 
-  it('should fail to save locations tag | no BE title', () =>
-    Tag({
+    expect(errorHandler).to.have.been.called();
+  });
+
+  it('should fail to save locations tag | no BE title', async () => {
+    const errorHandler = spy(({ status, message }) => {
+      expect(status).to.equal(HttpStatus.BAD_REQUEST);
+      expect(message).to.not.empty();
+      expect(message.title.be).to.include('required');
+    });
+
+    await Tag({
       topic: topics.locations._id,
       content: {
-        images: 'imageurl',
+        image: 'imageurl',
         title: {
           en: 'en-title',
         },
       },
-      metadata: defaultMetadata,
+      metadata,
       slug: 'slug1',
     })
       .save()
-      .catch(({ status, message }) => {
-        expect(status).to.equal(HttpStatus.BAD_REQUEST);
-        expect(message).to.not.empty();
-        expect(message.title.be).to.include('required');
-      }));
+      .catch(errorHandler);
 
-  it('should fail to save personalities tag | bad color', () =>
-    Tag({
+    expect(errorHandler).to.have.been.called();
+  });
+
+  it('should fail to save personalities tag | bad color', async () => {
+    const errorHandler = spy(({ status, message }) => {
+      expect(status).to.equal(HttpStatus.BAD_REQUEST);
+      expect(message).to.not.empty();
+      expect(message.color).to.include('regex');
+    });
+
+    await Tag({
       topic: topics.personalities._id,
       content: {
         name: { be: 'Kolas' },
@@ -80,15 +97,59 @@ describe('Tag model', () => {
         color: 'black',
         description: { be: 'description' },
       },
-      metadata: defaultMetadata,
+      metadata,
       slug: 'kolas',
     })
       .save()
-      .catch(({ status, message }) => {
-        expect(status).to.equal(HttpStatus.BAD_REQUEST);
-        expect(message).to.not.empty();
-        expect(message.color).to.include('regex');
-      }));
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+  });
+
+  it('should fail to save author tag | no BE bio', async () => {
+    const errorHandler = spy(({ status, message }) => {
+      expect(status).to.equal(HttpStatus.BAD_REQUEST);
+      expect(message).to.not.empty();
+      expect(message.bio.be).to.include('required');
+    });
+
+    await Tag({
+      topic: topics.authors._id,
+      content: {
+        firstName: { be: 'George' },
+        lastName: { be: 'Orwell' },
+        bio: { en: '1984' },
+        image: 'image-url',
+      },
+      metadata,
+      slug: 'orwell',
+    })
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+  });
+
+  it('should fail to save brand tag | no image', async () => {
+    const errorHandler = spy(({ status, message }) => {
+      expect(status).to.equal(HttpStatus.BAD_REQUEST);
+      expect(message).to.not.empty();
+      expect(message.image).to.include('required');
+    });
+
+    await Tag({
+      topic: topics.brands._id,
+      content: {
+        title: { be: 'Adidas' },
+      },
+      metadata,
+      slug: 'adidas',
+    })
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+  });
 });
 
 describe('Tags/Topics API', () => {
@@ -100,22 +161,22 @@ describe('Tags/Topics API', () => {
     await dropData();
 
     await loginTestAdmin();
-    const defaultMetadata = await defaultObjectMetadata();
+    const metadata = await defaultObjectMetadata();
 
-    const topics = keyBy(await addTopics(defaultMetadata), 'slug');
+    const topics = keyBy(await addTopics(metadata), 'slug');
     const tags = await Promise.all(
       [
         {
           topic: topics.locations._id,
           slug: 'miensk',
           content: { title: { be: 'Менск' }, image: 'link-to-an-image' },
-          metadata: defaultMetadata,
+          metadata,
         },
         {
           topic: topics.times._id,
           slug: 'xx-century',
           content: { title: { be: 'ХХ стагоддзе', en: 'XX century' } },
-          metadata: defaultMetadata,
+          metadata,
         },
       ].map(data => Tag(data).save())
     );
@@ -127,7 +188,7 @@ describe('Tags/Topics API', () => {
     articleTwoTags = await Article({
       type: 'text',
       images: TEST_DATA.articleImages.text,
-      metadata: defaultMetadata,
+      metadata,
       publishAt: new Date('2018-01-21T16:25:43.511Z'),
       tags: [tagsIds.miensk, tagsIds['xx-century']],
     })
@@ -137,7 +198,7 @@ describe('Tags/Topics API', () => {
     articleOneTag = await Article({
       type: 'text',
       images: TEST_DATA.articleImages.text,
-      metadata: defaultMetadata,
+      metadata,
       publishAt: new Date('2018-01-22T16:25:43.511Z'),
       tags: [tagsIds.miensk],
     })
