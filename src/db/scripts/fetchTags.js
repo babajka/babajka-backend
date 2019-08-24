@@ -167,9 +167,7 @@ doc.getInfo(async (_, info) => {
     console.log('[OK] Received data from Google Spreadsheet.');
     const allSheetTags = validateSheetsData(sheetsData);
     console.log(
-      `[OK] Validation was successful. Total number of Tags in the Spreadsheet: ${
-        allSheetTags.length
-      }`
+      `[OK] Validation was successful. Total number of Tags in the Spreadsheet: ${allSheetTags.length}`
     );
 
     const tagsDiff = difference(db.tagsList, allSheetTags);

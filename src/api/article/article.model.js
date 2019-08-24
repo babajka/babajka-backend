@@ -57,6 +57,9 @@ const joiArticleSchema = Joi.object({
   tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
   // Keywords are for SEO optimization and search engines.
   keywords: Joi.array().items(Joi.string()),
+
+  // fiberyId: Joi.string().required(),
+  // fiberyPublicId: Joi.string().required(),
 });
 
 const ArticleSchema = joiToMongoose(joiArticleSchema, {
