@@ -20,6 +20,7 @@ export const toWirFormat = ({
   formatters = {},
   ignore = [],
 } = {}) => o =>
+  o &&
   Object.entries(o).reduce((acc, [field, value]) => {
     const [_, key = field, lang] = FIELD_REGEX.exec(field) || [];
     if (ignore.includes(key)) {
