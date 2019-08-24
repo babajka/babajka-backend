@@ -1,13 +1,14 @@
 import Fibery from 'fibery-unofficial';
 import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
+import keyBy from 'lodash/keyBy';
 
 import config from 'config';
 import { ValidationError } from 'utils/validation';
 import { map } from 'utils/func';
 
-import { STATE_READY } from './constants';
-import { FIBERY_DEFAULT, ARTICLE_FIELDS, STATE, TAGS, RELATED_ENTITIES } from './query';
+import { STATE_READY, DOC_SECRET_NAME, DOC_FORMAT } from './constants';
+import { FIBERY_DEFAULT, ARTICLE_FIELDS, STATE, TAGS, RELATED_ENTITIES, CONTENT } from './query';
 import { getArticlePublicId, addAppName, mapAppNameLocales } from './utils';
 import { getState } from './getters';
 import { toWirFormat, formatEnum } from './formatters';
@@ -28,7 +29,8 @@ const getArticleData = async url => {
         mapAppNameLocales(ARTICLE_FIELDS),
         STATE,
         TAGS,
-        RELATED_ENTITIES
+        RELATED_ENTITIES,
+        CONTENT
       ),
       'q/where': ['=', 'fibery/public-id', '$id'],
       'q/limit': 1,
@@ -48,6 +50,18 @@ const getArticleData = async url => {
   }
 
   const DEFAULT_TAG_MAPPER = map(toWirFormat({ name: 'slug' }));
+
+  const localeBySecret = mapAppNameLocales(['Text']).reduce((acc, key) => {
+    const secret = article[key][DOC_SECRET_NAME];
+    acc[secret] = key;
+    return acc;
+  }, {});
+  const secrets = Object.keys(localeBySecret).map(secret => ({ secret }));
+  const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
+  Object.entries(localeBySecret).forEach(([secret, key]) => {
+    const { content = null } = docs[secret] || {};
+    article[key] = content && content.doc;
+  });
 
   const formatArticle = toWirFormat({
     mapping: { Podcast: 'audio' },

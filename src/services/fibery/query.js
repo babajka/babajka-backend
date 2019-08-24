@@ -1,4 +1,5 @@
 import { addAppName, mapAppNameLocales } from './utils';
+import { DOC_SECRET_NAME } from './constants';
 
 export const FIBERY_DEFAULT = ['fibery/id', 'fibery/public-id'];
 
@@ -70,6 +71,13 @@ const RELATED_ENT_FIELDS = {
 export const RELATED_ENTITIES = Object.entries(RELATED_ENT_FIELDS).reduce((acc, [key, fields]) => {
   acc.push({
     [`user/${key}`]: FIBERY_DEFAULT.concat(fields),
+  });
+  return acc;
+}, []);
+
+export const CONTENT = mapAppNameLocales(['Text']).reduce((acc, key) => {
+  acc.push({
+    [key]: [DOC_SECRET_NAME],
   });
   return acc;
 }, []);
