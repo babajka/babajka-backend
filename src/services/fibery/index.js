@@ -10,7 +10,7 @@ import { STATE_READY } from './constants';
 import { FIBERY_DEFAULT, ARTICLE_FIELDS, STATE, TAGS, RELATED_ENTITIES } from './query';
 import { getArticlePublicId, addAppName, mapAppNameLocales } from './utils';
 import { getState } from './getters';
-import { toWirFormat } from './formatters';
+import { toWirFormat, formatEnum } from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
 
@@ -49,10 +49,10 @@ const getArticleData = async url => {
 
   const DEFAULT_TAG_MAPPER = map(toWirFormat({ name: 'slug' }));
 
-  const formatArticle = toWirFormat(
-    { state: false, Podcast: 'audio' },
-    (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
-    {
+  const formatArticle = toWirFormat({
+    mapping: { Podcast: 'audio' },
+    mapper: (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
+    formatters: {
       authors: DEFAULT_TAG_MAPPER,
       brands: DEFAULT_TAG_MAPPER,
       times: DEFAULT_TAG_MAPPER,
@@ -60,10 +60,17 @@ const getArticleData = async url => {
       locations: DEFAULT_TAG_MAPPER,
 
       collection: toWirFormat(),
-      video: toWirFormat({ 'Youtube Link': 'url' }),
-      audio: toWirFormat({ 'SoundCloud Link': 'url' }),
-    }
-  );
+      video: toWirFormat({ mapping: { 'Youtube Link': 'url' } }),
+      audio: toWirFormat({ mapping: { 'SoundCloud Link': 'url' } }),
+      cover: toWirFormat({
+        formatters: {
+          theme: formatEnum,
+          files: map(toWirFormat()),
+        },
+      }),
+    },
+    ignore: ['state'],
+  });
 
   return formatArticle(article);
 };
