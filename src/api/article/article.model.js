@@ -49,7 +49,7 @@ const joiArticleSchema = Joi.object({
   images: Joi.object().required(),
   // Can only be present when Article type is video.
   video: joiVideoSchema,
-  color: Joi.color().default('000000'),
+  color: Joi.color().default('#000000'),
   // Text on article card may be rendered in one of the following ways.
   // This depends on the color and is set manually.
   textColorTheme: Joi.string()

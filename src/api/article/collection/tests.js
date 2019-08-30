@@ -52,10 +52,11 @@ describe('Collections API', () => {
     for (let i = 1; i <= 5; i += 1) {
       promises.push(
         new ArticleCollection({
-          name: { en: `Collection ${i}` },
-          description: { en: `a description` },
+          name: { be: `Калекцыя ${i}`, en: `Collection ${i}` },
+          description: { be: `апісанне`, en: `a description` },
           slug: `collection-${i}`,
           articles: articlesList[i - 1],
+          imageUrl: NEW_IMAGE_URL,
         }).save()
       );
     }
@@ -100,7 +101,8 @@ describe('Collections API', () => {
         .set('Cookie', sessionCookie)
         .send({
           slug: 'collection-6',
-          name: { en: 'New Collection' },
+          name: { be: 'New Collection' },
+          imageUrl: NEW_IMAGE_URL,
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {

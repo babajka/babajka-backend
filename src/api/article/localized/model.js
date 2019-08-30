@@ -1,58 +1,26 @@
 import mongoose from 'mongoose';
 
-import { slugValidator } from 'utils/validation';
+import Joi, { joiToMongoose } from 'utils/joi';
 
-import { ObjectMetadata } from 'api/helpers/metadata';
+const joiLocalizedArticleSchema = Joi.object({
+  articleId: Joi.objectId().required(),
+  locale: Joi.locale().required(),
+  title: Joi.string().required(),
+  subtitle: Joi.string().required(),
+  content: Joi.object(),
+  slug: Joi.slug()
+    .meta({ unique: true })
+    .required(),
+  metadata: Joi.metadata().required(),
+  active: Joi.boolean().default(true),
+  // Keywords are for SEO optimization and search engines.
+  keywords: Joi.array().items(Joi.string()),
+});
 
-const { Schema } = mongoose;
-
-const LocalizedArticleSchema = new Schema(
-  {
-    articleId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-    },
-    locale: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    subtitle: {
-      type: String,
-      required: true,
-    },
-    video: String,
-    image: String,
-    content: Schema.Types.Mixed,
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      validate: slugValidator,
-    },
-    metadata: {
-      type: ObjectMetadata.schema,
-      required: true,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
-    keywords: [
-      // Keywords are for SEO optimization and search engines.
-      {
-        type: String,
-      },
-    ],
-  },
-  {
-    usePushEach: true,
-    minimize: false,
-  }
-);
+const LocalizedArticleSchema = joiToMongoose(joiLocalizedArticleSchema, {
+  usePushEach: true,
+  minimize: false,
+});
 
 const LocalizedArticle = mongoose.model('LocalizedArticle', LocalizedArticleSchema);
 

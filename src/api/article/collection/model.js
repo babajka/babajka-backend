@@ -1,50 +1,28 @@
 import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 
-import { slugValidator } from 'utils/validation';
-
 import { serializeArticle, queryUnpublished } from 'api/article/article.model';
 
-const { Schema } = mongoose;
+import Joi, { joiToMongoose } from 'utils/joi';
 
-const ArticleCollectionSchema = new Schema(
-  {
-    // name and description (below) map locales (be, ru, ...) to strings.
-    // Once amount of localized data increases implementation of LocalizedArticleCollection
-    // model might be considered.
-    name: {
-      type: Schema.Types.Mixed,
-      required: true,
-    },
-    description: Schema.Types.Mixed,
-    // The order of articles below is essential and defines the structure of the collection.
-    articles: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Article',
-      },
-    ],
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      validate: slugValidator,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
-    imageUrl: String,
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
-  },
-  {
-    usePushEach: true,
-  }
-);
+const joiArticleCollectionSchema = Joi.object({
+  name: Joi.localizedText().required(),
+  description: Joi.localizedText(),
+  // The order of articles below is essential and defines the structure of the collection.
+  articles: Joi.array().items(Joi.string().meta({ type: 'ObjectId', ref: 'Article' })),
+  slug: Joi.slug()
+    .meta({ unique: true })
+    .required(),
+  active: Joi.boolean().default(true),
+  imageUrl: Joi.image(),
+  createdAt: Joi.date()
+    .default(Date.now, 'time of creation')
+    .required(),
+});
+
+const ArticleCollectionSchema = joiToMongoose(joiArticleCollectionSchema, {
+  usePushEach: true,
+});
 
 const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionSchema);
 
