@@ -1,8 +1,3 @@
-import {
-  ObjectMetadata,
-  getInitObjectMetadata,
-  updateObjectMetadata,
-  mergeWithUpdateMetadata,
-} from './model';
+import { getInitObjectMetadata, updateObjectMetadata, mergeWithUpdateMetadata } from './model';
 
-export { ObjectMetadata, getInitObjectMetadata, updateObjectMetadata, mergeWithUpdateMetadata };
+export { getInitObjectMetadata, updateObjectMetadata, mergeWithUpdateMetadata };

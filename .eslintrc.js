@@ -33,7 +33,7 @@ module.exports = {
     // allow `console.error` & `console.warning`
     'no-console': ['error', { allow: ['warn', 'error'] }],
     // `_id` comes from Mongo
-    'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    'no-underscore-dangle': ['error', { allow: ['_id', '_doc'] }],
 
     'func-names': 'off',
   },

@@ -1,15 +1,13 @@
 import mongoose from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
-// import fromPairs from 'lodash/fromPairs';
 import pick from 'lodash/pick';
 
 import config from 'config';
+import Joi, { joiToMongoose } from 'utils/joi';
 import { joinNames } from 'utils/formatting';
-import { permissionsObjectValidator, validatePassword } from 'utils/validation';
+import { validatePassword } from 'utils/validation';
 
-const { Schema } = mongoose;
-
-const UserSchema = new Schema({
+const joiUserSchema = Joi.object({
   // IMPORTANT:
   // User model has not changed much with the introduction of Authors-as-Tags.
   // We now do not support Users with role 'author' but we do not remove 'role'
@@ -19,46 +17,29 @@ const UserSchema = new Schema({
   // to the values. A set of locales must be the same for all of the fields mentioned.
   // For a User with a role 'regular' firstName, lastName and bio are Strings;
   // the language of these strings is undefined.
-  // TODO(uladbohdan): to implement validator to verify the set of locales is the same
-  // for all the fields.
-  firstName: {
-    type: Schema.Types.Mixed,
-    required: true,
-  },
-  lastName: Schema.Types.Mixed,
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  passwordHash: String,
-  permissions: {
-    type: Schema.Types.Mixed,
-    default: {},
-    validate: permissionsObjectValidator,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    required: true,
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-  bio: Schema.Types.Mixed,
-  role: {
-    type: String,
-    enum: [
+  firstName: Joi.localizedText().required(),
+  lastName: Joi.localizedText(),
+  bio: Joi.localizedText(),
+  email: Joi.string()
+    .required()
+    .meta({ unique: true }),
+  passwordHash: Joi.string(),
+  permissions: Joi.userPermissions().required(),
+  createdAt: Joi.date()
+    .default(Date.now, 'time of creation')
+    .required(),
+  active: Joi.boolean().default(true),
+  role: Joi.string()
+    .valid([
       // 'author',
       'regular',
-    ],
-    required: true,
-    default: 'regular',
-  },
-  imageUrl: String,
+    ])
+    .required()
+    .default('regular'),
+  imageUrl: Joi.image(),
 });
+
+const UserSchema = joiToMongoose(joiUserSchema);
 
 UserSchema.virtual('displayName').get(function get() {
   // if (this.role === 'author') {

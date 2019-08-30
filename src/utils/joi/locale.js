@@ -1,7 +1,7 @@
 export default joi => ({
-  name: 'color',
+  name: 'locale',
   base: joi
     .string()
-    .regex(/^#[0-9a-fA-F]{6}$/)
+    .regex(/^[a-z]{2}$/)
     .meta({ type: String }),
 });

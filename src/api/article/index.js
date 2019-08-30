@@ -4,7 +4,6 @@ import { requireAuth, verifyPermission } from 'auth';
 import { requireFields, precheck } from 'utils/validation';
 
 import collectionRoutes from 'api/article/collection';
-import localeRoutes from 'api/article/localized';
 
 import * as controller from './controller';
 
@@ -15,8 +14,6 @@ import LocalizedArticle from './localized/model';
 const router = Router();
 
 router.use('/collections', collectionRoutes);
-
-router.use('/localize', localeRoutes);
 
 router.get('/', controller.getAll);
 router.post(

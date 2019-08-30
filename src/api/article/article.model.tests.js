@@ -93,7 +93,7 @@ describe('Article model', () => {
     expect(errorHandler).to.have.been.called();
   });
 
-  it('should fail to save article | imvalid image', async () => {
+  it('should fail to save article | invalid image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
       expect(message.images.page).to.includes('uri');
