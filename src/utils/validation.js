@@ -147,25 +147,3 @@ export const checkIsFound = (object, code = HttpStatus.NOT_FOUND) => {
 };
 
 export const isValidId = id => mongoose.Types.ObjectId.isValid(id);
-
-// TODO: replace all validator with Joi extensions
-
-export const slugValidator = {
-  validator: v => /^[a-zA-Z0-9_-]+$/.test(v),
-  message: 'errors.failedMatchRegex',
-};
-
-export const permissionsObjectValidator = {
-  validator: v => {
-    if (v instanceof Array || typeof v !== 'object') {
-      return false;
-    }
-    return Object.values(v).every(val => typeof val === 'boolean');
-  },
-  message: 'errors.badPermissions',
-};
-
-export const colorValidator = {
-  validator: v => /^[0-9a-fA-F]{6}$/.test(v),
-  message: 'errors.failedMatchRegex',
-};
