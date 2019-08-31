@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
+import castArray from 'lodash/castArray';
 import pick from 'lodash/pick';
 
 import config from 'config';
@@ -8,18 +9,8 @@ import { joinNames } from 'utils/formatting';
 import { validatePassword } from 'utils/validation';
 
 const joiUserSchema = Joi.object({
-  // IMPORTANT:
-  // User model has not changed much with the introduction of Authors-as-Tags.
-  // We now do not support Users with role 'author' but we do not remove 'role'
-  // either. The code below might contain some legacy concepts and ideas.
-  //
-  // For a User with a role 'author' firstName, lastName and bio map locales
-  // to the values. A set of locales must be the same for all of the fields mentioned.
-  // For a User with a role 'regular' firstName, lastName and bio are Strings;
-  // the language of these strings is undefined.
-  firstName: Joi.localizedText().required(),
-  lastName: Joi.localizedText(),
-  bio: Joi.localizedText(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string(),
   email: Joi.string()
     .required()
     .meta({ unique: true }),
@@ -29,29 +20,11 @@ const joiUserSchema = Joi.object({
     .default(Date.now, 'time of creation')
     .required(),
   active: Joi.boolean().default(true),
-  role: Joi.string()
-    .valid([
-      // 'author',
-      'regular',
-    ])
-    .required()
-    .default('regular'),
-  imageUrl: Joi.image(),
 });
 
 const UserSchema = joiToMongoose(joiUserSchema);
 
 UserSchema.virtual('displayName').get(function get() {
-  // if (this.role === 'author') {
-  //   return fromPairs(
-  //     Object.entries(this.firstName).map(([l, firstName]) => [
-  //       l,
-  //       joinNames(firstName, this.lastName && this.lastName[l]),
-  //     ])
-  //   );
-  // }
-
-  // The role is 'regular' (default).
   return joinNames(this.firstName, this.lastName);
 });
 
@@ -78,22 +51,14 @@ UserSchema.methods.authenticate = async function authenticate(password) {
 
 const User = mongoose.model('User', UserSchema);
 
-const basicFields = [
-  'firstName',
-  'lastName',
-  'displayName',
-  'email',
-  'role',
-  'active',
-  'bio',
-  'imageUrl',
-];
+const basicFields = ['firstName', 'lastName', 'displayName', 'email', 'active', 'permissions'];
 
 export const serializeUser = object => {
   if (!object) {
     return null;
   }
-  const obj = pick(object, [...basicFields, 'permissions']);
+  const obj = pick(object, basicFields);
+  // TODO: remove?
   if (!obj.permissions) {
     obj.permissions = {};
   }
@@ -102,13 +67,8 @@ export const serializeUser = object => {
 
 export const getUserResponse = object => ({ user: serializeUser(object) });
 
-export const serializeAuthor = object => pick(object, basicFields);
-
 export const checkPermissions = (user, permissions) => {
-  let list = permissions;
-  if (typeof permissions === 'string') {
-    list = [permissions];
-  }
+  const list = castArray(permissions);
   return user && user.permissions && list.every(perm => user.permissions[perm]);
 };
 

@@ -4,10 +4,7 @@ import Joi, { joiToMongoose } from 'utils/joi';
 import { TOPIC_SLUGS } from 'constants/topic';
 
 const joiTopicSchema = Joi.object({
-  slug: Joi.string()
-    .valid(TOPIC_SLUGS)
-    .required()
-    .meta({ unique: true }),
+  slug: Joi.slug().valid(TOPIC_SLUGS),
   metadata: Joi.metadata().required(),
 });
 

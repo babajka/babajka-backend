@@ -35,7 +35,7 @@ const createArticleValidator = ({ body }, res, next) => {
 
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
-      ['title', 'subtitle', 'slug', 'content'].forEach(field => {
+      ['title', 'subtitle', 'slug', 'text'].forEach(field => {
         if (!localeData[field]) {
           set(errors, ['locales', locale, field], 'errors.fieldRequired');
         }
@@ -64,7 +64,7 @@ const updateArticleValidator = ({ body }, res, next) => {
 
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
-      ['title', 'subtitle', 'slug', 'content', 'locale'].forEach(field => {
+      ['title', 'subtitle', 'slug', 'text', 'locale'].forEach(field => {
         if (localeData[field] === '') {
           set(errors, ['locales', locale, field], 'errors.fieldUnremovable');
         }

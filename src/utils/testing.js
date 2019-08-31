@@ -172,6 +172,7 @@ export const addArticles = async (numberPublished, numberUnpublished) => {
                 : `article-draft-${i + 1}-${loc}`,
             articleId: articles[i]._id,
             metadata: defaultMetadata,
+            text: { some: 'content' },
           })
             .save()
             .then(locArticle => {

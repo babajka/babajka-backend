@@ -33,19 +33,19 @@ const Joi = baseJoi.extend([
 const Joigoose = getJoigoose(mongoose);
 const joiToMongoose = (joiModel, options) => {
   const schema = new mongoose.Schema(Joigoose.convert(joiModel), options);
+
   schema.pre('validate', function(next) {
-    const { error } = Joi.validate(omit(this._doc, '_id'), joiModel, {
+    const { error } = Joi.validate(omit(this._doc, ['_id', '__v']), joiModel, {
       abortEarly: false,
     });
-    if (error !== null) {
-      const errors = {};
-      error.details.forEach(({ path, type }) => {
-        set(errors, path, type);
-      });
-      next(new ValidationError(errors));
+    if (error === null) {
+      return next();
     }
-    next();
+
+    const errors = error.details.reduce((acc, { path, type }) => set(acc, path, type), {});
+    return next(new ValidationError(errors));
   });
+
   return schema;
 };
 

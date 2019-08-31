@@ -53,6 +53,7 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .catch(next);
 
 const handleArticleLocalizationError = locale => err => {
+  // TODO: check this, maybe redundant
   if (err.code === 11000) {
     // This is a duplication error. For some reasons it has a slightly different
     // structure which makes us to distinguish it as a special case.
@@ -61,11 +62,7 @@ const handleArticleLocalizationError = locale => err => {
   if (err.name === 'MongoError') {
     throw err;
   }
-  const msg = {};
-  Object.values(err.errors).forEach(({ path, message }) => {
-    set(msg, ['locales', locale, path], message);
-  });
-  throw new ValidationError(msg);
+  throw new ValidationError({ locales: { [locale]: err.message } });
 };
 
 export const create = async ({ body, user }, res, next) => {

@@ -7,14 +7,10 @@ const joiLocalizedArticleSchema = Joi.object({
   locale: Joi.locale().required(),
   title: Joi.string().required(),
   subtitle: Joi.string().required(),
-  content: Joi.object(),
-  slug: Joi.slug()
-    .meta({ unique: true })
-    .required(),
+  text: Joi.object().required(),
+  slug: Joi.slug(),
   metadata: Joi.metadata().required(),
   active: Joi.boolean().default(true),
-  // Keywords are for SEO optimization and search engines.
-  keywords: Joi.array().items(Joi.string()),
 });
 
 const LocalizedArticleSchema = joiToMongoose(joiLocalizedArticleSchema, {

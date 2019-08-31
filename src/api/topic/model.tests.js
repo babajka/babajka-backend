@@ -1,15 +1,6 @@
-import {
-  expect,
-  dropData,
-  loginTestAdmin,
-  defaultObjectMetadata,
-  addTopics,
-  spy,
-} from 'utils/testing';
-
 import 'db/connect';
+import { expect, dropData, loginTestAdmin, defaultObjectMetadata, spy } from 'utils/testing';
 
-import { TOPIC_SLUGS } from 'constants/topic';
 import Topic from './model';
 
 describe('Topic model', () => {
@@ -24,9 +15,8 @@ describe('Topic model', () => {
   });
 
   it('should fail to save unknown topic', async () => {
-    const errorHandler = spy(({ errors, message }) => {
-      expect(message).to.not.empty();
-      expect(errors.slug.value).to.be.equal('RANDOM_TOPIC');
+    const errorHandler = spy(({ message }) => {
+      expect(message.slug).to.include('allowOnly');
     });
 
     await Topic({ slug: 'RANDOM_TOPIC', metadata })
@@ -54,17 +44,4 @@ describe('Topic model', () => {
     await Topic.getAll().then(obj => expect(obj).to.have.length(1));
     expect(errorHandler).to.have.been.called();
   });
-});
-
-describe('Topic Helpers', () => {
-  before(async () => {
-    await dropData();
-
-    await loginTestAdmin();
-    const metadata = await defaultObjectMetadata();
-    await addTopics(metadata);
-  });
-
-  it('should get all topics', () =>
-    Topic.getAll().then(obj => expect(obj).to.have.length(TOPIC_SLUGS.length)));
 });

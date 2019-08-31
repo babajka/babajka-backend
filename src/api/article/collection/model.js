@@ -9,10 +9,8 @@ const joiArticleCollectionSchema = Joi.object({
   name: Joi.localizedText().required(),
   description: Joi.localizedText(),
   // The order of articles below is essential and defines the structure of the collection.
-  articles: Joi.array().items(Joi.string().meta({ type: 'ObjectId', ref: 'Article' })),
-  slug: Joi.slug()
-    .meta({ unique: true })
-    .required(),
+  articles: Joi.array().items(Joi.objectId().meta({ ref: 'Article' })),
+  slug: Joi.slug(),
   active: Joi.boolean().default(true),
   imageUrl: Joi.image(),
   createdAt: Joi.date()

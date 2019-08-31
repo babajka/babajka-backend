@@ -1,3 +1,4 @@
+import 'db/connect';
 import HttpStatus from 'http-status-codes';
 
 import {
@@ -10,9 +11,8 @@ import {
 } from 'utils/testing';
 
 import app from 'server';
-import 'db/connect';
-
 import Article from 'api/article/article.model';
+import { mapIds } from 'utils/getters';
 
 import ArticleCollection from './model';
 
@@ -29,7 +29,6 @@ describe('Collections API', () => {
     await dropData();
 
     sessionCookie = await loginTestAdmin();
-
     const defaultMetadata = await defaultObjectMetadata();
 
     // Populating DB with Collections.
@@ -46,7 +45,7 @@ describe('Collections API', () => {
     await Promise.all(articlePromises);
 
     const articles = await Article.find().exec();
-    const articlesList = articles.map(({ _id }) => _id);
+    const articlesIds = mapIds(articles);
 
     const promises = [];
     for (let i = 1; i <= 5; i += 1) {
@@ -55,7 +54,7 @@ describe('Collections API', () => {
           name: { be: `Калекцыя ${i}`, en: `Collection ${i}` },
           description: { be: `апісанне`, en: `a description` },
           slug: `collection-${i}`,
-          articles: articlesList[i - 1],
+          articles: articlesIds[i - 1],
           imageUrl: NEW_IMAGE_URL,
         }).save()
       );
@@ -133,8 +132,8 @@ describe('Collections API', () => {
             be: {
               title: 'title',
               subtitle: 'subtitle',
-              content: 'text',
               slug: 'slug-new1-be',
+              text: { content: 'some text' },
             },
           },
         })
@@ -160,7 +159,7 @@ describe('Collections API', () => {
             be: {
               title: 'title',
               subtitle: 'subtitle',
-              content: 'text',
+              text: { content: 'text' },
               slug: 'slug-new2-be',
             },
           },
