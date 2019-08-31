@@ -28,6 +28,7 @@ module.exports = {
     // prettier-ignore
     'mocha/valid-test-description': ['warn', /^(\[.+\] )?should/],
 
+    'import/no-cycle': 'warn',
     // we use named export in utils
     'import/prefer-default-export': 'off',
     // allow `console.error` & `console.warning`

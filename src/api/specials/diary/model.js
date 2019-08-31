@@ -1,13 +1,10 @@
 import mongoose from 'mongoose';
 import pick from 'lodash/pick';
 
-import { LOCALES } from 'constants/misc';
 import Joi, { joiToMongoose } from 'utils/joi';
 
 const joiDiarySchema = Joi.object({
-  locale: Joi.string()
-    .valid(LOCALES)
-    .required(),
+  locale: Joi.locale().required(),
   text: Joi.string().required(),
   author: Joi.string().required(),
   // ColloquialDateHash is a hash of date, equals to (month * 100 + day).

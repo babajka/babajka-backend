@@ -7,12 +7,10 @@ import { ValidationError } from 'utils/validation';
 import Joi, { joiToMongoose } from 'utils/joi';
 
 const joiTagSchema = Joi.object({
-  topic: Joi.string()
-    .meta({ type: 'ObjectId', ref: 'Topic' })
+  topic: Joi.objectId()
+    .meta({ ref: 'Topic' })
     .required(),
-  slug: Joi.string()
-    .required()
-    .meta({ unique: true }),
+  slug: Joi.slug(),
   // content depends on which `Topic` this `Tag` belongs to.
   // TODO: add `topicSlug` field and validate content against it
   // with Joi.when
@@ -23,6 +21,7 @@ const joiTagSchema = Joi.object({
 
 const TagSchema = joiToMongoose(joiTagSchema);
 
+// TODO: remove
 TagSchema.pre('validate', async function(next) {
   const topic = await Topic.findOne({ _id: this.topic });
 

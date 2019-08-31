@@ -5,13 +5,13 @@
       "be": {
         "title": "Назва 0",
         "subtitle": "Падназва 0",
-        "content": {},
+        "text": {},
         "slug": "slug0-be"
       },
       "en": {
         "title": "Title 0",
         "subtitle": "Subtitle 0",
-        "content": {},
+        "text": {},
         "slug": "slug0-en"
       }
     },
@@ -28,7 +28,7 @@
       "be": {
         "title": "Назва 1",
         "subtitle": "Падназва 1",
-        "content": {
+        "text": {
           "entityMap": {
             "0": {
               "type": "LINK",
@@ -71,7 +71,7 @@
       "en": {
         "title": "Title 1",
         "subtitle": "Subtitle 1",
-        "content": {},
+        "text": {},
         "slug": "slug1-en",
         "keywords": ["keyword", "for", "optimization"]
       }
@@ -89,13 +89,13 @@
       "be": {
         "title": "Назва 2",
         "subtitle": "Падназва 2",
-        "content": {},
+        "text": {},
         "slug": "slug2-be"
       },
       "en": {
         "title": "Title 2",
         "subtitle": "Subtitle 2",
-        "content": {},
+        "text": {},
         "slug": "slug2-en"
       }
     },
@@ -112,13 +112,13 @@
       "be": {
         "title": "Назва 3",
         "subtitle": "Падназва 3",
-        "content": {},
+        "text": {},
         "slug": "slug3-be"
       },
       "en": {
         "title": "Title 3",
         "subtitle": "Subtitle 3",
-        "content": {},
+        "text": {},
         "slug": "slug3-en"
       }
     },
@@ -135,13 +135,13 @@
       "be": {
         "title": "Назва 4",
         "subtitle": "Падназва 4",
-        "content": {},
+        "text": {},
         "slug": "slug4-be"
       },
       "en": {
         "title": "Title 4",
         "subtitle": "Subtitle 4",
-        "content": {},
+        "text": {},
         "slug": "slug4-en"
       }
     },
@@ -158,19 +158,19 @@
       "be": {
         "title": "Назва 5",
         "subtitle": "Падназва 5 з адкладзенай публікацыяй",
-        "content": {},
+        "text": {},
         "slug": "slug5-be"
       },
       "ru": {
         "title": "Статья номер 5",
         "subtitle": "Описание статьи номер 5",
-        "content": {},
+        "text": {},
         "slug": "slug5-ru"
       },
       "en": {
         "title": "Title 5",
         "subtitle": "Subtitle 5 with postpublishing",
-        "content": {},
+        "text": {},
         "slug": "slug5-en"
       }
     },

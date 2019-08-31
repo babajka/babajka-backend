@@ -1,4 +1,4 @@
 export default joi => ({
   name: 'userRef',
-  base: joi.object().meta({ type: 'ObjectId', ref: 'User' }),
+  base: joi.objectId().meta({ ref: 'User' }),
 });

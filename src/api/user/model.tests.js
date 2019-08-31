@@ -1,6 +1,7 @@
+import 'db/connect';
+
 import { expect, dropData } from 'utils/testing';
 
-import 'db/connect';
 import User from './model';
 
 describe('User model', () => {

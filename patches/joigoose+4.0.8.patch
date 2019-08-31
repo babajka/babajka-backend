@@ -1,0 +1,15 @@
+diff --git a/node_modules/joigoose/lib/index.js b/node_modules/joigoose/lib/index.js
+index 9bc235f..20fc9b8 100644
+--- a/node_modules/joigoose/lib/index.js
++++ b/node_modules/joigoose/lib/index.js
+@@ -142,6 +142,10 @@ internals.typeDeterminer = joiObject => {
+     return Boolean;
+   }
+ 
++  if (joiObject._type === "objectId") {
++    return "object";
++  }
++
+   var types = {};
+   var type = [];
+   var i = 0;

@@ -24,13 +24,11 @@ const joiArticleSchema = Joi.object({
   type: Joi.string()
     .valid(['text', 'video'])
     .required(),
-  collectionId: Joi.string()
+  collectionId: Joi.objectId()
     .allow(null)
-    .meta({ type: 'ObjectId', ref: 'ArticleCollection' }),
+    .meta({ ref: 'ArticleCollection' }),
 
-  // FIXME:
-  // ValidationError: locales.0: Validator failed for path `locales` with value `{ active: true, keywords: [], _id: 5d59905f08e579144c779faa }`
-  locales: Joi.array().items(Joi.string().meta({ type: 'ObjectId', ref: 'LocalizedArticle' })),
+  locales: Joi.array().items(Joi.objectId().meta({ ref: 'LocalizedArticle' })),
 
   metadata: Joi.metadata().required(),
   // publishAt contains date and time for the article to be published.
@@ -56,7 +54,9 @@ const joiArticleSchema = Joi.object({
     .valid(['light', 'dark'])
     .default('light'),
   // Authors and Brands are also just Tags.
-  tags: Joi.array().items(Joi.string().meta({ type: 'ObjectId', ref: 'Tag' })),
+  tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
+  // Keywords are for SEO optimization and search engines.
+  keywords: Joi.array().items(Joi.string()),
 });
 
 const ArticleSchema = joiToMongoose(joiArticleSchema, {

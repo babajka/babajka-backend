@@ -1,20 +1,41 @@
-import mongoose from 'mongoose';
-
-import { expect, dropData, loginTestAdmin, defaultObjectMetadata, spy } from 'utils/testing';
-
 import 'db/connect';
+import mongoose from 'mongoose';
+import omit from 'lodash/omit';
+
+import { expect, dropData, addAdminUser, defaultObjectMetadata, spy } from 'utils/testing';
 
 import LocalizedArticle from './model';
 
 describe('LocalizedArticle model', () => {
-  let metadata;
+  let data;
 
   before(async function() {
     this.timeout(5000);
     await dropData();
 
-    await loginTestAdmin();
-    metadata = await defaultObjectMetadata();
+    await addAdminUser();
+    const metadata = await defaultObjectMetadata();
+    data = {
+      articleId: mongoose.Types.ObjectId().toString(),
+      title: 'Title',
+      subtitle: 'Subtitle',
+      slug: 'slug1',
+      text: {},
+      metadata,
+    };
+  });
+
+  it('should fail to save article | no text', async () => {
+    const errorHandler = spy(({ message }) => {
+      expect(message).to.not.empty();
+      expect(message.text).to.includes('required');
+    });
+
+    await LocalizedArticle(omit(data, 'text'))
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
   });
 
   it('should fail to save article | no locale', async () => {
@@ -23,13 +44,20 @@ describe('LocalizedArticle model', () => {
       expect(message.locale).to.includes('required');
     });
 
-    await LocalizedArticle({
-      articleId: mongoose.Types.ObjectId().toString(),
-      title: 'Title',
-      subtitle: 'Subtitle',
-      slug: 'slug1',
-      metadata,
-    })
+    await LocalizedArticle(data)
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+  });
+
+  it('should fail to save article | unsupported locale', async () => {
+    const errorHandler = spy(({ message }) => {
+      expect(message).to.not.empty();
+      expect(message.locale).to.includes('allowOnly');
+    });
+
+    await LocalizedArticle({ ...data, locale: 'fr' })
       .save()
       .catch(errorHandler);
 
