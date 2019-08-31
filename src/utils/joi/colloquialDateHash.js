@@ -7,13 +7,8 @@ const isValid = v => {
 export default joi => ({
   name: 'colloquialDateHash',
   base: joi.number().meta({ type: Number }),
-  // v16
-  // coerce: {
-  //   from: 'string',
-  //   method: (_, v) => parseInt(v, 10),
-  // },
   // eslint-disable-next-line no-unused-vars
-  coerce: (v, state, options) => parseInt(v, 10),
+  coerce: (v, state, options) => v && +v,
   pre(v, state, options) {
     if (!isValid(v)) {
       return this.createError('number.colloquialDateHash', { v }, state, options);
