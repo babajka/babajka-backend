@@ -13,6 +13,8 @@ describe('LocalizedArticle model', () => {
     this.timeout(5000);
     await dropData();
 
+    LocalizedArticle.ensureIndexes();
+
     await addAdminUser();
     const metadata = await defaultObjectMetadata();
     data = {
@@ -62,5 +64,21 @@ describe('LocalizedArticle model', () => {
       .catch(errorHandler);
 
     expect(errorHandler).to.have.been.called();
+  });
+
+  it('should fail to save article | dup slug', async () => {
+    const errorHandler = spy(({ message }) => {
+      expect(message).to.not.empty();
+      expect(message).to.includes('duplicate key');
+    });
+
+    const article = { ...data, locale: 'be' };
+    await LocalizedArticle(article).save();
+    await LocalizedArticle(article)
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+    await LocalizedArticle.find({}).then(articles => expect(articles).to.have.length(1));
   });
 });

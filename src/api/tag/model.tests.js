@@ -21,6 +21,8 @@ describe('Tag model', () => {
     this.timeout(5000);
     await dropData();
 
+    Tag.ensureIndexes();
+
     await loginTestAdmin();
     metadata = await defaultObjectMetadata();
 
@@ -70,6 +72,30 @@ describe('Tag model', () => {
       .catch(errorHandler);
 
     expect(errorHandler).to.have.been.called();
+  });
+
+  it('should fail to save tag | dup slug', async () => {
+    const errorHandler = spy(({ message }) => {
+      expect(message).to.not.empty();
+      expect(message).to.includes('duplicate key');
+    });
+
+    const data = {
+      topic: topics.times._id,
+      content: {
+        title: { be: 'XX стагоддзе' },
+      },
+      metadata,
+      slug: 'xx-century',
+    };
+
+    await Tag(data).save();
+    await Tag(data)
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+    await Tag.find({}).then(tags => expect(tags).to.have.length(1));
   });
 
   it('should fail to save personalities tag | bad color', async () => {

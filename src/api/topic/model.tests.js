@@ -10,6 +10,8 @@ describe('Topic model', () => {
     this.timeout(5000);
     await dropData();
 
+    Topic.ensureIndexes();
+
     await loginTestAdmin();
     metadata = await defaultObjectMetadata();
   });
@@ -26,22 +28,18 @@ describe('Topic model', () => {
     expect(errorHandler).to.have.been.called();
   });
 
-  // FIXME
-  // eslint-disable-next-line
-  it.skip('should fail to save topic with same slug', async () => {
+  it('should fail to save topic | dup slug', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
+      expect(message).to.includes('duplicate key');
     });
 
     await Topic({ slug: 'themes', metadata }).save();
     await Topic({ slug: 'themes', metadata })
       .save()
       .catch(errorHandler);
-    // [
-    //   { _id: 5d597b4c965e6602d21fcfc7, slug: 'themes' },
-    //   { _id: 5d597b4c965e6602d21fcfc8, slug: 'themes' }
-    // ]
-    await Topic.getAll().then(obj => expect(obj).to.have.length(1));
+
     expect(errorHandler).to.have.been.called();
+    await Topic.getAll().then(topics => expect(topics).to.have.length(1));
   });
 });
