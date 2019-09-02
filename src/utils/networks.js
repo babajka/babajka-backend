@@ -1,3 +1,4 @@
+import parseYoutubeUrl from 'lib/utils/parseYoutubeUrl';
 import { ValidationError } from './validation';
 
 // Keys of the object are all supported video plarforms.
@@ -6,13 +7,10 @@ export const VIDEO_PLATFORMS = {
   youtube: id => /^[a-zA-Z0-9_-]{11}$/.test(id),
 };
 
-const YOUTUBE_URL_REGEX = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
-
 export const parseVideoUrl = videoUrl => {
-  const match = YOUTUBE_URL_REGEX.exec(videoUrl);
-  if (!match) {
+  const videoId = parseYoutubeUrl(videoUrl);
+  if (!videoId) {
     throw new ValidationError('errors.badVideoUrl');
   }
-  const [_, videoId] = match;
   return { platform: 'youtube', videoId, videoUrl };
 };
