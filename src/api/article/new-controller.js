@@ -46,7 +46,7 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
 export const fiberyPreview = async ({ body: { url } }, res, next) => {
   try {
     const data = await fibery.getArticleData(url);
-    const article = mapFiberyArticle(data);
+    const article = await mapFiberyArticle(data);
     return sendJson(res)({ article });
   } catch (err) {
     return next(err);

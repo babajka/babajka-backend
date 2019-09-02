@@ -25,7 +25,7 @@ const joiVideoSchema = Joi.object({
 
 const joiArticleSchema = Joi.object({
   type: Joi.string()
-    .valid(['text', 'video'])
+    .valid(['text', 'video', 'audio'])
     .required(),
   collectionId: Joi.objectId()
     .allow(null)

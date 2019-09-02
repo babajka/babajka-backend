@@ -1,6 +1,7 @@
 import set from 'lodash/set';
 import identity from 'lodash/identity';
 
+import { map } from 'utils/func';
 import { lowerFirst } from 'utils/formatting';
 
 // https://regex101.com/r/nsTMgf/1
@@ -35,3 +36,18 @@ export const toWirFormat = ({
   }, {});
 
 export const formatEnum = o => o['enum/name'];
+
+export const IMAGE_FORMATER = toWirFormat({
+  formatters: {
+    files: map(toWirFormat()),
+  },
+});
+
+export const TAG_MAPPER = map(
+  toWirFormat({
+    mapping: { name: 'slug' },
+    formatters: {
+      image: IMAGE_FORMATER,
+    },
+  })
+);
