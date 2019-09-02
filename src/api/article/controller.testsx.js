@@ -505,7 +505,7 @@ describe('Articles Bundled API', () => {
         publishAt: Date.now(),
         videoUrl: validYoutubeLink,
         color: '#ababab',
-        textColorTheme: 'dark',
+        theme: 'dark',
         locales: {
           be: {
             title: 'be-title',
@@ -514,10 +514,10 @@ describe('Articles Bundled API', () => {
             slug: 'be-slug',
           },
         },
-        keywords: ['keyword1', 'ключавая фраза'],
+        keywords: 'keyword1, ключавая фраза',
       })
       .expect(HttpStatus.OK)
-      .expect(({ body: { _id, locales, images, video, color, textColorTheme, keywords } }) => {
+      .expect(({ body: { _id, locales, images, video, color, theme, keywords } }) => {
         articleId = _id;
         expect(images.horizontal).to.equal(TEST_DATA.articleImages.video.horizontal);
         expect(images.page).to.equal(TEST_DATA.articleImages.video.page);
@@ -525,10 +525,9 @@ describe('Articles Bundled API', () => {
         expect(video.videoId).to.equal(validYoutubeID);
         expect(video.videoUrl).to.equal(validYoutubeLink);
         expect(color).to.equal('#ababab');
-        expect(textColorTheme).to.equal('dark');
+        expect(theme).to.equal('dark');
         expect(Object.keys(locales)).has.length(1);
         expect(locales.be.slug).to.equal('be-slug');
-        expect(keywords).to.have.length(2);
         expect(keywords).to.include('keyword1');
       }));
 
@@ -557,16 +556,13 @@ describe('Articles Bundled API', () => {
         expect(video.videoUrl).to.equal(validYoutubeLink);
       }));
 
-  it('should update list of keywords', () =>
+  it('should update keywords', () =>
     request
       .put('/api/articles/be-slug')
       .set('Cookie', sessionCookie)
-      .send({
-        keywords: ['new-keyword'],
-      })
+      .send({ keywords: 'new-keyword' })
       .expect(HttpStatus.OK)
       .expect(({ body: { keywords } }) => {
-        expect(keywords).to.have.length(1);
         expect(keywords).to.include('new-keyword');
         expect(keywords).to.not.include('keyword1');
       }));

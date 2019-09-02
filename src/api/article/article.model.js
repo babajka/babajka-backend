@@ -13,6 +13,9 @@ import { ValidationError } from 'utils/validation';
 import { mapIds, getId } from 'utils/getters';
 import Joi, { joiToMongoose } from 'utils/joi';
 
+export const DEFAULT_COLOR = '#000000';
+export const DEFAULT_THEME = 'light';
+
 const joiVideoSchema = Joi.object({
   platform: Joi.string(),
   videoId: Joi.string(),
@@ -47,16 +50,16 @@ const joiArticleSchema = Joi.object({
   images: Joi.object().required(),
   // Can only be present when Article type is video.
   video: joiVideoSchema,
-  color: Joi.color().default('#000000'),
+  color: Joi.color().default(DEFAULT_COLOR),
   // Text on article card may be rendered in one of the following ways.
   // This depends on the color and is set manually.
-  textColorTheme: Joi.string()
+  theme: Joi.string()
     .valid(['light', 'dark'])
-    .default('light'),
+    .default(DEFAULT_THEME),
   // Authors and Brands are also just Tags.
   tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
   // Keywords are for SEO optimization and search engines.
-  keywords: Joi.array().items(Joi.string()),
+  keywords: Joi.string(),
 
   // fiberyId: Joi.string().required(),
   // fiberyPublicId: Joi.string().required(),

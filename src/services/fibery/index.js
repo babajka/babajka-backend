@@ -7,10 +7,10 @@ import config from 'config';
 import { ValidationError } from 'utils/validation';
 import { map } from 'utils/func';
 
-import { STATE_READY, DOC_SECRET_NAME, DOC_FORMAT } from './constants';
+import { /* STATE_READY, */ DOC_SECRET_NAME, DOC_FORMAT } from './constants';
 import { FIBERY_DEFAULT, ARTICLE_FIELDS, STATE, TAGS, RELATED_ENTITIES, CONTENT } from './query';
 import { getArticlePublicId, addAppName, mapAppNameLocales } from './utils';
-import { getState } from './getters';
+// import { getState } from './getters';
 import { toWirFormat, formatEnum } from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
@@ -44,12 +44,23 @@ const getArticleData = async url => {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
 
-  if (getState(article) !== STATE_READY) {
-    // FIXME
-    throw new ValidationError({ state: 'invalid' });
-  }
+  // if (getState(article) !== STATE_READY) {
+  //   // FIXME
+  //   throw new ValidationError({ state: 'invalid' });
+  // }
 
-  const DEFAULT_TAG_MAPPER = map(toWirFormat({ name: 'slug' }));
+  const DEFAULT_TAG_MAPPER = map(
+    toWirFormat({
+      mapping: { name: 'slug' },
+      formatters: {
+        image: toWirFormat({
+          formatters: {
+            files: map(toWirFormat()),
+          },
+        }),
+      },
+    })
+  );
 
   const localeBySecret = mapAppNameLocales(['Text']).reduce((acc, key) => {
     const secret = article[key][DOC_SECRET_NAME];
@@ -69,6 +80,7 @@ const getArticleData = async url => {
     formatters: {
       authors: DEFAULT_TAG_MAPPER,
       brands: DEFAULT_TAG_MAPPER,
+      themes: DEFAULT_TAG_MAPPER,
       times: DEFAULT_TAG_MAPPER,
       personalities: DEFAULT_TAG_MAPPER,
       locations: DEFAULT_TAG_MAPPER,

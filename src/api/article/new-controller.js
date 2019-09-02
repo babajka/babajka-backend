@@ -5,6 +5,7 @@ import fibery from 'services/fibery';
 
 import Article, { checkIsPublished, DEFAULT_ARTICLE_QUERY } from './article.model';
 import LocalizedArticle from './localized/model';
+import { mapFiberyArticle } from './utils';
 
 export const getAll = ({ query: { skip, take }, user }, res, next) =>
   Article.customQuery({
@@ -42,9 +43,18 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const fiberyImport = async ({ body }, res, next) => {
+export const fiberyPreview = async ({ body: { url } }, res, next) => {
   try {
-    const { url } = body;
+    const data = await fibery.getArticleData(url);
+    const article = mapFiberyArticle(data);
+    return sendJson(res)({ article });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const fiberyImport = async ({ body: { url } }, res, next) => {
+  try {
     const data = await fibery.getArticleData(url);
 
     /* some magic */

@@ -19,6 +19,7 @@ export const FILES = {
 const TAGS_LOCALIZED_FIELDS = {
   Authors: ['FirstName', 'LastName', 'Bio'],
   Brands: ['Title'],
+  Themes: ['Title'],
   Times: ['Title'],
   Personalities: ['Name', 'Subtitle', 'Description'],
   Locations: ['Title'],

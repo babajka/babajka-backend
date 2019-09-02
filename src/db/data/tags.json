@@ -60,7 +60,7 @@
         "be": "Дэвід Боўі",
         "en": "David Bowie"
       },
-      "dates": {
+      "subtitle": {
         "be": "1947 - 2016"
       },
       "image": "random-url",
@@ -78,7 +78,7 @@
         "be": "Дэвід Боўі 2",
         "en": "David Bowie 2"
       },
-      "dates": {
+      "subtitle": {
         "be": "1947 - 2016"
       },
       "image": "random-url",
@@ -96,7 +96,7 @@
         "be": "Дэвід Боўі 3",
         "en": "David Bowie 3"
       },
-      "dates": {
+      "subtitle": {
         "be": "1947 - 2016"
       },
       "image": "random-url",
