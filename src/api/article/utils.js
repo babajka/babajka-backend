@@ -2,6 +2,8 @@ import fromPairs from 'lodash/fromPairs';
 import omit from 'lodash/omit';
 
 import { getImageUrl } from 'services/fibery/getters';
+import { parseSoundcloudUrl } from 'services/soundcloud';
+import parseYoutubeUrl from 'lib/utils/parseYoutubeUrl';
 import { TOPIC_SLUGS } from 'constants/topic';
 import { DEFAULT_COLOR, DEFAULT_THEME } from './article.model';
 
@@ -45,16 +47,39 @@ const mapTags = data =>
     []
   );
 
+const mapVideo = ({ url }) => {
+  const videoId = parseYoutubeUrl(url);
+  return { url, videoId };
+};
+
+const mapAudio = async ({ url }) => {
+  const trackId = await parseSoundcloudUrl(url);
+  return { url, trackId };
+};
+
 // filter out locales without `slug`
 const filterLocales = o => fromPairs(Object.entries(o).filter(([_, v]) => v && v.slug));
 
+const getType = ({ video, audio }) => {
+  if (video) {
+    return 'video';
+  }
+  if (audio) {
+    return 'audio';
+  }
+  return 'text';
+};
+
 // `fibery` -> `wir` mapper
-export const mapFiberyArticle = ({ cover, locales, ...rest }) => ({
+export const mapFiberyArticle = async ({ cover, locales, video, audio, ...rest }) => ({
   ...omit(rest, TOPIC_SLUGS),
   ...mapCover(cover || {}),
   tags: mapTags(rest),
   locales: filterLocales(locales),
+  video: mapVideo(video),
+  audio: await mapAudio(audio),
   // FIXME:
   articleId: rest.fiberyId,
   active: true,
+  type: getType({ video, audio }),
 });

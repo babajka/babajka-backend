@@ -44,6 +44,9 @@
     "fibery": {
       "host": "MUST BE SET IN BABAJKA SECRET CONFIG",
       "token": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    },
+    "soundcloud": {
+      "client_id": "MUST BE SET IN BABAJKA SECRET CONFIG"
     }
   }
 }

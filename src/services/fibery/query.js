@@ -57,7 +57,11 @@ export const TAGS = Object.entries(TAGS_LOCALIZED_FIELDS).reduce((acc, [key, fie
 }, []);
 
 const RELATED_ENT_FIELDS = {
-  Collection: mapAppNameLocales(['Name', 'Description']).concat(addAppName('Slug')),
+  Collection: mapAppNameLocales(['Name', 'Description'])
+    .concat(addAppName('Slug'))
+    .concat({
+      'user/Cover': IMAGE,
+    }),
   Video: addAppName('Youtube Link'),
   Podcast: addAppName('SoundCloud Link'),
   Cover: [
