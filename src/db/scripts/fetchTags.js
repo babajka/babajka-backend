@@ -38,6 +38,7 @@ const tagScopes = {
   locations: { localized: ['title'], unlocalized: ['image'] },
   times: { localized: ['title'], unlocalized: [] },
   personalities: {
+    // FIXME `dates` -> `subtitle`
     localized: ['name', 'dates', 'description'],
     unlocalized: ['color', 'image'],
   },

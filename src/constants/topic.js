@@ -11,8 +11,7 @@ export const TAG_CONTENT_SCHEMA = {
   }),
   personalities: Joi.object({
     name: Joi.localizedText().required(),
-    // TODO: rename to `subtitle`
-    dates: Joi.localizedText().required(),
+    subtitle: Joi.localizedText().required(),
     image: Joi.string().required(),
     color: Joi.color().required(),
     description: Joi.localizedText().required(),

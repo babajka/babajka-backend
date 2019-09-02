@@ -66,14 +66,14 @@
           ]
         },
         "slug": "slug1-be",
-        "keywords": ["ключавое слова", "для аптымізацыі"]
+        "keywords": "ключавое слова, для аптымізацыі"
       },
       "en": {
         "title": "Title 1",
         "subtitle": "Subtitle 1",
         "text": {},
         "slug": "slug1-en",
-        "keywords": ["keyword", "for", "optimization"]
+        "keywords": "keyword, for, optimization"
       }
     },
     "videoId": "SPauxWv1Rnk",

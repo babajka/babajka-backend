@@ -109,7 +109,7 @@ describe('Tag model', () => {
       topic: topics.personalities._id,
       content: {
         name: { be: 'Kolas' },
-        dates: { be: 'forever' },
+        subtitle: { be: 'forever' },
         image: 'image-url',
         color: 'black',
         description: { be: 'description' },

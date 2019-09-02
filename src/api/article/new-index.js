@@ -15,6 +15,7 @@ router.get('/', controller.getAll);
 // slugOrId parameter below either contains ID of an Article or a slug of any Article Localization.
 router.get('/:slugOrId', controller.getOne);
 
+router.post('/fibery/preview', requireAuth, requireFields('url'), controller.fiberyPreview);
 router.post(
   '/fibery/import',
   requireAuth,
