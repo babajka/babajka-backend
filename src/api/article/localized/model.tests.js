@@ -30,7 +30,7 @@ describe('LocalizedArticle model', () => {
   it('should fail to save article | no text', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.text).to.includes('required');
+      expect(message.text.type).to.includes('required');
     });
 
     await LocalizedArticle(omit(data, 'text'))
@@ -43,7 +43,7 @@ describe('LocalizedArticle model', () => {
   it('should fail to save article | no locale', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.locale).to.includes('required');
+      expect(message.locale.type).to.includes('required');
     });
 
     await LocalizedArticle(data)
@@ -56,7 +56,7 @@ describe('LocalizedArticle model', () => {
   it('should fail to save article | unsupported locale', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.locale).to.includes('allowOnly');
+      expect(message.locale.type).to.includes('allowOnly');
     });
 
     await LocalizedArticle({ ...data, locale: 'fr' })

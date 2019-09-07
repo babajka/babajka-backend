@@ -15,7 +15,7 @@ const joiUserSchema = Joi.object({
     .required()
     .meta({ unique: true }),
   passwordHash: Joi.string(),
-  permissions: Joi.userPermissions().required(),
+  permissions: Joi.userPermissions().default({}),
   createdAt: Joi.date()
     .default(Date.now, 'time of creation')
     .required(),

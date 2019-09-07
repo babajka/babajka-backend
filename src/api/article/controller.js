@@ -64,6 +64,7 @@ export const fiberyImport = async ({ body: { url }, user }, res, next) => {
   try {
     const rawArticle = await fibery.getArticleData(url);
     const data = await mapFiberyArticle(rawArticle);
+    // FIXME: metadata.createdAt everytime new
     const metadata = getInitObjectMetadata(user);
     const { tags, locales, collection, ...rest } = data;
 

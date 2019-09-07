@@ -1,3 +1,5 @@
+import omit from 'lodash/omit';
+
 import {
   expect,
   dropData,
@@ -12,6 +14,7 @@ import 'db/connect';
 import Article from './article.model';
 
 describe('Article model', () => {
+  const fiberyIds = { fiberyId: 'a1', fiberyPublicId: '1' };
   let metadata;
 
   before(async function() {
@@ -22,10 +25,10 @@ describe('Article model', () => {
     metadata = await defaultObjectMetadata();
   });
 
-  it('should fail to save article | no images', async () => {
+  it('should fail to save article | no fiberyId', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images).to.includes('required');
+      expect(message.fiberyId.type).to.includes('required');
     });
 
     await Article({ type: 'text', metadata })
@@ -35,13 +38,29 @@ describe('Article model', () => {
     expect(errorHandler).to.have.been.called();
   });
 
-  it('should fail to save video article | no video', async () => {
+  it('should fail to save article | no images', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message).to.includes('video.platform');
+      expect(message.images.type).to.includes('required');
+    });
+
+    await Article({ ...fiberyIds, type: 'text', metadata })
+      .save()
+      .catch(errorHandler);
+
+    expect(errorHandler).to.have.been.called();
+  });
+
+  // for now `no video` -> `type !== 'video'` 🤷
+  // eslint-disable-next-line mocha/no-skipped-tests
+  it.skip('should fail to save video article | no video', async () => {
+    const errorHandler = spy(({ message }) => {
+      expect(message).to.not.empty();
+      expect(message.video.type).to.includes('required');
     });
 
     await Article({
+      ...fiberyIds,
       type: 'video',
       images: TEST_DATA.articleImages.video,
       metadata,
@@ -55,15 +74,16 @@ describe('Article model', () => {
   it('should fail to save video article | no horizontal image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.horizontal).to.includes('required');
+      expect(message.images.horizontal.type).to.includes('required');
     });
 
     await Article({
+      ...fiberyIds,
       type: 'video',
       video: {
         platform: 'youtube',
-        videoId: TEST_DATA.youtubeId,
-        videoUrl: TEST_DATA.youtubeLink,
+        id: TEST_DATA.youtubeId,
+        url: TEST_DATA.youtubeLink,
       },
       images: {
         page: TEST_DATA.imageUrl,
@@ -79,12 +99,13 @@ describe('Article model', () => {
   it('should fail to save text article | no vertical image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.vertical).to.includes('required');
+      expect(message.images.vertical.type).to.includes('required');
     });
 
     await Article({
+      ...fiberyIds,
       type: 'text',
-      images: TEST_DATA.articleImages.video,
+      images: omit(TEST_DATA.articleImages.text, 'vertical'),
       metadata,
     })
       .save()
@@ -96,13 +117,14 @@ describe('Article model', () => {
   it('should fail to save article | invalid image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.page).to.includes('uri');
+      expect(message.images.page.type).to.includes('uri');
     });
 
     await Article({
+      ...fiberyIds,
       type: 'text',
       images: {
-        ...TEST_DATA.articleImages.video,
+        ...TEST_DATA.articleImages.text,
         page: 'ololo',
       },
       metadata,

@@ -48,7 +48,7 @@ const joiToMongoose = (joiModel, options, validator = validate) => {
   const schema = new mongoose.Schema(Joigoose.convert(joiModel), options);
 
   schema.pre('validate', function(next) {
-    const errors = validator(this.toObject(), joiModel);
+    const errors = validator(this.toObject({ virtuals: false }), joiModel);
     return next(errors && new ValidationError(errors));
   });
 

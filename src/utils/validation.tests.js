@@ -40,7 +40,7 @@ describe('Video: parseYoutubeUrl', () => {
     expect(() => parseYoutubeUrl('https://www.youtube.com/watch?v=LOOOL').to.equal(null)));
 
   it('should accept youtube video url', () =>
-    expect(
-      parseYoutubeUrl('https://www.youtube.com/watch?v=OUGvR8UVlSU').to.be.equal('OUGvR8UVlSU')
+    expect(parseYoutubeUrl('https://www.youtube.com/watch?v=OUGvR8UVlSU')).to.be.equal(
+      'OUGvR8UVlSU'
     ));
 });

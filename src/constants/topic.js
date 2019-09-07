@@ -16,7 +16,7 @@ export const TAG_CONTENT_SCHEMA = {
     description: Joi.localizedText().required(),
   }),
   times: Joi.object({
-    title: Joi.localizedText(),
+    title: Joi.localizedText().required(),
   }),
   brands: Joi.object({
     title: Joi.localizedText().required(),
