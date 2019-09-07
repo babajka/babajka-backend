@@ -1,3 +1,5 @@
+// TODO: remove
+
 import 'db/connect';
 import HttpStatus from 'http-status-codes';
 
@@ -14,7 +16,7 @@ import app from 'server';
 import Article from 'api/article/article.model';
 import { mapIds } from 'utils/getters';
 
-import ArticleCollection from './model';
+import ArticleCollection from 'api/article/collection/model';
 
 const request = supertest.agent(app.listen());
 

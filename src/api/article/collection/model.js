@@ -5,17 +5,17 @@ import { serializeArticle, queryUnpublished } from 'api/article/article.model';
 
 import Joi, { joiToMongoose } from 'utils/joi';
 
-const joiArticleCollectionSchema = Joi.object({
+export const joiArticleCollectionSchema = Joi.object({
+  fiberyId: Joi.string().meta({ unique: true }),
+  fiberyPublicId: Joi.string().meta({ unique: true }),
   name: Joi.localizedText().required(),
   description: Joi.localizedText(),
   // The order of articles below is essential and defines the structure of the collection.
   articles: Joi.array().items(Joi.objectId().meta({ ref: 'Article' })),
   slug: Joi.slug(),
   active: Joi.boolean().default(true),
-  imageUrl: Joi.image(),
-  createdAt: Joi.date()
-    .default(Date.now, 'time of creation')
-    .required(),
+  cover: Joi.image(),
+  createdAt: Joi.date().default(Date.now, 'time of creation'),
 });
 
 const ArticleCollectionSchema = joiToMongoose(joiArticleCollectionSchema, {

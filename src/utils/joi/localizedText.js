@@ -3,8 +3,8 @@ export default joi => ({
   base: joi
     .object({
       be: joi.string().required(),
-      en: joi.string(),
-      ru: joi.string(),
+      en: joi.string().allow(null),
+      ru: joi.string().allow(null),
     })
     .meta({ type: Object }),
 });

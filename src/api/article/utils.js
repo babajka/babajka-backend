@@ -5,7 +5,8 @@ import { getImageUrl } from 'services/fibery/getters';
 import { parseSoundcloudUrl } from 'services/soundcloud';
 import parseYoutubeUrl from 'lib/utils/parseYoutubeUrl';
 import { TOPIC_SLUGS } from 'constants/topic';
-import { DEFAULT_COLOR, DEFAULT_THEME } from './article.model';
+
+import Article, { DEFAULT_COLOR, DEFAULT_THEME } from './article.model';
 
 const IMAGE_TYPE_REGEX = /(horizontal|page|vertical)/;
 
@@ -34,8 +35,10 @@ const mapTags = data =>
   TOPIC_SLUGS.reduce(
     (acc, topic) =>
       acc.concat(
-        data[topic].map(({ slug, ...content }) => ({
+        data[topic].map(({ slug, fiberyId, fiberyPublicId, ...content }) => ({
           slug,
+          fiberyId,
+          fiberyPublicId,
           content: mapTagContent(content),
           topic: {
             // FIXME
@@ -47,14 +50,22 @@ const mapTags = data =>
     []
   );
 
+const mapCollection = c => {
+  if (!c.cover) {
+    return c;
+  }
+  const [{ secret } = {}] = c.cover.files;
+  return { ...c, cover: getImageUrl(secret) };
+};
+
 const mapVideo = ({ url }) => {
-  const videoId = parseYoutubeUrl(url);
-  return { url, videoId };
+  const id = parseYoutubeUrl(url);
+  return { platform: 'youtube', id, url };
 };
 
 const mapAudio = async ({ url }) => {
-  const trackId = await parseSoundcloudUrl(url);
-  return { url, trackId };
+  const id = await parseSoundcloudUrl(url);
+  return { platform: 'soundcloud', id, url };
 };
 
 // filter out locales without `slug`
@@ -71,15 +82,22 @@ const getType = ({ video, audio }) => {
 };
 
 // `fibery` -> `wir` mapper
-export const mapFiberyArticle = async ({ cover, locales, video, audio, ...rest }) => ({
+export const mapFiberyArticle = async ({ cover, collection, locales, video, audio, ...rest }) => ({
   ...omit(rest, TOPIC_SLUGS),
   ...mapCover(cover || {}),
+  collection: mapCollection(collection),
   tags: mapTags(rest),
   locales: filterLocales(locales),
-  video: mapVideo(video),
-  audio: await mapAudio(audio),
+  video: video && mapVideo(video),
+  audio: audio && (await mapAudio(audio)),
   // FIXME:
   articleId: rest.fiberyId,
   active: true,
   type: getType({ video, audio }),
 });
+
+export const getArticle = async data => {
+  const { fiberyId } = data;
+  const article = await Article.findOne({ fiberyId });
+  return article || Article(data);
+};

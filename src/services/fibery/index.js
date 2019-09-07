@@ -11,7 +11,7 @@ import { /* STATE_READY, */ DOC_SECRET_NAME, DOC_FORMAT } from './constants';
 import { FIBERY_DEFAULT, ARTICLE_FIELDS, STATE, TAGS, RELATED_ENTITIES, CONTENT } from './query';
 import { getArticlePublicId, addAppName, mapAppNameLocales } from './utils';
 // import { getState } from './getters';
-import { toWirFormat, formatEnum, IMAGE_FORMATER, TAG_MAPPER } from './formatters';
+import { toWirFormat, formatEnum, IMAGE_FORMATER, TAG_FORMATER } from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
 
@@ -45,7 +45,6 @@ const getArticleData = async url => {
   }
 
   // if (getState(article) !== STATE_READY) {
-  //   // FIXME
   //   throw new ValidationError({ state: 'invalid' });
   // }
 
@@ -65,12 +64,12 @@ const getArticleData = async url => {
     mapping: { Podcast: 'audio' },
     mapper: (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
     formatters: {
-      authors: TAG_MAPPER,
-      brands: TAG_MAPPER,
-      themes: TAG_MAPPER,
-      times: TAG_MAPPER,
-      personalities: TAG_MAPPER,
-      locations: TAG_MAPPER,
+      authors: TAG_FORMATER,
+      brands: TAG_FORMATER,
+      themes: TAG_FORMATER,
+      times: TAG_FORMATER,
+      personalities: TAG_FORMATER,
+      locations: TAG_FORMATER,
 
       collection: toWirFormat({
         formatters: {
