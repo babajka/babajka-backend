@@ -1,7 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 
 import { ValidationError } from 'utils/validation';
-import { validate as defaultValidator } from 'utils/joi';
+import { defaultValidator } from 'utils/joi';
 import { mapIds } from 'utils/getters';
 
 import LocalizedArticle, { joiLocalizedArticleSchema } from './model';

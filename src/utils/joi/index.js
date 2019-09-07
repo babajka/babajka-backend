@@ -30,7 +30,7 @@ const Joi = baseJoi.extend([
   userPermissions,
 ]);
 
-export const validate = (data, schema) => {
+export const defaultValidator = (data, schema) => {
   const { error } = Joi.validate(omit(data, ['_id', '__v']), schema, {
     abortEarly: false,
   });
@@ -44,7 +44,7 @@ export const validate = (data, schema) => {
 };
 
 const Joigoose = getJoigoose(mongoose);
-const joiToMongoose = (joiModel, options, validator = validate) => {
+const joiToMongoose = (joiModel, options, validator = defaultValidator) => {
   const schema = new mongoose.Schema(Joigoose.convert(joiModel), options);
 
   schema.pre('validate', function(next) {

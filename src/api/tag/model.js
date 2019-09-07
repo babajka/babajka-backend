@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import { TAG_CONTENT_SCHEMA, TOPIC_SLUGS } from 'constants/topic';
-import Joi, { joiToMongoose, validate } from 'utils/joi';
+import Joi, { joiToMongoose, defaultValidator } from 'utils/joi';
 
 const joiTagSchema = Joi.object({
   fiberyId: Joi.string()
@@ -27,7 +27,7 @@ export const validateTag = data => {
   const schema = joiTagSchema.keys({
     content: TAG_CONTENT_SCHEMA[topicSlug].required(),
   });
-  return validate(data, schema);
+  return defaultValidator(data, schema);
 };
 
 const TagSchema = joiToMongoose(joiTagSchema, {}, validateTag);

@@ -7,7 +7,7 @@ import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
 import { mapIds, getId } from 'utils/getters';
-import Joi, { joiToMongoose, validate } from 'utils/joi';
+import Joi, { joiToMongoose, defaultValidator } from 'utils/joi';
 
 export const DEFAULT_COLOR = '#000000';
 export const DEFAULT_THEME = 'light';
@@ -87,7 +87,7 @@ export const validateArticle = data => {
     images: getImagesSchema(type).required(),
     // TODO: conditional require `video` or `audio`
   });
-  return validate(data, schema);
+  return defaultValidator(data, schema);
 };
 
 const ArticleSchema = joiToMongoose(joiArticleSchema, { usePushEach: true }, validateArticle);
