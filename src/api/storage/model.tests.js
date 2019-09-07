@@ -17,7 +17,7 @@ describe('StorageEntity model', () => {
     const metadata = await defaultObjectMetadata();
     data = {
       key: 'doc-key',
-      document: {},
+      document: { kek: 'lol' },
       metadata,
     };
   });

@@ -13,8 +13,12 @@ export const DEFAULT_COLOR = '#000000';
 export const DEFAULT_THEME = 'light';
 
 const joiArticleSchema = Joi.object({
-  fiberyId: Joi.string().meta({ unique: true }),
-  fiberyPublicId: Joi.string().meta({ unique: true }),
+  fiberyId: Joi.string()
+    .meta({ unique: true })
+    .required(),
+  fiberyPublicId: Joi.string()
+    .meta({ unique: true })
+    .required(),
   type: Joi.string()
     .valid(['text', 'video', 'audio'])
     .required(),
@@ -80,7 +84,8 @@ const getImagesSchema = type =>
 export const validateArticle = data => {
   const { type } = data;
   const schema = joiArticleSchema.keys({
-    images: getImagesSchema(type),
+    images: getImagesSchema(type).required(),
+    // TODO: conditional require `video` or `audio`
   });
   return validate(data, schema);
 };

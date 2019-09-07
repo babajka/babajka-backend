@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 
+// TODO: replace with fibery import
+
 // Example of a run:
 //   npm run init-prod-diaries -- path-to-secret-file
 // 'path-to-secret-file' defines which database is about to be modified.

@@ -18,7 +18,7 @@ describe('Topic model', () => {
 
   it('should fail to save unknown topic', async () => {
     const errorHandler = spy(({ message }) => {
-      expect(message.slug).to.include('allowOnly');
+      expect(message.slug.type).to.include('allowOnly');
     });
 
     await Topic({ slug: 'RANDOM_TOPIC', metadata })

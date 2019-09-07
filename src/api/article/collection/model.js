@@ -6,8 +6,12 @@ import { serializeArticle, queryUnpublished } from 'api/article/article.model';
 import Joi, { joiToMongoose } from 'utils/joi';
 
 export const joiArticleCollectionSchema = Joi.object({
-  fiberyId: Joi.string().meta({ unique: true }),
-  fiberyPublicId: Joi.string().meta({ unique: true }),
+  fiberyId: Joi.string()
+    .meta({ unique: true })
+    .required(),
+  fiberyPublicId: Joi.string()
+    .meta({ unique: true })
+    .required(),
   name: Joi.localizedText().required(),
   description: Joi.localizedText(),
   // The order of articles below is essential and defines the structure of the collection.

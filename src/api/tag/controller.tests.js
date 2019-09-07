@@ -10,6 +10,7 @@ import {
   addTopics,
   defaultObjectMetadata,
   TEST_DATA,
+  IMAGE_URL,
 } from 'utils/testing';
 import { getId, mapIds } from 'utils/getters';
 
@@ -32,16 +33,21 @@ describe('Tags/Topics API', () => {
     const metadata = await defaultObjectMetadata();
 
     const topics = keyBy(await addTopics(metadata), 'slug');
+    // TODO: extract to some helper
     const tags = await Promise.all(
       [
         {
+          fiberyId: 't1',
           topic: topics.locations._id,
+          topicSlug: 'locations',
           slug: 'miensk',
-          content: { title: { be: 'Менск' }, image: 'link-to-an-image' },
+          content: { title: { be: 'Менск' }, image: IMAGE_URL },
           metadata,
         },
         {
+          fiberyId: 't2',
           topic: topics.times._id,
+          topicSlug: 'times',
           slug: 'xx-century',
           content: { title: { be: 'ХХ стагоддзе', en: 'XX century' } },
           metadata,
@@ -54,6 +60,8 @@ describe('Tags/Topics API', () => {
     }, {});
 
     articleTwoTags = await Article({
+      fiberyId: 'a1',
+      fiberyPublicId: '1',
       type: 'text',
       images: TEST_DATA.articleImages.text,
       metadata,
@@ -64,6 +72,8 @@ describe('Tags/Topics API', () => {
       .then(getId);
 
     articleOneTag = await Article({
+      fiberyId: 'a2',
+      fiberyPublicId: '2',
       type: 'text',
       images: TEST_DATA.articleImages.text,
       metadata,
@@ -84,7 +94,7 @@ describe('Tags/Topics API', () => {
         expect(tag.topic.slug).to.equal('locations');
         expect(tag.slug).to.equal('miensk');
         expect(tag.content.title.be).to.equal('Менск');
-        expect(tag.content.image).to.contain('link');
+        expect(tag.content.image).to.equal(IMAGE_URL);
       }));
 
   it('should get times tags by topic', () =>

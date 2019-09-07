@@ -8,8 +8,10 @@ describe('Diary Model', () => {
 
   it('should fail to create diary with invalid date', async () => {
     const errorHandler = spy(({ message }) => {
-      // TODO: fix message
-      expect(message.colloquialDateHash).to.equal('number.colloquialDateHash');
+      expect(message).to.not.empty();
+      const { colloquialDateHash: hash } = message;
+      expect(hash.type).to.equal('colloquialDateHash.invalid');
+      expect(hash.message).to.contain('should be in MMDD format');
     });
 
     await Diary({

@@ -1,36 +1,44 @@
 import mongoose from 'mongoose';
 
-import { TAG_CONTENT_SCHEMA } from 'constants/topic';
+import { TAG_CONTENT_SCHEMA, TOPIC_SLUGS } from 'constants/topic';
 import Joi, { joiToMongoose, validate } from 'utils/joi';
 
 const joiTagSchema = Joi.object({
-  fiberyId: Joi.string().meta({ unique: true }),
+  fiberyId: Joi.string()
+    .meta({ unique: true })
+    .required(),
   // WARNING: not unique (tags in fibery are different types)
   fiberyPublicId: Joi.string(),
+  // Q: do we need Topic as a model?
   topic: Joi.objectId()
     .meta({ ref: 'Topic' })
     .required(),
-  topicSlug: Joi.slug(),
+  topicSlug: Joi.string().valid(TOPIC_SLUGS),
   slug: Joi.slug(),
-  // content depends on which `Topic` this `Tag` belongs to.
-  // TODO: add `topicSlug` field and validate content against it
-  // with Joi.when
-  // https://github.com/hapijs/joi/blob/v15/API.md#anywhencondition-options
   content: Joi.object().required(),
   metadata: Joi.metadata().required(),
 });
 
 export const validateTag = data => {
-  const schema = joiTagSchema.keys({ content: TAG_CONTENT_SCHEMA[data.topicSlug] });
+  const { topicSlug } = data;
+  if (!topicSlug) {
+    return { topicSlug: { type: 'required' } };
+  }
+  const schema = joiTagSchema.keys({
+    content: TAG_CONTENT_SCHEMA[topicSlug].required(),
+  });
   return validate(data, schema);
 };
 
 const TagSchema = joiToMongoose(joiTagSchema, {}, validateTag);
 
 TagSchema.statics.customQuery = function({ query = {} } = {}) {
-  return this.find(query)
-    .select('-__v -metadata')
-    .populate('topic', 'slug');
+  return (
+    this.find(query)
+      .select('-__v -metadata')
+      // can be ommited
+      .populate('topic', 'slug')
+  );
 };
 
 const Tag = mongoose.model('Tag', TagSchema);

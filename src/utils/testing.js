@@ -28,7 +28,7 @@ export const dropData = () => mongoose.connection.db.dropDatabase();
 
 const request = supertest.agent(app.listen());
 
-const IMAGE_URL =
+export const IMAGE_URL =
   'http://res.cloudinary.com/dhgy4yket/image/upload/v1522525517/babajka-dev/kino.jpg';
 const YOUTUBE_ID = 'ABCABCABCAB';
 const YOUTUBE_LINK = `https://www.youtube.com/watch?v=${YOUTUBE_ID}`;
@@ -47,6 +47,7 @@ export const TEST_DATA = {
   tags: {
     authors: {
       default: {
+        fiberyId: 'testTag-albert',
         slug: 'albert',
         content: {
           firstName: {
@@ -64,6 +65,7 @@ export const TEST_DATA = {
     },
     brands: {
       default: {
+        fiberyId: 'testTag-libra',
         slug: 'libra',
         content: {
           title: {
@@ -75,6 +77,7 @@ export const TEST_DATA = {
     },
     themes: {
       default: {
+        fiberyId: 'testTag-history',
         slug: 'history',
         content: {
           title: {
@@ -93,6 +96,7 @@ export const TEST_DATA = {
     video: {
       page: IMAGE_URL,
       horizontal: IMAGE_URL,
+      vertical: IMAGE_URL,
     },
   },
 };
@@ -146,6 +150,8 @@ export const addArticles = async (numberPublished, numberUnpublished) => {
       const date = i < numberPublished ? passedDate : futureDate;
 
       return new Article({
+        fiberyId: `article${i}`,
+        fiberyPublicId: `${i}`,
         type: 'text',
         images: TEST_DATA.articleImages.text,
         metadata: defaultMetadata,
@@ -194,14 +200,17 @@ export const addTopics = metadata =>
   Promise.all(TOPIC_SLUGS.map(topicSlug => Topic({ slug: topicSlug, metadata }).save()));
 
 const addTag = (metadata, topicSlug) =>
-  Topic.findOne({ slug: topicSlug }).then(topic =>
-    Tag({
+  Topic.findOne({ slug: topicSlug }).then(topic => {
+    const { fiberyId, slug, content } = TEST_DATA.tags[topicSlug].default;
+    return Tag({
+      fiberyId,
       topic: topic._id,
-      slug: TEST_DATA.tags[topicSlug].default.slug,
-      content: TEST_DATA.tags[topicSlug].default.content,
+      topicSlug,
+      slug,
+      content,
       metadata,
-    }).save()
-  );
+    }).save();
+  });
 
 export const addAuthorsTag = metadata => addTag(metadata, 'authors');
 
