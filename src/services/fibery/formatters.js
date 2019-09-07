@@ -43,9 +43,9 @@ export const IMAGE_FORMATER = toWirFormat({
   },
 });
 
-export const TAG_MAPPER = map(
+export const TAG_FORMATER = map(
   toWirFormat({
-    mapping: { name: 'slug' },
+    mapping: { name: 'slug', Avatar: 'image', Logo: 'image' },
     formatters: {
       image: IMAGE_FORMATER,
     },

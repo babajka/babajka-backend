@@ -1,9 +1,14 @@
+// TODO: remove
+
 import HttpStatus from 'http-status-codes';
 
 import { checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import ArticleCollection, { serializeCollection, COLLECTION_POPULATE_OPTIONS } from './model';
+import ArticleCollection, {
+  serializeCollection,
+  COLLECTION_POPULATE_OPTIONS,
+} from 'api/article/collection/model';
 
 export const getAll = ({ user }, res, next) =>
   ArticleCollection.find({ active: true })

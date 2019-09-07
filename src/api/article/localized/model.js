@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 import Joi, { joiToMongoose } from 'utils/joi';
 
-const joiLocalizedArticleSchema = Joi.object({
+export const joiLocalizedArticleSchema = Joi.object({
   articleId: Joi.objectId().required(),
   locale: Joi.locale().required(),
   title: Joi.string().required(),

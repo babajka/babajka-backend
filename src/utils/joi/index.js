@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import baseJoi from '@hapi/joi';
 import getJoigoose from 'joigoose';
-import set from 'lodash/set';
 import omit from 'lodash/omit';
+import set from 'lodash/set';
 
 import { ValidationError } from 'utils/validation';
 
@@ -30,20 +30,26 @@ const Joi = baseJoi.extend([
   userPermissions,
 ]);
 
+export const validate = (data, schema) => {
+  const { error } = Joi.validate(omit(data, ['_id', '__v']), schema, {
+    abortEarly: false,
+  });
+  return (
+    error &&
+    error.details.reduce(
+      (acc, { path, type, message }) => set(acc, path.join('.') || 'index', { type, message }),
+      {}
+    )
+  );
+};
+
 const Joigoose = getJoigoose(mongoose);
-const joiToMongoose = (joiModel, options) => {
+const joiToMongoose = (joiModel, options, validator = validate) => {
   const schema = new mongoose.Schema(Joigoose.convert(joiModel), options);
 
   schema.pre('validate', function(next) {
-    const { error } = Joi.validate(omit(this._doc, ['_id', '__v']), joiModel, {
-      abortEarly: false,
-    });
-    if (error === null) {
-      return next();
-    }
-
-    const errors = error.details.reduce((acc, { path, type }) => set(acc, path, type), {});
-    return next(new ValidationError(errors));
+    const errors = validator(this.toObject(), joiModel);
+    return next(errors && new ValidationError(errors));
   });
 
   return schema;

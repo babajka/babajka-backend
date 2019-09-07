@@ -1,15 +1,16 @@
 import mongoose from 'mongoose';
-import set from 'lodash/set';
 
-import { Topic } from 'api/topic';
 import { TAG_CONTENT_SCHEMA } from 'constants/topic';
-import { ValidationError } from 'utils/validation';
-import Joi, { joiToMongoose } from 'utils/joi';
+import Joi, { joiToMongoose, validate } from 'utils/joi';
 
 const joiTagSchema = Joi.object({
+  fiberyId: Joi.string().meta({ unique: true }),
+  // WARNING: not unique (tags in fibery are different types)
+  fiberyPublicId: Joi.string(),
   topic: Joi.objectId()
     .meta({ ref: 'Topic' })
     .required(),
+  topicSlug: Joi.slug(),
   slug: Joi.slug(),
   // content depends on which `Topic` this `Tag` belongs to.
   // TODO: add `topicSlug` field and validate content against it
@@ -19,24 +20,12 @@ const joiTagSchema = Joi.object({
   metadata: Joi.metadata().required(),
 });
 
-const TagSchema = joiToMongoose(joiTagSchema);
+export const validateTag = data => {
+  const schema = joiTagSchema.keys({ content: TAG_CONTENT_SCHEMA[data.topicSlug] });
+  return validate(data, schema);
+};
 
-// TODO: remove
-TagSchema.pre('validate', async function(next) {
-  const topic = await Topic.findOne({ _id: this.topic });
-
-  const { error } = Joi.validate(this.content, TAG_CONTENT_SCHEMA[topic.slug]);
-  if (error !== null) {
-    const errors = {};
-    error.details.forEach(({ path, type }) => {
-      set(errors, path, type);
-    });
-
-    next(new ValidationError(errors));
-  }
-
-  next();
-});
+const TagSchema = joiToMongoose(joiTagSchema, {}, validateTag);
 
 TagSchema.statics.customQuery = function({ query = {} } = {}) {
   return this.find(query)
@@ -45,5 +34,4 @@ TagSchema.statics.customQuery = function({ query = {} } = {}) {
 };
 
 const Tag = mongoose.model('Tag', TagSchema);
-
 export default Tag;

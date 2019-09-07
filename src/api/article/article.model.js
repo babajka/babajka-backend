@@ -2,28 +2,19 @@ import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
 
 import mongoose from 'mongoose';
-import get from 'lodash/get';
-import set from 'lodash/set';
 import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
 
 import { checkPermissions } from 'api/user';
-import { VIDEO_PLATFORMS } from 'utils/networks';
-import { ValidationError } from 'utils/validation';
 import { mapIds, getId } from 'utils/getters';
-import Joi, { joiToMongoose } from 'utils/joi';
+import Joi, { joiToMongoose, validate } from 'utils/joi';
 
 export const DEFAULT_COLOR = '#000000';
 export const DEFAULT_THEME = 'light';
 
-const joiVideoSchema = Joi.object({
-  platform: Joi.string(),
-  videoId: Joi.string(),
-  // Url of the video as it was put by the creator.
-  videoUrl: Joi.string().uri(),
-}).meta({ type: Object });
-
 const joiArticleSchema = Joi.object({
+  fiberyId: Joi.string().meta({ unique: true }),
+  fiberyPublicId: Joi.string().meta({ unique: true }),
   type: Joi.string()
     .valid(['text', 'video', 'audio'])
     .required(),
@@ -49,7 +40,16 @@ const joiArticleSchema = Joi.object({
   // Images are as described in 'covers' guide by Vitalik.
   images: Joi.object().required(),
   // Can only be present when Article type is video.
-  video: joiVideoSchema,
+  video: Joi.object({
+    platform: Joi.string().valid(['youtube']),
+    id: Joi.string().regex(/^[a-zA-Z0-9_-]{11}$/),
+    url: Joi.string().uri(),
+  }),
+  audio: Joi.object({
+    platform: Joi.string().valid(['soundcloud']),
+    id: Joi.string(),
+    url: Joi.string().uri(),
+  }),
   color: Joi.color().default(DEFAULT_COLOR),
   // Text on article card may be rendered in one of the following ways.
   // This depends on the color and is set manually.
@@ -60,62 +60,32 @@ const joiArticleSchema = Joi.object({
   tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
   // Keywords are for SEO optimization and search engines.
   keywords: Joi.string(),
+}).nand('video', 'audio');
 
-  // fiberyId: Joi.string().required(),
-  // fiberyPublicId: Joi.string().required(),
-});
-
-const ArticleSchema = joiToMongoose(joiArticleSchema, {
-  usePushEach: true,
-});
-
-// TODO: replace with joi?
-ArticleSchema.pre('validate', function(next) {
-  if (this.type === 'video') {
-    ['video.platform', 'video.videoId'].forEach(path => {
-      if (!get(this, path)) {
-        next(new ValidationError(`Missing ${path} field for Video Article type`));
-      }
-    });
-    const { platform, videoId } = this.video;
-    const validateId = VIDEO_PLATFORMS[platform];
-    if (!validateId) {
-      next(new ValidationError('video platform is not supported'));
-    }
-    if (!validateId(videoId)) {
-      next(new ValidationError('bad videoId for selected platform'));
-    }
-  }
-  if (this.type === 'text' && this.video) {
-    next(new ValidationError('video must be absent if article type is text'));
-  }
-  next();
-});
-
-const IMAGES_SCHEMA = {
-  text: Joi.object({
-    page: Joi.image(),
-    horizontal: Joi.image(),
-    vertical: Joi.image(),
-  }),
-  video: Joi.object({
-    page: Joi.image(),
-    horizontal: Joi.image(),
-  }),
+// FIXME: sync with design
+const IMAGES_BY_TYPE = {
+  text: ['page', 'horizontal', 'vertical'],
+  video: ['page', 'horizontal', 'vertical'],
+  audio: ['page', 'horizontal', 'vertical'],
 };
 
-ArticleSchema.pre('validate', function(next) {
-  const { error } = Joi.validate(this.images, IMAGES_SCHEMA[this.type].required());
-  if (error !== null) {
-    const errors = error.details.reduce((acc, { path, type }) => {
-      set(acc, ['images', ...path], type);
+const getImagesSchema = type =>
+  Joi.object(
+    IMAGES_BY_TYPE[type].reduce((acc, cur) => {
+      acc[cur] = Joi.image();
       return acc;
-    }, {});
+    }, {})
+  );
 
-    next(new ValidationError(errors));
-  }
-  next();
-});
+export const validateArticle = data => {
+  const { type } = data;
+  const schema = joiArticleSchema.keys({
+    images: getImagesSchema(type),
+  });
+  return validate(data, schema);
+};
+
+const ArticleSchema = joiToMongoose(joiArticleSchema, { usePushEach: true }, validateArticle);
 
 const formatArticle = article =>
   article

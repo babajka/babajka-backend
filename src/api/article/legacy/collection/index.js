@@ -1,9 +1,11 @@
+// TODO: remove
+
 import { Router } from 'express';
 
 import { requireAuth, verifyPermission } from 'auth';
 
+import ArticleCollection from 'api/article/collection/model';
 import * as controller from './controller';
-import ArticleCollection from './model';
 
 const router = Router();
 
