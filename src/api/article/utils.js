@@ -9,9 +9,14 @@ import { TOPIC_SLUGS } from 'constants/topic';
 import Article, { DEFAULT_COLOR, DEFAULT_THEME } from './article.model';
 
 const IMAGE_TYPE_REGEX = /(horizontal|page|vertical)/;
+// TODO: remove
+const TAG_TEMP_IMAGE = 'https://images.8tracks.com/cover/i/000/799/185/Fixme-8293.jpg';
+const ARTICLE_TEMP_COVER = 'https://i.ytimg.com/vi/DoO36MjbFTk/maxresdefault.jpg';
+const TEMP_VIDEO_URL = 'https://www.youtube.com/watch?v=2nV-ryyyZWs';
+const TEMP_AUDIO_URL = 'https://soundcloud.com/dillonfrancis/fix-me';
 
 const mapCover = ({ color, theme, files = [] }) => {
-  const images = files.reduce((acc, { name, secret }) => {
+  let images = files.reduce((acc, { name, secret }) => {
     const [type] = IMAGE_TYPE_REGEX.exec(name) || [];
 
     if (type) {
@@ -20,15 +25,28 @@ const mapCover = ({ color, theme, files = [] }) => {
 
     return acc;
   }, {});
+
+  // FIXME:
+  if (!files.length) {
+    images = {
+      horizontal: ARTICLE_TEMP_COVER,
+      vertical: ARTICLE_TEMP_COVER,
+      page: ARTICLE_TEMP_COVER,
+    };
+  }
+
   return { images, color: color || DEFAULT_COLOR, theme: theme || DEFAULT_THEME };
 };
 
-const mapTagContent = tag => {
-  if (!tag.image) {
-    return tag;
+const mapTagContent = (content, topic) => {
+  if (!content.image) {
+    if (['times', 'themes'].includes(topic)) {
+      return content;
+    }
+    return { ...content, image: TAG_TEMP_IMAGE };
   }
-  const [{ secret } = {}] = tag.image.files;
-  return { ...tag, image: getImageUrl(secret) };
+  const [{ secret } = {}] = content.image.files;
+  return { ...content, image: getImageUrl(secret) || TAG_TEMP_IMAGE };
 };
 
 const mapTags = data =>
@@ -39,7 +57,7 @@ const mapTags = data =>
           slug,
           fiberyId,
           fiberyPublicId,
-          content: mapTagContent(content),
+          content: mapTagContent(content, topic),
           topic: {
             // FIXME
             _id: topic,
@@ -51,25 +69,39 @@ const mapTags = data =>
   );
 
 const mapCollection = c => {
-  if (!c.cover) {
+  if (!c || !c.cover) {
     return c;
   }
   const [{ secret } = {}] = c.cover.files;
-  return { ...c, cover: getImageUrl(secret) };
+  return { ...c, cover: getImageUrl(secret) || TAG_TEMP_IMAGE };
 };
 
 const mapVideo = ({ url }) => {
+  if (!url) {
+    // eslint-disable-next-line no-param-reassign
+    url = TEMP_VIDEO_URL;
+  }
   const id = parseYoutubeUrl(url);
   return { platform: 'youtube', id, url };
 };
 
 const mapAudio = async ({ url }) => {
+  if (!url) {
+    // eslint-disable-next-line no-param-reassign
+    url = TEMP_AUDIO_URL;
+  }
   const id = await parseSoundcloudUrl(url);
   return { platform: 'soundcloud', id, url };
 };
 
 // filter out locales without `slug`
-const filterLocales = o => fromPairs(Object.entries(o).filter(([_, v]) => v && v.slug));
+const mapLocales = o =>
+  fromPairs(
+    Object.entries(o)
+      .filter(([_, v]) => v && v.slug)
+      // change `text` from `null` to `{}`
+      .map(([k, v]) => [k, { ...v, text: v.text || {} }])
+  );
 
 const getType = ({ video, audio }) => {
   if (video) {
@@ -87,7 +119,7 @@ export const mapFiberyArticle = async ({ cover, collection, locales, video, audi
   ...mapCover(cover || {}),
   collection: mapCollection(collection),
   tags: mapTags(rest),
-  locales: filterLocales(locales),
+  locales: mapLocales(locales),
   video: video && mapVideo(video),
   audio: audio && (await mapAudio(audio)),
   // FIXME:

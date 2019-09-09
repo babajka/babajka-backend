@@ -25,7 +25,8 @@ export const TAG_CONTENT_SCHEMA = {
   authors: Joi.object({
     firstName: Joi.localizedText().required(),
     lastName: Joi.localizedText().required(),
-    bio: Joi.localizedText().required(),
+    // bio: Joi.localizedText().required(),
+    bio: Joi.object(),
     image: Joi.image(),
   }),
 };
