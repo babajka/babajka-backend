@@ -70,11 +70,14 @@ export const fiberyImport = async ({ body: { url }, user }, res, next) => {
 
     const article = await getArticle({ ...rest, metadata });
     await article.validate();
+    await article.save();
     const id = getId(article);
 
     article.tags = await updateTags(tags, metadata);
     article.locales = await updateLocales(locales, metadata, id);
-    article.collectionId = await updateCollection(collection, id);
+    if (collection) {
+      article.collectionId = await updateCollection(collection, id);
+    }
 
     await article.save();
     return getArticleById(id, user)
