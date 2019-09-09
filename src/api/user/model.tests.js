@@ -50,7 +50,7 @@ describe('User model', () => {
   it('should fail to save user | dup email', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message).to.includes('duplicate key');
+      expect(message).to.include('duplicate key');
     });
 
     await User(userData)

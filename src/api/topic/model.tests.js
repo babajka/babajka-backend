@@ -31,7 +31,7 @@ describe('Topic model', () => {
   it('should fail to save topic | dup slug', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message).to.includes('duplicate key');
+      expect(message).to.include('duplicate key');
     });
 
     await Topic({ slug: 'themes', metadata }).save();
