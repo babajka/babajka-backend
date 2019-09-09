@@ -24,7 +24,7 @@
     "semantic-release": "semantic-release",
     "travis-deploy-once": "travis-deploy-once",
     "deploy-dev-from-local": "sh bin/dev/deploy-from-local.sh",
-    "postinstall": "git submodule update --init && patch-package"
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@hapi/joi": "^15.1.1",

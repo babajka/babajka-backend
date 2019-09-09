@@ -25,7 +25,7 @@ describe('StorageEntity model', () => {
   it('should fail to save doc | dup key', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message).to.includes('duplicate key');
+      expect(message).to.include('duplicate key');
     });
 
     await StorageEntity(data).save();

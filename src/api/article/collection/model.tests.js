@@ -39,7 +39,7 @@ describe('ArticleCollection model', () => {
   it.skip('should fail to save collection | dup slug', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message).to.includes('duplicate key');
+      expect(message).to.include('duplicate key');
     });
 
     const col = { ...data, slug: 'col-slug' };

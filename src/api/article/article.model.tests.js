@@ -28,7 +28,7 @@ describe('Article model', () => {
   it('should fail to save article | no fiberyId', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.fiberyId.type).to.includes('required');
+      expect(message.fiberyId.type).to.include('required');
     });
 
     await Article({ type: 'text', metadata })
@@ -41,7 +41,7 @@ describe('Article model', () => {
   it('should fail to save article | no images', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.type).to.includes('required');
+      expect(message.images.type).to.include('required');
     });
 
     await Article({ ...fiberyIds, type: 'text', metadata })
@@ -56,7 +56,7 @@ describe('Article model', () => {
   it.skip('should fail to save video article | no video', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.video.type).to.includes('required');
+      expect(message.video.type).to.include('required');
     });
 
     await Article({
@@ -74,7 +74,7 @@ describe('Article model', () => {
   it('should fail to save video article | no horizontal image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.horizontal.type).to.includes('required');
+      expect(message.images.horizontal.type).to.include('required');
     });
 
     await Article({
@@ -99,7 +99,7 @@ describe('Article model', () => {
   it('should fail to save text article | no vertical image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.vertical.type).to.includes('required');
+      expect(message.images.vertical.type).to.include('required');
     });
 
     await Article({
@@ -117,7 +117,7 @@ describe('Article model', () => {
   it('should fail to save article | invalid image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.page.type).to.includes('uri');
+      expect(message.images.page.type).to.include('uri');
     });
 
     await Article({

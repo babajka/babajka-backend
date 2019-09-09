@@ -30,7 +30,7 @@ describe('LocalizedArticle model', () => {
   it('should fail to save article | no text', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.text.type).to.includes('required');
+      expect(message.text.type).to.include('required');
     });
 
     await LocalizedArticle(omit(data, 'text'))
@@ -43,7 +43,7 @@ describe('LocalizedArticle model', () => {
   it('should fail to save article | no locale', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.locale.type).to.includes('required');
+      expect(message.locale.type).to.include('required');
     });
 
     await LocalizedArticle(data)
@@ -56,7 +56,7 @@ describe('LocalizedArticle model', () => {
   it('should fail to save article | unsupported locale', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.locale.type).to.includes('allowOnly');
+      expect(message.locale.type).to.include('allowOnly');
     });
 
     await LocalizedArticle({ ...data, locale: 'fr' })
@@ -69,7 +69,7 @@ describe('LocalizedArticle model', () => {
   it('should fail to save article | dup slug', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message).to.includes('duplicate key');
+      expect(message).to.include('duplicate key');
     });
 
     const article = { ...data, locale: 'be' };
