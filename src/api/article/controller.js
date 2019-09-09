@@ -5,7 +5,7 @@ import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 
-import Article, { checkIsPublished, DEFAULT_ARTICLE_QUERY } from './article.model';
+import Article, { DEFAULT_ARTICLE_QUERY } from './article.model';
 import LocalizedArticle from './localized/model';
 import { updateLocales } from './localized/utils';
 import { updateCollection } from './collection/utils';
@@ -43,7 +43,8 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
   retrieveArticleId(slugOrId, { active: true })
     .then(artId => getArticleById(artId, user))
     .then(checkIsFound)
-    .then(article => checkIsPublished(article, user))
+    // FIXME: publishAt check
+    // .then(article => checkIsPublished(article, user))
     .then(sendJson(res))
     .catch(next);
 
