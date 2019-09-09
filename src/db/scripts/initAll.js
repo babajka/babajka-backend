@@ -17,21 +17,20 @@
 import fs from 'fs';
 import path from 'path';
 import mongoose from 'mongoose';
-import omit from 'lodash/omit';
-import pick from 'lodash/pick';
-import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
 import sample from 'lodash/sample';
 import sampleSize from 'lodash/sampleSize';
+import noop from 'lodash/noop';
 
 import connectDb from 'db';
 import { User } from 'api/user';
-import { Article, ArticleCollection, LocalizedArticle } from 'api/article';
+import { Article, ArticleCollection } from 'api/article';
 import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
 import { Tag } from 'api/tag';
 import { Topic } from 'api/topic';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
+import { fiberyImport } from 'api/article/controller';
 
 import * as permissions from 'constants/permissions';
 import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
@@ -44,10 +43,7 @@ const SIDEBAR_BLOCKS = ['themes', 'personalities', 'times', 'locations', 'brands
 const defaultDataPath = `${__dirname}/../data/`;
 const dataFilenames = {
   users: 'users.json',
-  articleCollections: 'articleCollections.json',
-  articles: 'articles.json',
   diaries: 'diary.json',
-  tags: 'tags.json',
 };
 
 const initData = {};
@@ -81,42 +77,6 @@ const getData = () => {
   });
 };
 
-const TEXT_BY_LOCALE = {
-  be: 'Гэта дэфолтны загаловак пустога артыкула',
-  ru: 'Это дефолтный заголовок пустой статьи',
-  en: 'This is a default header of an empty article',
-};
-
-const getArticleContent = locale => ({
-  entityMap: {
-    '0': {
-      type: 'LINK',
-      mutability: 'MUTABLE',
-      data: { url: 'http://dev.wir.by/be/article/dushy' },
-    },
-  },
-  blocks: [
-    {
-      key: '761n6',
-      text: TEXT_BY_LOCALE[locale],
-      type: 'header-one',
-      depth: 0,
-      inlineStyleRanges: [],
-      entityRanges: [],
-      data: {},
-    },
-    {
-      key: 'cuvud',
-      text: 'CLICK HERE TO CHECK A SAMPLE ARTICLE OUT.',
-      type: 'blockquote',
-      depth: 0,
-      inlineStyleRanges: [],
-      entityRanges: [{ offset: 0, length: 41, key: 0 }],
-      data: {},
-    },
-  ],
-});
-
 const initUsers = () =>
   Promise.all(
     initData.users.map(async userData => {
@@ -131,89 +91,64 @@ const initUsers = () =>
     })
   );
 
-const retrieveMetadataTestingUser = async () => User.findOne({ email: 'admin@babajka.io' });
+export const retrieveMetadataTestingUser = async () => User.findOne({ email: 'admin@babajka.io' });
+
+const INIT_ARTICLES = [
+  'https://wir.fibery.io/Content~Marketing/139#Article/38',
+  'https://wir.fibery.io/Content~Marketing/139#Article/45',
+  'https://wir.fibery.io/Content~Marketing/139#Article/85',
+  'https://wir.fibery.io/Content~Marketing/139#Article/73',
+  'https://wir.fibery.io/Content~Marketing/139#Article/74',
+  'https://wir.fibery.io/Content~Marketing/139#Article/88',
+  'https://wir.fibery.io/Content~Marketing/139#Article/90',
+  'https://wir.fibery.io/Content~Marketing/139#Article/89',
+  'https://wir.fibery.io/Content~Marketing/139#Article/86',
+  'https://wir.fibery.io/Content~Marketing/139#Article/91',
+];
+
+const mockRes = {
+  status: () => ({
+    json: noop,
+  }),
+};
 
 const initArticles = metadataTestingUser =>
   Promise.all(
-    initData.articles.map(async rawArticleData => {
-      const commonMetadata = getInitObjectMetadata(metadataTestingUser);
-
-      const articleLocales = rawArticleData.locales;
-      const articleData = omit(rawArticleData, ['locales', 'videoId']);
-      articleData.metadata = commonMetadata;
-      if (articleData.publishAt) {
-        articleData.publishAt = new Date(articleData.publishAt);
-      }
-      if (articleData.type === 'video') {
-        articleData.video = {
-          platform: 'youtube',
-          videoId: rawArticleData.videoId,
-          videoUrl: `https://www.youtube.com/watch?v=${rawArticleData.videoId}`,
-        };
-      }
-      const article = new Article(articleData);
-      Promise.all(
-        Object.keys(articleLocales).map(locale => {
-          if (isEmpty(articleLocales[locale].content)) {
-            articleLocales[locale].content = getArticleContent(locale);
+    INIT_ARTICLES.map(url =>
+      fiberyImport(
+        {
+          body: { url },
+          user: metadataTestingUser,
+        },
+        mockRes,
+        err => {
+          if (err) {
+            throw err;
           }
-          const data = new LocalizedArticle({
-            ...articleLocales[locale],
-            locale,
-            articleId: article._id,
-            metadata: commonMetadata,
-          });
-          article.locales.push(data._id);
-          return data.save();
-        })
-      );
-      return article.save();
-    })
-  );
-
-// Returns a mapping of slugs to id-s.
-const getArticlesDict = async () => {
-  const articlesDict = {};
-  const articles = await Article.find().populate('locales', ['slug']);
-  articles.forEach(item => {
-    item.locales.forEach(({ slug }) => {
-      articlesDict[slug] = item._id;
-    });
-  });
-  return articlesDict;
-};
-
-const initArticleCollections = articlesDict =>
-  Promise.all(
-    initData.articleCollections.map(async collectionData => {
-      const subDict = pick(articlesDict, collectionData.articleSlugs);
-      const body = { ...collectionData, articles: Object.values(subDict) };
-      const collection = await new ArticleCollection(body).save();
-      await Promise.all(
-        Object.values(subDict).map(_id =>
-          Article.findOneAndUpdate({ _id }, { collectionId: collection._id }).exec()
-        )
-      );
-    })
+        }
+      )
+    )
   );
 
 const initDiaries = () =>
   Promise.all(initData.diaries.map(async diaryData => new Diary(diaryData).save()));
 
-const initMainPageState = async metadataTestingUser => {
+export const initMainPageState = async metadataTestingUser => {
   const articles = await Article.find();
   const topics = await Topic.find().exec();
   const tags = await Tag.find().exec();
   const tagsBySlug = keyBy(tags, 'slug');
-  const tagsByTopic = getTagsByTopic({ tags, topics });
   const articlesByTag = getArticlesByTag({ articles, tags });
+  const { personalities = [], locations = [] } = getTagsByTopic({ tags, topics });
 
-  if (tagsByTopic.personalities.length < 3) {
-    throw new Error(`Not enoght personalities tags ${tagsByTopic.personalities.length}/3!`);
+  const hasPersonalities = personalities.length > 2;
+  if (!hasPersonalities) {
+    console.log(`Not enoght personalities tags ${personalities.length}/3!`);
   }
 
-  if (tagsByTopic.locations.length < 3) {
-    throw new Error(`Not enoght locations tags ${tagsByTopic.locations.length}/3!`);
+  const hasLocations = locations.length > 2;
+  if (!hasLocations) {
+    console.log(`Not enoght locations tags ${locations.length}/3!`);
   }
 
   const state = {
@@ -224,42 +159,47 @@ const initMainPageState = async metadataTestingUser => {
         type: 'latestArticles',
         articlesIds: [{ id: getId(sample(articles)), frozen: true }, { id: null, frozen: false }],
       },
-      {
+      hasPersonalities && {
         type: 'tagsByTopic',
         topicSlug: 'personalities',
-        tagsIds: sampleSize(tagsByTopic.personalities, 3),
+        tagsIds: sampleSize(personalities, 3),
         style: '1-2',
       },
       {
         type: 'articlesByTag3',
-        tagId: tagsBySlug['xx-century']._id,
-        articlesIds: sampleSize(articlesByTag['xx-century'], 3),
+        tagId: getId(tagsBySlug.linguistics),
+        articlesIds: sampleSize(articlesByTag.linguistics, 3),
       },
       {
         type: 'articlesByTag2',
-        tagId: tagsBySlug.bowie._id,
-        articlesIds: sampleSize(articlesByTag.bowie, 2),
+        tagId: getId(tagsBySlug.modernism),
+        articlesIds: sampleSize(articlesByTag.modernism, 2),
       },
       // to add "banner" block here.
-      {
+      hasLocations && {
         type: 'tagsByTopic',
         topicSlug: 'locations',
-        tagsIds: sampleSize(tagsByTopic.locations, 3),
+        tagsIds: sampleSize(locations, 3),
         style: '2-1',
       },
       {
-        type: 'articlesByBrand',
-        tagId: tagsBySlug.libra._id,
+        type: 'articlesByTag2',
+        tagId: getId(tagsBySlug.minsk),
+        articlesIds: sampleSize(articlesByTag.minsk, 2),
+      },
+      {
+        type: 'articlesByTag2',
+        tagId: getId(tagsBySlug.libra),
         articlesIds: sampleSize(articlesByTag.libra, 2),
       },
-    ],
+    ].filter(Boolean),
     data: {
       articles: mapIds(articles),
       tags: mapIds(tags),
     },
   };
 
-  return StorageEntity.setValue(MAIN_PAGE_KEY, state, metadataTestingUser._id);
+  return StorageEntity.setValue(MAIN_PAGE_KEY, state, getId(metadataTestingUser));
 };
 
 const initSidebarState = async metadataTestingUser => {
@@ -273,31 +213,7 @@ const initSidebarState = async metadataTestingUser => {
   }));
 
   const state = { blocks, data: { tags: mapIds(tags) } };
-  return StorageEntity.setValue(SIDEBAR_KEY, state, metadataTestingUser._id);
-};
-
-const initTags = async metadataTestingUser => {
-  const commonMetadata = getInitObjectMetadata(metadataTestingUser);
-  const topics = keyBy(await addTopics(commonMetadata), 'slug');
-  const tags = await Promise.all(
-    initData.tags.map(rawTagData =>
-      Tag({
-        ...omit(rawTagData, ['topicSlug']),
-        topic: topics[rawTagData.topicSlug],
-        metadata: commonMetadata,
-      })
-        .save()
-        .then(getId)
-    )
-  );
-
-  // Randomly applying tags to articles.
-  const articles = await Article.find({}).then(mapIds);
-  await Promise.all(
-    articles.map(_id => Article.findOneAndUpdate({ _id }, { tags: sampleSize(tags, 4) }))
-  );
-
-  return tags.length;
+  return StorageEntity.setValue(SIDEBAR_KEY, state, getId(metadataTestingUser));
 };
 
 const run = async () => {
@@ -309,32 +225,31 @@ const run = async () => {
     console.log('Mongoose: drop database');
 
     await initUsers();
-    const usersCount = await User.countDocuments();
-    console.log(`Mongoose: insert ${usersCount} user(s)`);
+    console.log(`Mongoose: insert ${await User.countDocuments()} user(s)`);
 
     const metadataTestingUser = await retrieveMetadataTestingUser();
+    const commonMetadata = getInitObjectMetadata(metadataTestingUser);
+    const topics = await addTopics(commonMetadata);
+    console.log(`Mongoose: insert ${topics.length} topic(s)`);
 
     await initArticles(metadataTestingUser);
     const articlesCount = await Article.countDocuments();
     console.log(`Mongoose: insert ${articlesCount} article(s)`);
-    const articleDict = await getArticlesDict();
-
-    await initArticleCollections(articleDict);
-    const articleCollectionsCount = await ArticleCollection.countDocuments();
-    console.log(`Mongoose: insert ${articleCollectionsCount} article collection(s)`);
+    console.log(
+      `Mongoose: insert ${await ArticleCollection.countDocuments()} article collection(s)`
+    );
 
     await initDiaries();
-    const diariesCount = await Diary.countDocuments();
-    console.log(`Mongoose: insert ${diariesCount} diary(es)`);
+    console.log(`Mongoose: insert ${await Diary.countDocuments()} diary(es)`);
+    console.log(`Mongoose: insert ${await Tag.countDocuments()} tags;`);
 
-    const tagsCount = await initTags(metadataTestingUser);
-    console.log(`Mongoose: insert ${tagsCount} tags; all articles are randomly updated with tags`);
+    if (articlesCount) {
+      await initMainPageState(metadataTestingUser);
+      console.log('Mongoose: main page state pushed');
 
-    await initMainPageState(metadataTestingUser);
-    console.log('Mongoose: main page state pushed');
-
-    await initSidebarState(metadataTestingUser);
-    console.log('Mongoose: sidebar state pushed');
+      await initSidebarState(metadataTestingUser);
+      console.log('Mongoose: sidebar state pushed');
+    }
 
     // PLACEHOLDER.
   } catch (err) {

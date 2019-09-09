@@ -48,7 +48,8 @@ const getState = ({ user, storageKey, entitiesQueries, includeLatestArticles = f
             query: {
               active: true,
               locales: { $exists: true },
-              publishAt: { $lt: Date.now() },
+              // FIXME:
+              // publishAt: { $lt: Date.now() },
             },
             limit: 3,
             sort: { publishAt: 'desc' },

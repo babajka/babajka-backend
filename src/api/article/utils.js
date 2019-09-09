@@ -38,15 +38,21 @@ const mapCover = ({ color, theme, files = [] }) => {
   return { images, color: color || DEFAULT_COLOR, theme: theme || DEFAULT_THEME };
 };
 
-const mapTagContent = (content, topic) => {
-  if (!content.image) {
+const mapTagContent = (data, topic) => {
+  if (!data.image) {
     if (['times', 'themes'].includes(topic)) {
-      return content;
+      return data;
     }
-    return { ...content, image: TAG_TEMP_IMAGE };
+    return { ...data, image: TAG_TEMP_IMAGE };
   }
-  const [{ secret } = {}] = content.image.files;
-  return { ...content, image: getImageUrl(secret) || TAG_TEMP_IMAGE };
+  const { files, color } = data.image;
+  const [{ secret } = {}] = files;
+
+  const content = { ...data, image: getImageUrl(secret) || TAG_TEMP_IMAGE };
+  if (color) {
+    content.color = color;
+  }
+  return content;
 };
 
 const mapTags = data =>

@@ -144,7 +144,9 @@ export const checkIsPublished = (article, user) => {
 
 export const queryUnpublished = user => {
   if (!checkPermissions(user, 'canManageArticles')) {
-    return { publishAt: { $lt: Date.now() } };
+    // FIXME: publishAt check
+    // return { publishAt: { $lt: Date.now() } };
+    return {};
   }
   return {};
 };
@@ -152,7 +154,7 @@ export const queryUnpublished = user => {
 export const POPULATE_OPTIONS = {
   collection: user => ({
     path: 'collectionId',
-    select: '-_id name slug description imageUrl articles',
+    select: '-_id name slug description cover articles',
     populate: {
       path: 'articles',
       match: queryUnpublished(user),
