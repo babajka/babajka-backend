@@ -120,7 +120,16 @@ const getType = ({ video, audio }) => {
 };
 
 // `fibery` -> `wir` mapper
-export const mapFiberyArticle = async ({ cover, collection, locales, video, audio, ...rest }) => ({
+export const mapFiberyArticle = async ({
+  cover,
+  collection,
+  locales,
+  video,
+  audio,
+  publishAt,
+  keywords,
+  ...rest
+}) => ({
   ...omit(rest, TOPIC_SLUGS),
   ...mapCover(cover || {}),
   collection: mapCollection(collection),
@@ -132,10 +141,12 @@ export const mapFiberyArticle = async ({ cover, collection, locales, video, audi
   articleId: rest.fiberyId,
   active: true,
   type: getType({ video, audio }),
+  publishAt: new Date(publishAt),
+  keywords: keywords || ' ',
 });
 
 export const getArticle = async data => {
   const { fiberyId } = data;
-  const article = await Article.findOne({ fiberyId });
+  const article = await Article.findOneAndUpdate({ fiberyId }, data);
   return article || Article(data);
 };
