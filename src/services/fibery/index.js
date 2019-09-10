@@ -8,8 +8,16 @@ import { ValidationError } from 'utils/validation';
 import { map } from 'utils/func';
 
 import { /* STATE_READY, */ DOC_SECRET_NAME, DOC_FORMAT } from './constants';
-import { FIBERY_DEFAULT, ARTICLE_FIELDS, STATE, TAGS, RELATED_ENTITIES, CONTENT } from './query';
-import { getArticlePublicId, addAppName, mapAppNameLocales } from './utils';
+import {
+  FIBERY_DEFAULT,
+  ARTICLE_FIELDS,
+  ARTICLE_LOC_FIELDS,
+  STATE,
+  TAGS,
+  RELATED_ENTITIES,
+  CONTENT,
+} from './query';
+import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales } from './utils';
 // import { getState } from './getters';
 import { toWirFormat, formatEnum, IMAGE_FORMATER, TAG_FORMATER } from './formatters';
 
@@ -26,7 +34,8 @@ const getArticleData = async url => {
     {
       'q/from': addAppName('Article'),
       'q/select': FIBERY_DEFAULT.concat(
-        mapAppNameLocales(ARTICLE_FIELDS),
+        mapAppName(ARTICLE_FIELDS),
+        mapAppNameLocales(ARTICLE_LOC_FIELDS),
         STATE,
         TAGS,
         RELATED_ENTITIES,
@@ -61,7 +70,7 @@ const getArticleData = async url => {
   });
 
   const formatArticle = toWirFormat({
-    mapping: { Podcast: 'audio' },
+    mapping: { Podcast: 'audio', publication: 'publishAt' },
     mapper: (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
     formatters: {
       authors: TAG_FORMATER,

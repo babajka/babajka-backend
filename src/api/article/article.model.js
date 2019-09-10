@@ -48,12 +48,12 @@ const joiArticleSchema = Joi.object({
     platform: Joi.string().valid(['youtube']),
     id: Joi.string().regex(/^[a-zA-Z0-9_-]{11}$/),
     url: Joi.string().uri(),
-  }),
+  }).allow(null),
   audio: Joi.object({
     platform: Joi.string().valid(['soundcloud']),
     id: Joi.string(),
     url: Joi.string().uri(),
-  }),
+  }).allow(null),
   color: Joi.color().default(DEFAULT_COLOR),
   // Text on article card may be rendered in one of the following ways.
   // This depends on the color and is set manually.
@@ -64,7 +64,9 @@ const joiArticleSchema = Joi.object({
   tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
   // Keywords are for SEO optimization and search engines.
   keywords: Joi.string(),
-}).nand('video', 'audio');
+});
+// FIXME: falls with { audio: null, video: null }
+// .nand('video', 'audio');
 
 // FIXME: sync with design
 const IMAGES_BY_TYPE = {
