@@ -2,7 +2,8 @@ export default joi => ({
   name: 'image',
   base: joi
     .string()
-    .uri()
+    .uri({ allowRelative: true })
+    .regex(/^(\/api\/files|https?)/)
     .required()
     .meta({ type: String }),
 });
