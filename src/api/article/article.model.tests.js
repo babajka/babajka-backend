@@ -117,7 +117,7 @@ describe('Article model', () => {
   it('should fail to save article | invalid image', async () => {
     const errorHandler = spy(({ message }) => {
       expect(message).to.not.empty();
-      expect(message.images.page.type).to.include('uri');
+      expect(message.images.page.type).to.include('regex');
     });
 
     await Article({

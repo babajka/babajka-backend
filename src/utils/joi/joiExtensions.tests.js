@@ -22,7 +22,9 @@ describe('Joi.iamge', () => {
 
   it('should not accept empty strings', () => expect(validate('')).to.be.false());
   it('should not accept filename', () => expect(validate('lol-kek.jpg')).to.be.false());
+  it('should not accept non-url', () => expect(validate('23 4234 23432')).to.be.false());
   it('should accept valid url', () => expect(validate('http://wir.by/kino.jpg')).to.be.true());
+  it('should accept api/files url', () => expect(validate('/api/files/12323423')).to.be.true());
 });
 
 describe('Joi.locale', () => {
