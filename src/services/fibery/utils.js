@@ -17,3 +17,5 @@ export const getArticlePublicId = url => {
   const match = url.match(ARTICLE_URL_REGEX);
   return match && (match[1] || match[2]);
 };
+
+export const mapSecrets = list => list.map(secret => ({ secret }));

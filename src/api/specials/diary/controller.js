@@ -2,6 +2,7 @@ import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
 
 import { sendJson } from 'utils/api';
+import fibery from 'services/fibery';
 
 import Diary, { buildColloquialDateHash, serializeDiary } from './model';
 
@@ -56,4 +57,11 @@ export const getDay = async ({ params: { locale, month, day } }, res, next) => {
   }
 };
 
-export default getDay;
+export const fiberyImport = async (req, res, next) => {
+  try {
+    const data = await fibery.getDiaries();
+    return sendJson(res)({ data });
+  } catch (err) {
+    return next(err);
+  }
+};

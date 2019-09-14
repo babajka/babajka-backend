@@ -16,6 +16,7 @@ export const author = {
 export const contentManager = {
   ...author,
   canManageArticles: true,
+  canEditDiaries: true,
 };
 export const admin = {
   ...contentManager,

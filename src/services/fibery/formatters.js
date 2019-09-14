@@ -43,11 +43,12 @@ export const IMAGE_FORMATER = toWirFormat({
   },
 });
 
-export const TAG_FORMATER = map(
-  toWirFormat({
-    mapping: { name: 'slug', Avatar: 'image', Logo: 'image' },
-    formatters: {
-      image: IMAGE_FORMATER,
-    },
-  })
-);
+export const TAG_FORMATER = toWirFormat({
+  mapping: { name: 'slug', Avatar: 'image', Logo: 'image', 'Diary Author Avatar': 'diaryImage' },
+  formatters: {
+    image: IMAGE_FORMATER,
+    diaryImage: IMAGE_FORMATER,
+  },
+});
+
+export const TAGS_FORMATER = map(TAG_FORMATER);
