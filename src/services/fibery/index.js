@@ -123,11 +123,10 @@ const getDiaries = async () => {
   });
 
   const formatDiary = toWirFormat({
-    mapping: { Personality: 'author' },
     formatters: {
-      author: TAG_FORMATER,
+      personality: TAG_FORMATER,
       locale: formatEnum,
-      month: formatEnum,
+      month: toWirFormat(),
     },
   });
   return diaries.map(formatDiary);

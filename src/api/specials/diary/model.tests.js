@@ -1,10 +1,27 @@
 import 'db/connect';
-import { expect, dropData, spy } from 'utils/testing';
+import {
+  expect,
+  dropData,
+  spy,
+  addPersonalityTag,
+  defaultObjectMetadata,
+  addTopics,
+  addAdminUser,
+} from 'utils/testing';
+import { getId } from 'utils/getters';
 
 import Diary from './model';
 
 describe('Diary Model', () => {
-  before(dropData);
+  let author;
+
+  before(async () => {
+    await dropData();
+    await addAdminUser();
+    const metadata = await defaultObjectMetadata();
+    await addTopics(metadata);
+    author = await addPersonalityTag(metadata);
+  });
 
   it('should fail to create diary with invalid date', async () => {
     const errorHandler = spy(({ message }) => {
@@ -15,8 +32,8 @@ describe('Diary Model', () => {
     });
 
     await Diary({
-      author: 'George Orwell',
-      text: 'Big brother is watching you',
+      author: getId(author),
+      text: { content: 'Big brother is watching you' },
       colloquialDateHash: '1984',
       locale: 'en',
     })

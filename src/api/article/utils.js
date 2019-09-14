@@ -38,41 +38,40 @@ const mapCover = ({ color, theme, files = [] }) => {
   return { images, color: color || DEFAULT_COLOR, theme: theme || DEFAULT_THEME };
 };
 
-const mapTagContent = (data, topic) => {
-  if (!data.image) {
-    if (['times', 'themes'].includes(topic)) {
-      return data;
-    }
-    return { ...data, image: TAG_TEMP_IMAGE };
+const mapImage = (image, topic) => {
+  if (!image) {
+    return ['times', 'themes'].includes(topic) ? image : TAG_TEMP_IMAGE;
   }
-  const { files, color } = data.image;
-  const [{ secret } = {}] = files;
+  const [{ secret } = {}] = image.files;
+  return getImageUrl(secret) || TAG_TEMP_IMAGE;
+};
 
-  const content = { ...data, image: getImageUrl(secret) || TAG_TEMP_IMAGE };
-  if (color) {
-    content.color = color;
+const mapTagContent = ({ image, diaryImage, ...rest }, topic) => {
+  const content = {
+    ...rest,
+    image: mapImage(image, topic),
+    diaryImage: mapImage(diaryImage, topic),
+  };
+  if (image && image.color) {
+    content.color = image.color;
   }
   return content;
 };
 
+export const getMapTag = topic => ({ slug, fiberyId, fiberyPublicId, ...content }) => ({
+  slug,
+  fiberyId,
+  fiberyPublicId,
+  content: mapTagContent(content, topic),
+  topic: {
+    // FIXME
+    _id: topic,
+    slug: topic,
+  },
+});
+
 const mapTags = data =>
-  TOPIC_SLUGS.reduce(
-    (acc, topic) =>
-      acc.concat(
-        data[topic].map(({ slug, fiberyId, fiberyPublicId, ...content }) => ({
-          slug,
-          fiberyId,
-          fiberyPublicId,
-          content: mapTagContent(content, topic),
-          topic: {
-            // FIXME
-            _id: topic,
-            slug: topic,
-          },
-        }))
-      ),
-    []
-  );
+  TOPIC_SLUGS.reduce((acc, topic) => acc.concat(data[topic].map(getMapTag(topic))), []);
 
 const mapCollection = c => {
   if (!c || !c.cover) {
