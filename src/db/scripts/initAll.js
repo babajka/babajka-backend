@@ -1,26 +1,19 @@
 /* eslint-disable no-console */
 
-// The script updates databases with data provided as a set of json files.
+// The script updates databases with data from Fibery.io.
 // The script is executed as follows:
-//   npm run init-db -- path-to-secret-file path-to-data
+//   npm run init-db -- path-to-secret-file
 //
 // Examples:
-// * to populate local db with data from this repo:
+// * to populate local db:
 //   npm run init-db
-// * to populate remote db with data from this repo:
+// * to populate remote db:
 //   npm run init-db -- '/home/user/secret.json'
-// * to populate local db with golden data from Google Drive:
-//   npm run init-db -- '' '${GOOGLE_DRIVE}/Wir/golden-data/'
-// * to populate remote db with golden data from Google Drive:
-//   npm run init-db -- '/home/user/secret.json' '${GOOGLE_DRIVE}/Wir/golden-data/'
 
-import fs from 'fs';
-import path from 'path';
 import mongoose from 'mongoose';
 import keyBy from 'lodash/keyBy';
 import sample from 'lodash/sample';
 import sampleSize from 'lodash/sampleSize';
-import noop from 'lodash/noop';
 
 import connectDb from 'db';
 import { User } from 'api/user';
@@ -30,7 +23,6 @@ import { Diary } from 'api/specials';
 import { Tag } from 'api/tag';
 import { Topic } from 'api/topic';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
-import { fiberyImport } from 'api/article/controller';
 
 import * as permissions from 'constants/permissions';
 import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
@@ -38,48 +30,40 @@ import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
 import { addTopics } from 'utils/testing';
 import { getId, mapIds, getTagsByTopic, getArticlesByTag } from 'utils/getters';
 
+import importArticles from './importArticles';
+import importDiaries from './importDiaries';
+import { retrieveMetadataTestingUser } from './utils';
+
 const SIDEBAR_BLOCKS = ['themes', 'personalities', 'times', 'locations', 'brands', 'authors'];
 
-const defaultDataPath = `${__dirname}/../data/`;
-const dataFilenames = {
-  users: 'users.json',
-  diaries: 'diary.json',
-};
-
-const initData = {};
-
-const getData = () => {
-  const customDir = process.argv[3] || '';
-  if (customDir.length === 0) {
-    console.log('No custom directory with init data provided: using default data to init db.');
-  }
-
-  Object.entries(dataFilenames).forEach(([dataType, filename]) => {
-    let data;
-
-    if (customDir.length > 0) {
-      const customPath = path.join(customDir, filename);
-      try {
-        data = JSON.parse(fs.readFileSync(customPath, 'utf8'));
-      } catch {
-        console.log(
-          `Custom path was provided but we failed to read data from:\n  ${customPath}\nUsing default file instead.`
-        );
-      }
-    }
-
-    if (!data) {
-      const defaultPath = path.join(defaultDataPath, filename);
-      data = JSON.parse(fs.readFileSync(defaultPath, 'utf8'));
-    }
-
-    initData[dataType] = data;
-  });
-};
+const USERS = [
+  {
+    email: 'admin@babajka.io',
+    firstName: 'Fox',
+    lastName: 'Muller',
+    password: 'password',
+    permissionsPreset: 'admin',
+  },
+  {
+    email: 'creator@babajka.io',
+    firstName: 'Dana',
+    lastName: 'Scally',
+    password: 'password1',
+    permissionsPreset: 'contentManager',
+  },
+  {
+    email: 'user@babajka.io',
+    firstName: 'Джон',
+    lastName: 'Сміт',
+    password: 'password2',
+    bio: 'бла-бла-бла',
+    imageUrl: '/test/images/einstein.jpeg',
+  },
+];
 
 const initUsers = () =>
   Promise.all(
-    initData.users.map(async userData => {
+    USERS.map(async userData => {
       const permPreset = userData.permissionsPreset || 'user';
 
       const user = new User(userData);
@@ -91,48 +75,6 @@ const initUsers = () =>
     })
   );
 
-export const retrieveMetadataTestingUser = async () => User.findOne({ email: 'admin@babajka.io' });
-
-const INIT_ARTICLES = [
-  'https://wir.fibery.io/Content~Marketing/139#Article/38',
-  'https://wir.fibery.io/Content~Marketing/139#Article/45',
-  'https://wir.fibery.io/Content~Marketing/139#Article/85',
-  'https://wir.fibery.io/Content~Marketing/139#Article/73',
-  'https://wir.fibery.io/Content~Marketing/139#Article/74',
-  'https://wir.fibery.io/Content~Marketing/139#Article/88',
-  'https://wir.fibery.io/Content~Marketing/139#Article/90',
-  'https://wir.fibery.io/Content~Marketing/139#Article/89',
-  'https://wir.fibery.io/Content~Marketing/139#Article/86',
-  'https://wir.fibery.io/Content~Marketing/139#Article/91',
-];
-
-const mockRes = {
-  status: () => ({
-    json: noop,
-  }),
-};
-
-const initArticles = metadataTestingUser =>
-  Promise.all(
-    INIT_ARTICLES.map(url =>
-      fiberyImport(
-        {
-          body: { url },
-          user: metadataTestingUser,
-        },
-        mockRes,
-        err => {
-          if (err) {
-            throw err;
-          }
-        }
-      )
-    )
-  );
-
-const initDiaries = () =>
-  Promise.all(initData.diaries.map(async diaryData => new Diary(diaryData).save()));
-
 export const initMainPageState = async metadataTestingUser => {
   const articles = await Article.find();
   const topics = await Topic.find().exec();
@@ -140,6 +82,8 @@ export const initMainPageState = async metadataTestingUser => {
   const tagsBySlug = keyBy(tags, 'slug');
   const articlesByTag = getArticlesByTag({ articles, tags });
   const { personalities = [], locations = [] } = getTagsByTopic({ tags, topics });
+
+  // TODO: filter out personalities with 0 articles (diary authors)
 
   const hasPersonalities = personalities.length > 2;
   if (!hasPersonalities) {
@@ -207,6 +151,8 @@ const initSidebarState = async metadataTestingUser => {
   const topics = await Topic.find().exec();
   const tagsByTopic = getTagsByTopic({ tags, topics });
 
+  // TODO: filter out personalities with 0 articles (diary authors)
+
   const blocks = SIDEBAR_BLOCKS.map(topic => ({
     topic,
     tags: tagsByTopic[topic],
@@ -218,30 +164,26 @@ const initSidebarState = async metadataTestingUser => {
 
 const run = async () => {
   try {
-    getData();
-
     await connectDb();
     await mongoose.connection.db.dropDatabase();
     console.log('Mongoose: drop database');
 
     await initUsers();
-    console.log(`Mongoose: insert ${await User.countDocuments()} user(s)`);
+    console.log(`Mongoose: insert ${await User.countDocuments()} users`);
 
     const metadataTestingUser = await retrieveMetadataTestingUser();
     const commonMetadata = getInitObjectMetadata(metadataTestingUser);
     const topics = await addTopics(commonMetadata);
-    console.log(`Mongoose: insert ${topics.length} topic(s)`);
+    console.log(`Mongoose: insert ${topics.length} topics`);
 
-    await initArticles(metadataTestingUser);
+    await importArticles(metadataTestingUser);
     const articlesCount = await Article.countDocuments();
-    console.log(`Mongoose: insert ${articlesCount} article(s)`);
-    console.log(
-      `Mongoose: insert ${await ArticleCollection.countDocuments()} article collection(s)`
-    );
+    console.log(`Mongoose: insert ${articlesCount} articles`);
+    console.log(`Mongoose: insert ${await ArticleCollection.countDocuments()} article collections`);
 
-    await initDiaries();
-    console.log(`Mongoose: insert ${await Diary.countDocuments()} diary(es)`);
-    console.log(`Mongoose: insert ${await Tag.countDocuments()} tags;`);
+    await importDiaries(metadataTestingUser);
+    console.log(`Mongoose: insert ${await Diary.countDocuments()} diaries`);
+    console.log(`Mongoose: insert ${await Tag.countDocuments()} tags`);
 
     if (articlesCount) {
       await initMainPageState(metadataTestingUser);
@@ -260,4 +202,6 @@ const run = async () => {
   process.exit();
 };
 
-run();
+if (require.main === module) {
+  run();
+}

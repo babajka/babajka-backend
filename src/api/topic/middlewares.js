@@ -1,6 +1,6 @@
 import { TOPIC_SLUGS } from 'constants/topic';
 
-import { ValidationError } from 'utils/validation';
+import { ValidationError } from 'utils/joi';
 
 export const verifyTopicName = ({ params: { topic } }, res, next) => {
   if (!TOPIC_SLUGS.includes(topic)) {
