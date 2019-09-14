@@ -1,14 +1,13 @@
 import isEmpty from 'lodash/isEmpty';
 
 import { ValidationError } from 'utils/validation';
-import { defaultValidator } from 'utils/joi';
 import { mapIds } from 'utils/getters';
 
-import LocalizedArticle, { joiLocalizedArticleSchema } from './model';
+import LocalizedArticle, { validateLocalization } from './model';
 
 const validate = locales => {
   const errors = locales.reduce((acc, cur) => {
-    const err = defaultValidator(cur, joiLocalizedArticleSchema);
+    const err = validateLocalization(cur);
     if (err) {
       acc[cur.locale] = err;
     }

@@ -19,6 +19,7 @@ import LocalizedArticle from 'api/article/localized/model';
 import User from 'api/user/model';
 import Tag from 'api/tag/model';
 import Topic from 'api/topic/model';
+import { getId } from 'utils/getters';
 
 chai.use(dirtyChai);
 chai.use(spies);
@@ -60,6 +61,44 @@ export const TEST_DATA = {
             be: 'lol',
           },
           image: IMAGE_URL,
+        },
+      },
+    },
+    personalities: {
+      default: {
+        fiberyId: 'testTag-karatkevich',
+        slug: 'karatkevich',
+        content: {
+          name: {
+            be: 'Уладзімір Караткевіч',
+          },
+          subtitle: {
+            be: '20 стг',
+          },
+          image: IMAGE_URL,
+          diaryImage: IMAGE_URL,
+          color: '#ff0000',
+          description: {
+            be: 'пісменнік',
+          },
+        },
+      },
+      kolas: {
+        fiberyId: 'testTag-kolas',
+        slug: 'kolas',
+        content: {
+          name: {
+            be: 'Якуб Клас',
+          },
+          subtitle: {
+            be: '20 стг',
+          },
+          image: IMAGE_URL,
+          diaryImage: IMAGE_URL,
+          color: '#ff0000',
+          description: {
+            be: 'пісменнік',
+          },
         },
       },
     },
@@ -199,12 +238,12 @@ export const addArticles = async (numberPublished, numberUnpublished) => {
 export const addTopics = metadata =>
   Promise.all(TOPIC_SLUGS.map(topicSlug => Topic({ slug: topicSlug, metadata }).save()));
 
-const addTag = (metadata, topicSlug) =>
+const addTag = (metadata, topicSlug, key = 'default') =>
   Topic.findOne({ slug: topicSlug }).then(topic => {
-    const { fiberyId, slug, content } = TEST_DATA.tags[topicSlug].default;
+    const { fiberyId, slug, content } = TEST_DATA.tags[topicSlug][key];
     return Tag({
       fiberyId,
-      topic: topic._id,
+      topic: getId(topic),
       topicSlug,
       slug,
       content,
@@ -213,6 +252,8 @@ const addTag = (metadata, topicSlug) =>
   });
 
 export const addAuthorsTag = metadata => addTag(metadata, 'authors');
+
+export const addPersonalityTag = (metadata, key) => addTag(metadata, 'personalities', key);
 
 export const addBrandsTag = metadata => addTag(metadata, 'brands');
 

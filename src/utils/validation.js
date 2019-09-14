@@ -147,3 +147,16 @@ export const checkIsFound = (object, code = HttpStatus.NOT_FOUND) => {
 };
 
 export const isValidId = id => mongoose.Types.ObjectId.isValid(id);
+
+export const validateList = (data, validator, name) => {
+  const errors = data.map(validator).reduce((acc, error, index) => {
+    if (!error) {
+      return acc;
+    }
+    // data for render error on frontend
+    return acc.concat({ data: data[index], error });
+  }, []);
+  if (errors.length) {
+    throw new ValidationError({ [name]: errors });
+  }
+};

@@ -12,6 +12,7 @@ export const TAG_CONTENT_SCHEMA = {
     name: Joi.localizedText().required(),
     subtitle: Joi.localizedText().required(),
     image: Joi.image(),
+    diaryImage: Joi.image(),
     color: Joi.color().required(),
     description: Joi.localizedText().required(),
   }),

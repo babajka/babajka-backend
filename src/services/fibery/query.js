@@ -7,7 +7,7 @@ export const ARTICLE_FIELDS = ['Keywords', 'publication-date'];
 
 export const ARTICLE_LOC_FIELDS = ['Title', 'Subtitle', 'Slug'];
 
-export const ENUM = ['enum/name'];
+export const ENUM = ['enum/name', 'fibery/rank'];
 
 export const STATE = { 'workflow/state': ENUM };
 

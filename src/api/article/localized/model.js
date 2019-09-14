@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
-import Joi, { joiToMongoose } from 'utils/joi';
+import Joi, { joiToMongoose, defaultValidator } from 'utils/joi';
 
-export const joiLocalizedArticleSchema = Joi.object({
+const joiLocalizedArticleSchema = Joi.object({
   articleId: Joi.objectId().required(),
   locale: Joi.locale().required(),
   title: Joi.string().required(),
@@ -19,5 +19,7 @@ const LocalizedArticleSchema = joiToMongoose(joiLocalizedArticleSchema, {
 });
 
 const LocalizedArticle = mongoose.model('LocalizedArticle', LocalizedArticleSchema);
+
+export const validateLocalization = data => defaultValidator(data, joiLocalizedArticleSchema);
 
 export default LocalizedArticle;
