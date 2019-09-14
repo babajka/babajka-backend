@@ -16,10 +16,11 @@ import {
   TAGS,
   RELATED_ENTITIES,
   CONTENT,
+  DIARY_FIELDS,
 } from './query';
-import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales } from './utils';
+import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales, mapSecrets } from './utils';
 // import { getState } from './getters';
-import { toWirFormat, formatEnum, IMAGE_FORMATER, TAG_FORMATER } from './formatters';
+import { toWirFormat, formatEnum, IMAGE_FORMATER, TAGS_FORMATER, TAG_FORMATER } from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
 
@@ -62,7 +63,7 @@ const getArticleData = async url => {
     acc[secret] = key;
     return acc;
   }, {});
-  const secrets = Object.keys(localeBySecret).map(secret => ({ secret }));
+  const secrets = mapSecrets(Object.keys(localeBySecret));
   const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
   Object.entries(localeBySecret).forEach(([secret, key]) => {
     const { content = null } = docs[secret] || {};
@@ -73,12 +74,12 @@ const getArticleData = async url => {
     mapping: { Podcast: 'audio', publication: 'publishAt' },
     mapper: (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
     formatters: {
-      authors: TAG_FORMATER,
-      brands: TAG_FORMATER,
-      themes: TAG_FORMATER,
-      times: TAG_FORMATER,
-      personalities: TAG_FORMATER,
-      locations: TAG_FORMATER,
+      authors: TAGS_FORMATER,
+      brands: TAGS_FORMATER,
+      themes: TAGS_FORMATER,
+      times: TAGS_FORMATER,
+      personalities: TAGS_FORMATER,
+      locations: TAGS_FORMATER,
 
       collection: toWirFormat({
         formatters: {
@@ -100,4 +101,36 @@ const getArticleData = async url => {
   return formatArticle(article);
 };
 
-export default { getArticleData };
+// TODO: add `month` input param (to reduce data amount)
+const getDiaries = async () => {
+  const data = await fibery.entity.query({
+    'q/from': addAppName('Diary'),
+    'q/select': FIBERY_DEFAULT.concat(DIARY_FIELDS),
+    'q/limit': 'q/no-limit',
+  });
+
+  const TEXT = addAppName('Text');
+  const secrets = data.map((d, index) => ({
+    secret: d[TEXT][DOC_SECRET_NAME],
+    index,
+  }));
+  const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
+  const secretByIndex = keyBy(secrets, 'index');
+  const diaries = data.map((d, i) => {
+    const { secret } = secretByIndex[i];
+    const { content = null } = docs[secret] || {};
+    return { ...d, [TEXT]: content && content.doc };
+  });
+
+  const formatDiary = toWirFormat({
+    mapping: { Personality: 'author' },
+    formatters: {
+      author: TAG_FORMATER,
+      locale: formatEnum,
+      month: formatEnum,
+    },
+  });
+  return diaries.map(formatDiary);
+};
+
+export default { getArticleData, getDiaries };

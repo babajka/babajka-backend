@@ -1,4 +1,4 @@
-import { addAppName, mapAppNameLocales } from './utils';
+import { addAppName, mapAppNameLocales, mapAppName } from './utils';
 import { DOC_SECRET_NAME } from './constants';
 
 export const FIBERY_DEFAULT = ['fibery/id', 'fibery/public-id'];
@@ -38,6 +38,7 @@ const TAGS_IMAGES = {
   },
   Personalities: {
     'user/Avatar': IMAGE.concat(addAppName('Color')),
+    'user/Diary Author Avatar': IMAGE,
   },
   Locations: {
     'user/Image': IMAGE,
@@ -88,3 +89,24 @@ export const CONTENT = mapAppNameLocales(['Text']).reduce((acc, key) => {
   });
   return acc;
 }, []);
+
+export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
+  .concat(
+    [
+      { Month: ENUM },
+      { Locale: ENUM },
+      {
+        Text: [DOC_SECRET_NAME],
+      },
+    ].map(o => {
+      const [[k, v]] = Object.entries(o);
+      return { [addAppName(k)]: v };
+    })
+  )
+  .concat({
+    'user/Personality': FIBERY_DEFAULT.concat(
+      addAppName('name'),
+      mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities),
+      TAGS_IMAGES.Personalities
+    ),
+  });
