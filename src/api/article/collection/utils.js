@@ -1,7 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 
-import { ValidationError } from 'utils/validation';
-import { defaultValidator } from 'utils/joi';
+import { defaultValidator, ValidationError } from 'utils/joi';
 import { getId } from 'utils/getters';
 
 import ArticleCollection, { joiArticleCollectionSchema } from './model';

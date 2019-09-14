@@ -79,7 +79,7 @@ export const TEST_DATA = {
           diaryImage: IMAGE_URL,
           color: '#ff0000',
           description: {
-            be: 'пісменнік',
+            be: 'пісьменнік',
           },
         },
       },
@@ -88,7 +88,7 @@ export const TEST_DATA = {
         slug: 'kolas',
         content: {
           name: {
-            be: 'Якуб Клас',
+            be: 'Якуб Колас',
           },
           subtitle: {
             be: '20 стг',
@@ -97,7 +97,7 @@ export const TEST_DATA = {
           diaryImage: IMAGE_URL,
           color: '#ff0000',
           description: {
-            be: 'пісменнік',
+            be: 'пісьменнік',
           },
         },
       },

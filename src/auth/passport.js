@@ -3,7 +3,7 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 
 import { User } from 'api/user';
-import { ValidationError } from 'utils/validation';
+import { ValidationError } from 'utils/joi';
 import { cutUrlParams } from 'utils/formatting';
 import config from 'config';
 

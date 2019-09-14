@@ -11,6 +11,8 @@
     "start-secret": "npm start -- src/config/secret.json",
     "init-db": "babel-node src/db/scripts/initAll.js",
     "init-db-secret": "npm run init-db -- src/config/secret.json",
+    "import-articles": "babel-node src/db/scripts/importArticles.js",
+    "import-diaries": "babel-node src/db/scripts/importDiaries.js",
     "grant-permissions": "babel-node src/db/scripts/grantPermissions.js",
     "set-password": "babel-node src/db/scripts/setPassword.js",
     "lint": "npm run prettify && eslint index.js src/ --fix",

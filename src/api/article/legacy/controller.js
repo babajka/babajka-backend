@@ -4,7 +4,8 @@ import omit from 'lodash/omit';
 import set from 'lodash/set';
 import HttpStatus from 'http-status-codes';
 
-import { checkIsFound, isValidId, ValidationError } from 'utils/validation';
+import { ValidationError } from 'utils/joi';
+import { checkIsFound, isValidId } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
 import {

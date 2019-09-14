@@ -4,7 +4,7 @@ import HttpStatus from 'http-status-codes';
 import keyBy from 'lodash/keyBy';
 
 import config from 'config';
-import { ValidationError } from 'utils/validation';
+import { ValidationError } from 'utils/joi';
 import { map } from 'utils/func';
 
 import { /* STATE_READY, */ DOC_SECRET_NAME, DOC_FORMAT } from './constants';
@@ -20,7 +20,13 @@ import {
 } from './query';
 import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales, mapSecrets } from './utils';
 // import { getState } from './getters';
-import { toWirFormat, formatEnum, IMAGE_FORMATER, TAGS_FORMATER, TAG_FORMATER } from './formatters';
+import {
+  toWirFormat,
+  formatEnum,
+  IMAGE_FORMATTER,
+  TAGS_FORMATTER,
+  TAG_FORMATTER,
+} from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
 
@@ -74,16 +80,16 @@ const getArticleData = async url => {
     mapping: { Podcast: 'audio', publication: 'publishAt' },
     mapper: (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
     formatters: {
-      authors: TAGS_FORMATER,
-      brands: TAGS_FORMATER,
-      themes: TAGS_FORMATER,
-      times: TAGS_FORMATER,
-      personalities: TAGS_FORMATER,
-      locations: TAGS_FORMATER,
+      authors: TAGS_FORMATTER,
+      brands: TAGS_FORMATTER,
+      themes: TAGS_FORMATTER,
+      times: TAGS_FORMATTER,
+      personalities: TAGS_FORMATTER,
+      locations: TAGS_FORMATTER,
 
       collection: toWirFormat({
         formatters: {
-          cover: IMAGE_FORMATER,
+          cover: IMAGE_FORMATTER,
         },
       }),
       video: toWirFormat({ mapping: { 'Youtube Link': 'url' } }),
@@ -124,7 +130,7 @@ const getDiaries = async () => {
 
   const formatDiary = toWirFormat({
     formatters: {
-      personality: TAG_FORMATER,
+      personality: TAG_FORMATTER,
       locale: formatEnum,
       month: toWirFormat(),
     },

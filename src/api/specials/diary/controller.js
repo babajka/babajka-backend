@@ -27,6 +27,8 @@ const getQuery = d => {
   return { day, month };
 };
 
+const getMonthNum = ({ rank }) => rank / ENUM_BASE + 1;
+
 export const getDay = async ({ params: { month, day } }, res, next) => {
   try {
     const today = buildColloquialDateHash(month, day);
@@ -91,11 +93,10 @@ export const fiberyImport = async ({ user }, res, next) => {
       (acc, { fiberyId, _id }) => ({ ...acc, [fiberyId]: _id }),
       {}
     );
-    const diariesData = data.map(({ personality, day, month: { rank }, ...rest }) => ({
+    const diariesData = data.map(({ personality, day, month, ...rest }) => ({
       ...rest,
       author: authorsIds[personality.fiberyId],
-      // TODO: check if rank is right
-      colloquialDateHash: (rank / ENUM_BASE + 1) * 100 + day,
+      colloquialDateHash: getMonthNum(month) * 100 + day,
     }));
 
     await validateList(diariesData, validateDiary, 'diaries');

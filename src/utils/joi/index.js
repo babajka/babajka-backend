@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import baseJoi from '@hapi/joi';
 import getJoigoose from 'joigoose';
+import HttpError from 'node-http-error';
+import HttpStatus from 'http-status-codes';
 import omit from 'lodash/omit';
 import set from 'lodash/set';
-
-import { ValidationError } from 'utils/validation';
 
 import objectid from './objectId';
 import color from './color';
@@ -16,6 +16,10 @@ import image from './image';
 import slug from './slug';
 import locale from './locale';
 import userPermissions from './userPermissions';
+
+export function ValidationError(message) {
+  return HttpError(HttpStatus.BAD_REQUEST, message);
+}
 
 const Joi = baseJoi.extend([
   objectid,

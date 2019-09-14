@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 
-import { ValidationError } from 'utils/validation';
+import { ValidationError } from 'utils/joi';
 import { mapIds } from 'utils/getters';
 
 import LocalizedArticle, { validateLocalization } from './model';

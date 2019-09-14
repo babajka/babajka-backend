@@ -38,20 +38,22 @@ const mapCover = ({ color, theme, files = [] }) => {
   return { images, color: color || DEFAULT_COLOR, theme: theme || DEFAULT_THEME };
 };
 
-const mapImage = (image, topic) => {
+const mapImage = image => {
   if (!image) {
-    return ['times', 'themes'].includes(topic) ? image : TAG_TEMP_IMAGE;
+    return TAG_TEMP_IMAGE;
   }
   const [{ secret } = {}] = image.files;
   return getImageUrl(secret) || TAG_TEMP_IMAGE;
 };
 
 const mapTagContent = ({ image, diaryImage, ...rest }, topic) => {
-  const content = {
-    ...rest,
-    image: mapImage(image, topic),
-    diaryImage: mapImage(diaryImage, topic),
-  };
+  const content = rest;
+  if (!['times', 'themes'].includes(topic)) {
+    content.image = mapImage(image, topic);
+  }
+  if (topic === 'personalities') {
+    content.diaryImage = mapImage(diaryImage, topic);
+  }
   if (image && image.color) {
     content.color = image.color;
   }

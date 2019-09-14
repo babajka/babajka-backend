@@ -6,7 +6,7 @@ import set from 'lodash/set';
 import mongoose from 'mongoose';
 import Joi from 'utils/joi';
 
-import { joiMainPageDataSchema, joiSidebarDataSchema } from 'constants/storage';
+import { MAIN_PAGE_ENTITIES, SIDEBAR_ENTITIES } from 'constants/storage';
 
 export function ValidationError(message) {
   return HttpError(HttpStatus.BAD_REQUEST, message);
@@ -77,6 +77,12 @@ const updateArticleValidator = ({ body }, res, next) => {
 
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
+
+const getDataSchema = entities =>
+  Joi.object().pattern(Joi.string().valid(entities), Joi.array().items(Joi.objectId()));
+
+const joiMainPageDataSchema = getDataSchema(MAIN_PAGE_ENTITIES);
+const joiSidebarDataSchema = getDataSchema(SIDEBAR_ENTITIES);
 
 export const checkMainPageEntitiesFormat = data =>
   Joi.validate(data, joiMainPageDataSchema).error === null;
