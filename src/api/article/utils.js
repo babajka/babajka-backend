@@ -70,6 +70,7 @@ export const getMapTag = topic => ({ slug, fiberyId, fiberyPublicId, ...content 
     _id: topic,
     slug: topic,
   },
+  topicSlug: topic,
 });
 
 const mapTags = data =>
