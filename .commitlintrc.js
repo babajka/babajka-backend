@@ -22,6 +22,7 @@ module.exports = {
         'topics-tags',
         'user',
         'utils',
+        'files',
       ],
     ],
     'scope-empty': [2, 'never'],
