@@ -41,6 +41,8 @@
     "fibery-unofficial": "^0.2.1",
     "google-spreadsheet": "^2.0.7",
     "http-status-codes": "^1.3.0",
+    "imagemin": "^7.0.0",
+    "imagemin-pngquant": "^8.0.0",
     "joigoose": "^4.0.8",
     "lodash": "^4.17.15",
     "mailchimp-api-v3": "^1.12.1",
