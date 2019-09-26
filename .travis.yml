@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-- '10'
+  - '10'
 services:
-- mongodb
+  - mongodb
 script:
-- npm run lint
-- npm run test:with-coverage
+  - npm run lint
+  - npm run test:with-coverage
 after_success:
-- npm run travis-deploy-once "npm run semantic-release"
+  - npm run travis-deploy-once "npm run semantic-release"
 notifications:
   slack:
     rooms:
@@ -15,19 +15,22 @@ notifications:
 addons:
   ssh_known_hosts: dev.wir.by
 before_deploy:
-- openssl aes-256-cbc -K $encrypted_4d81b79f98ff_key -iv $encrypted_4d81b79f98ff_iv
-  -in babajka_dev_rsa.enc -out /tmp/babajka_dev_rsa -d
-- eval "$(ssh-agent -s)"
-- chmod 600 /tmp/babajka_dev_rsa
-- ssh-add /tmp/babajka_dev_rsa
+  - openssl aes-256-cbc -K $encrypted_4d81b79f98ff_key -iv $encrypted_4d81b79f98ff_iv
+    -in babajka_dev_rsa.enc -out /tmp/babajka_dev_rsa -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 /tmp/babajka_dev_rsa
+  - ssh-add /tmp/babajka_dev_rsa
+  - sh bin/dev/before-deploy.sh dev
 deploy:
-- provider: script
-  skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR wir-dev@dev.wir.by:/home/wir-dev/deployed/swap-backend/
-  on:
-    branch: develop
-- provider: script
-  skip_cleanup: true
-  script: ssh wir-dev@dev.wir.by 'bash -s' < bin/dev/postdeploy.sh
-  on:
-    branch: develop
+  - provider: script
+    skip_cleanup: true
+    script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR wir-dev@dev.wir.by:/home/wir-dev/deployed/swap-backend/
+    on:
+      branch: develop
+  - provider: script
+    skip_cleanup: true
+    script: ssh wir-dev@dev.wir.by 'bash -s' < bin/dev/postdeploy.sh
+    on:
+      branch: develop
+after_deploy:
+  - sh bin/dev/after-deploy.sh dev
