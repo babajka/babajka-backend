@@ -12,7 +12,7 @@ export const addAppNameLocale = (key, lang) => appendLocale(addAppName(key))(lan
 export const mapAppNameLocales = arr => flatten(mapAppName(arr).map(mapLocales));
 
 // https://regex101.com/r/pBnzhy/1
-const ARTICLE_URL_REGEX = /https:\/\/wir\.fibery\.io\/Content~Marketing\/[^/]+#Article\/(?:([\d]+)|(?:.+)-([\d]+))$/;
+const ARTICLE_URL_REGEX = /https:\/\/wir\.fibery\.io\/Content~Marketing\/(?:[^/]+)?Article\/(?:([\d]+)|(?:.+)-([\d]+))$/;
 export const getArticlePublicId = url => {
   const match = url.match(ARTICLE_URL_REGEX);
   return match && (match[1] || match[2]);
