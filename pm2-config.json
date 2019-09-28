@@ -1,11 +1,14 @@
 {
-  "apps": [{
-    "name": "backend-staging",
-    "script": "npm",
-    "args": "run start-prod -- /home/wir-dev/secret-staging.json"
-  },{
-    "name": "backend-production",
-    "script": "npm",
-    "args": "run start-prod -- /home/wir-prod/secret-production.json"
-  }]
+  "apps": [
+    {
+      "name": "backend-staging",
+      "script": "npm",
+      "args": "run start-prod -- --secretPath=/home/wir-dev/secret-staging.json --imagesDir=/home/wir-dev/images-cache"
+    },
+    {
+      "name": "backend-production",
+      "script": "npm",
+      "args": "run start-prod -- --secretPath=/home/wir-prod/secret-production.json --imagesDir=/home/wir-prod/images-cache"
+    }
+  ]
 }

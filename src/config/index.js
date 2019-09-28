@@ -4,11 +4,11 @@ import connectMongo from 'connect-mongo';
 import merge from 'lodash/merge';
 import fs from 'fs';
 
+import { secretPath } from 'utils/args';
 import defaultConfig from './config.json';
 
 const MongoStore = connectMongo(session);
 
-const secretPath = process.argv[2];
 let secret = null;
 
 if (secretPath) {
