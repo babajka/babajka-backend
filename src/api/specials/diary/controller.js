@@ -32,42 +32,50 @@ const getMonthNum = ({ rank }) => rank / ENUM_BASE + 1;
 export const getDay = async ({ params: { month, day } }, res, next) => {
   try {
     const today = buildColloquialDateHash(month, day);
-    const diaries = await Diary.find({ colloquialDateHash: today, active: true }).populate(
+    const todayDiaries = await Diary.find({ colloquialDateHash: today, active: true }).populate(
       'author'
     );
-    const diary = sample(diaries);
+    let todayDiary = sample(todayDiaries);
 
-    let [bestPrev] = await Diary.find({ colloquialDateHash: { $lt: today } })
+    let [prevD, prevPrevD] = await Diary.find({ colloquialDateHash: { $lt: today } })
       .sort({ colloquialDateHash: 'desc' })
-      .limit(1);
+      .limit(2)
+      .populate('author');
 
-    if (!bestPrev) {
+    if (!prevD) {
       // The very beginning of the year might be requested.
-      [bestPrev] = await Diary.find({})
+      [prevD, prevPrevD] = await Diary.find({})
         .sort({ colloquialDateHash: 'desc' })
-        .limit(1);
+        .limit(2)
+        .populate('author');
 
-      if (!bestPrev) {
+      if (!prevD) {
         // We have no diaries at all.
         throw new HttpError(HttpStatus.NO_CONTENT, 'errors.diariesMissing');
       }
     }
 
-    let [bestNext] = await Diary.find({ colloquialDateHash: { $gt: today } })
+    let [nextD] = await Diary.find({ colloquialDateHash: { $gt: today } })
       .sort({ colloquialDateHash: 'asc' })
       .limit(1);
 
-    if (!bestNext) {
+    if (!nextD) {
       // The very end of the year might be requested.
-      [bestNext] = await Diary.find({})
+      [nextD] = await Diary.find({})
         .sort({ colloquialDateHash: 'asc' })
         .limit(1);
     }
 
+    if (!todayDiary) {
+      // TODO: add sentry call with warning
+      todayDiary = prevD;
+      prevD = prevPrevD;
+    }
+
     return sendJson(res)({
-      data: serializeDiary(diary),
-      prev: getQuery(bestPrev),
-      next: getQuery(bestNext),
+      data: serializeDiary(todayDiary),
+      prev: getQuery(prevD),
+      next: getQuery(nextD),
     });
   } catch (err) {
     return next(err);
