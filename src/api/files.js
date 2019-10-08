@@ -33,12 +33,12 @@ const filesProxy = async ({ params: { secret }, query: { w = '', f = 'png' } }, 
     .on('error', next)
     .pipe(res);
 
-  // TODO: handle 404 (fibery returns `null`)
+  // TODO: handle 404 (now we create empty files)
 
   // asynchronously save file
   gm(request.get(options))
     .resize(w, null)
-    .colors(32)
+    // .colors(32)
     .interlace('Line') // interlaced png or progressive jpeg
     .stream(f)
     .pipe(fs.createWriteStream(filepath));
