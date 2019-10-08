@@ -2,17 +2,16 @@
 
 // The script updates databases with data from Fibery.io.
 // The script is executed as follows:
-//   npm run init-db -- path-to-secret-file
+//   npm run init-db-secret
 //
 // Examples:
 // * to populate local db:
 //   npm run init-db
 // * to populate remote db:
-//   npm run init-db -- '/home/user/secret.json'
+//   npm run init-db -- --secretPath=/home/user/secret.json
 
 import mongoose from 'mongoose';
 import keyBy from 'lodash/keyBy';
-import sample from 'lodash/sample';
 import sampleSize from 'lodash/sampleSize';
 
 import connectDb from 'db';
@@ -81,27 +80,31 @@ export const initMainPageState = async metadataTestingUser => {
   const tags = await Tag.find().exec();
   const tagsBySlug = keyBy(tags, 'slug');
   const articlesByTag = getArticlesByTag({ articles, tags });
-  const { personalities = [], locations = [] } = getTagsByTopic({ tags, topics });
-
-  // TODO: filter out personalities with 0 articles (diary authors)
+  const tagsWithArticles = tags.filter(
+    ({ slug }) => articlesByTag[slug] && articlesByTag[slug].length
+  );
+  const { personalities = [], locations = [] } = getTagsByTopic({ tags: tagsWithArticles, topics });
 
   const hasPersonalities = personalities.length > 2;
   if (!hasPersonalities) {
-    console.log(`Not enoght personalities tags ${personalities.length}/3!`);
+    console.log(`Not enough personalities tags ${personalities.length}/3!`);
   }
 
   const hasLocations = locations.length > 2;
   if (!hasLocations) {
-    console.log(`Not enoght locations tags ${locations.length}/3!`);
+    console.log(`Not enough locations tags ${locations.length}/3!`);
   }
+
+  const [cinema] = articlesByTag.cinema;
+  const [a1, a2] = sampleSize(articles, 2).map(getId);
 
   const state = {
     blocks: [
-      { type: 'featured', articleId: null, frozen: false },
+      { type: 'featured', articleId: getId(cinema), frozen: true },
       { type: 'diary' },
       {
         type: 'latestArticles',
-        articlesIds: [{ id: getId(sample(articles)), frozen: true }, { id: null, frozen: false }],
+        articlesIds: [{ id: a1, frozen: true }, { id: a2, frozen: true }],
       },
       hasPersonalities && {
         type: 'tagsByTopic',
@@ -119,7 +122,10 @@ export const initMainPageState = async metadataTestingUser => {
         tagId: getId(tagsBySlug.modernism),
         articlesIds: sampleSize(articlesByTag.modernism, 2),
       },
-      // to add "banner" block here.
+      {
+        type: 'banner',
+        banner: 'mapa',
+      },
       hasLocations && {
         type: 'tagsByTopic',
         topicSlug: 'locations',
@@ -139,7 +145,7 @@ export const initMainPageState = async metadataTestingUser => {
     ].filter(Boolean),
     data: {
       articles: mapIds(articles),
-      tags: mapIds(tags),
+      tags: mapIds(tagsWithArticles),
     },
   };
 
@@ -147,11 +153,14 @@ export const initMainPageState = async metadataTestingUser => {
 };
 
 const initSidebarState = async metadataTestingUser => {
-  const tags = await Tag.find();
+  const rawTags = await Tag.find();
+
+  const articles = await Article.find();
+  const articlesByTag = getArticlesByTag({ articles, tags: rawTags });
+  const tags = rawTags.filter(({ slug }) => articlesByTag[slug] && articlesByTag[slug].length);
+
   const topics = await Topic.find().exec();
   const tagsByTopic = getTagsByTopic({ tags, topics });
-
-  // TODO: filter out personalities with 0 articles (diary authors)
 
   const blocks = SIDEBAR_BLOCKS.map(topic => ({
     topic,
