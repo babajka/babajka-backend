@@ -117,14 +117,16 @@ describe('Diary API', () => {
           expect(next.day).to.equal('15');
         }));
 
-    it('should return noting when request unexisting diary', () =>
+    it('should return closest previous when request unexisting diary', () =>
       request
         .get('/api/specials/diary/get/04/15')
         .expect(HttpStatus.OK)
         .expect(({ body: { data, prev, next } }) => {
-          expect(data).to.be.empty();
-          expect(prev.month).to.equal('03');
-          expect(prev.day).to.equal('04');
+          expect(data.author.slug).to.equal(author1.slug);
+          expect(data.month).to.equal('03');
+          expect(data.day).to.equal('04');
+          expect(prev.month).to.equal('02');
+          expect(prev.day).to.equal('28');
           expect(next.month).to.equal('05');
           expect(next.day).to.equal('17');
         }));
