@@ -5,57 +5,61 @@ import { getImageUrl } from 'services/fibery/getters';
 import { parseSoundcloudUrl } from 'services/soundcloud';
 import parseYoutubeUrl from 'lib/utils/parseYoutubeUrl';
 import { TOPIC_SLUGS } from 'constants/topic';
+import { DEFAULT_COLOR } from 'utils/joi/color';
 
-import Article, { DEFAULT_COLOR, DEFAULT_THEME } from './article.model';
+import Article from './article.model';
 
 const IMAGE_TYPE_REGEX = /(horizontal|page|vertical)/;
-// TODO: remove
-const TAG_TEMP_IMAGE = 'https://images.8tracks.com/cover/i/000/799/185/Fixme-8293.jpg';
-const ARTICLE_TEMP_COVER = 'https://i.ytimg.com/vi/DoO36MjbFTk/maxresdefault.jpg';
+const BRAND_LOGO_REGEX = /(black|white)/;
+const DEFAULT_COVERS = { vertical: null, horizontal: null };
 const TEMP_VIDEO_URL = 'https://www.youtube.com/watch?v=2nV-ryyyZWs';
 const TEMP_AUDIO_URL = 'https://soundcloud.com/dillonfrancis/fix-me';
 
-const mapCover = ({ color, theme, files = [] }) => {
-  let images = files.reduce((acc, { name, secret }) => {
-    const [type] = IMAGE_TYPE_REGEX.exec(name) || [];
+const matchImages = (regex, files, initial = {}) =>
+  files.reduce(
+    (acc, { name, secret }) => {
+      const [type] = regex.exec(name) || [];
 
-    if (type) {
-      acc[type] = getImageUrl(secret);
-    }
+      if (type) {
+        acc[type] = getImageUrl(secret);
+      }
 
-    return acc;
-  }, {});
+      return acc;
+    },
+    { ...initial }
+  );
 
-  // FIXME:
-  if (!files.length) {
-    images = {
-      horizontal: ARTICLE_TEMP_COVER,
-      vertical: ARTICLE_TEMP_COVER,
-      page: ARTICLE_TEMP_COVER,
-    };
-  }
-
-  return { images, color: color || DEFAULT_COLOR, theme: theme || DEFAULT_THEME };
-};
+const mapCover = ({ color, theme, files = [] }) => ({
+  images: matchImages(IMAGE_TYPE_REGEX, files, DEFAULT_COVERS),
+  color: color || DEFAULT_COLOR,
+  theme,
+});
 
 const mapImage = image => {
   if (!image) {
-    return TAG_TEMP_IMAGE;
+    return null;
   }
   const [{ secret } = {}] = image.files;
-  return getImageUrl(secret) || TAG_TEMP_IMAGE;
+  return getImageUrl(secret);
 };
 
 const mapTagContent = ({ image, diaryImage, ...rest }, topic) => {
   const content = rest;
+  // TODO: add `brands`
   if (!['times', 'themes'].includes(topic)) {
     content.image = mapImage(image, topic);
   }
   if (topic === 'personalities') {
     content.diaryImage = mapImage(diaryImage, topic);
   }
+  if (topic === 'brands') {
+    content.images = matchImages(BRAND_LOGO_REGEX, image.files || []);
+  }
   if (image && image.color) {
     content.color = image.color;
+  }
+  if (image && image.theme) {
+    content.theme = image.theme;
   }
   return content;
 };
@@ -81,7 +85,7 @@ const mapCollection = c => {
     return c;
   }
   const [{ secret } = {}] = c.cover.files;
-  return { ...c, cover: getImageUrl(secret) || TAG_TEMP_IMAGE };
+  return { ...c, cover: getImageUrl(secret) };
 };
 
 const mapVideo = ({ url }) => {

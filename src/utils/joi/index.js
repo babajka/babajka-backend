@@ -8,6 +8,7 @@ import set from 'lodash/set';
 
 import objectid from './objectId';
 import color from './color';
+import theme from './theme';
 import userRef from './userRef';
 import localizedText from './localizedText';
 import colloquialDateHash from './colloquialDateHash';
@@ -24,6 +25,7 @@ export function ValidationError(message) {
 const Joi = baseJoi.extend([
   objectid,
   color,
+  theme,
   userRef,
   localizedText,
   colloquialDateHash,

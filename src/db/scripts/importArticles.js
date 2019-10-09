@@ -26,6 +26,8 @@ const ARTICLES = [
   'https://wir.fibery.io/Content~Marketing/139#Article/86',
   // kafka
   'https://wir.fibery.io/Content~Marketing/139#Article/91',
+  // rodnoj-jazyk
+  'https://wir.fibery.io/Content~Marketing/139#Article/99',
 ];
 
 const importArticles = metadataTestingUser =>

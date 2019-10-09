@@ -27,7 +27,14 @@ const TAGS_LOCALIZED_FIELDS = {
   Locations: ['Title'],
 };
 
+const COLOR_THEME = [
+  addAppName('Color'),
+  {
+    [addAppName('Theme')]: ENUM,
+  },
+];
 const IMAGE = FIBERY_DEFAULT.concat(FILES);
+const LOC_PERS_IMAGE_FIELDS = IMAGE.concat(COLOR_THEME);
 
 const TAGS_IMAGES = {
   Authors: {
@@ -37,11 +44,11 @@ const TAGS_IMAGES = {
     'user/Logo': IMAGE,
   },
   Personalities: {
-    'user/Avatar': IMAGE.concat(addAppName('Color')),
+    'user/Avatar': LOC_PERS_IMAGE_FIELDS,
     'user/Diary Author Avatar': IMAGE,
   },
   Locations: {
-    'user/Image': IMAGE,
+    'user/Image': LOC_PERS_IMAGE_FIELDS,
   },
 };
 
@@ -67,13 +74,7 @@ const RELATED_ENT_FIELDS = {
     }),
   Video: addAppName('Youtube Link'),
   Podcast: addAppName('SoundCloud Link'),
-  Cover: [
-    addAppName('Color'),
-    FILES,
-    {
-      [addAppName('Theme')]: ENUM,
-    },
-  ],
+  Cover: COLOR_THEME.concat(FILES),
 };
 
 export const RELATED_ENTITIES = Object.entries(RELATED_ENT_FIELDS).reduce((acc, [key, fields]) => {
