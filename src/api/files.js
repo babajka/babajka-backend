@@ -10,8 +10,12 @@ import { imagesDir } from 'utils/args';
 
 const { host, token } = config.services.fibery;
 
-const filesProxy = async ({ params: { secret }, query: { w = '', f = 'png' } }, res, next) => {
-  const filepath = `${imagesDir}/${secret}_${w}.${f}`;
+const filesProxy = async (
+  { params: { secret }, query: { w = '', h = '', f = 'png' } },
+  res,
+  next
+) => {
+  const filepath = `${imagesDir}/${secret}_${w}x${h}.${f}`;
   res.type(`image/${f}`);
   const isExist = await isFileExist(filepath);
   if (isExist) {
@@ -37,7 +41,7 @@ const filesProxy = async ({ params: { secret }, query: { w = '', f = 'png' } }, 
 
   // asynchronously save file
   gm(request.get(options))
-    .resize(w, null)
+    .resize(w, h)
     // .colors(32)
     .interlace('Line') // interlaced png or progressive jpeg
     .stream(f)
