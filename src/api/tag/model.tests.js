@@ -194,11 +194,11 @@ describe('Tag model', () => {
     expect(errorHandler).to.have.been.called();
   });
 
-  it('should fail to save brand tag | no image', async () => {
+  it('should fail to save brand tag | no images', async () => {
     const errorHandler = spy(({ status, message }) => {
       expect(status).to.equal(HttpStatus.BAD_REQUEST);
       expect(message).to.not.empty();
-      expect(message.content.image.type).to.include('required');
+      expect(message.content.images.type).to.include('required');
     });
 
     await Tag({

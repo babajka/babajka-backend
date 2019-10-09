@@ -9,9 +9,6 @@ import { checkPermissions } from 'api/user';
 import { mapIds, getId } from 'utils/getters';
 import Joi, { joiToMongoose, defaultValidator } from 'utils/joi';
 
-export const DEFAULT_COLOR = '#000000';
-export const DEFAULT_THEME = 'light';
-
 const joiArticleSchema = Joi.object({
   fiberyId: Joi.string()
     .meta({ unique: true })
@@ -54,12 +51,10 @@ const joiArticleSchema = Joi.object({
     id: Joi.string(),
     url: Joi.string().uri(),
   }).allow(null),
-  color: Joi.color().default(DEFAULT_COLOR),
+  color: Joi.color(),
   // Text on article card may be rendered in one of the following ways.
   // This depends on the color and is set manually.
-  theme: Joi.string()
-    .valid(['light', 'dark'])
-    .default(DEFAULT_THEME),
+  theme: Joi.theme(),
   // Authors and Brands are also just Tags.
   tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
   // Keywords are for SEO optimization and search engines.
@@ -68,11 +63,10 @@ const joiArticleSchema = Joi.object({
 // FIXME: falls with { audio: null, video: null }
 // .nand('video', 'audio');
 
-// FIXME: sync with design
 const IMAGES_BY_TYPE = {
   text: ['page', 'horizontal', 'vertical'],
-  video: ['page', 'horizontal', 'vertical'],
-  audio: ['page', 'horizontal', 'vertical'],
+  video: ['horizontal', 'vertical'],
+  audio: ['horizontal', 'vertical'],
 };
 
 const getImagesSchema = type =>
