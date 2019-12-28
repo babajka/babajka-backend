@@ -29,11 +29,11 @@ import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
 import { addTopics } from 'utils/testing';
 import { getId, mapIds, getTagsByTopic, getArticlesByTag } from 'utils/getters';
 
-import importArticles from './importArticles';
+import importArticles, { INIT_ARTICLES_FIBERY_ID } from './importArticles';
 import importDiaries from './importDiaries';
 import { retrieveMetadataTestingUser } from './utils';
 
-const SIDEBAR_BLOCKS = ['themes', 'personalities', 'times', 'locations', 'brands', 'authors'];
+const SIDEBAR_BLOCKS = ['themes', 'personalities', 'times', 'locations' /*, 'brands', 'authors'*/];
 
 const USERS = [
   {
@@ -80,67 +80,71 @@ export const initMainPageState = async metadataTestingUser => {
   const tags = await Tag.find().exec();
   const tagsBySlug = keyBy(tags, 'slug');
   const articlesByTag = getArticlesByTag({ articles, tags });
+  const articlesByFid = articles.reduce((acc, cur) => {
+    acc[cur.fiberyPublicId] = cur;
+    return acc;
+  }, {})
   const tagsWithArticles = tags.filter(
     ({ slug }) => articlesByTag[slug] && articlesByTag[slug].length
   );
-  const { personalities = [], locations = [] } = getTagsByTopic({ tags: tagsWithArticles, topics });
+  // const { personalities = [], locations = [] } = getTagsByTopic({ tags: tagsWithArticles, topics });
+  //
+  // const hasPersonalities = personalities.length > 2;
+  // if (!hasPersonalities) {
+  //   console.log(`Not enough personalities tags ${personalities.length}/3!`);
+  // }
+  //
+  // const hasLocations = locations.length > 2;
+  // if (!hasLocations) {
+  //   console.log(`Not enough locations tags ${locations.length}/3!`);
+  // }
 
-  const hasPersonalities = personalities.length > 2;
-  if (!hasPersonalities) {
-    console.log(`Not enough personalities tags ${personalities.length}/3!`);
+  const getArticleId = name => {
+    const fId = INIT_ARTICLES_FIBERY_ID[name];
+    return getId(articlesByFid[fId]);
   }
-
-  const hasLocations = locations.length > 2;
-  if (!hasLocations) {
-    console.log(`Not enough locations tags ${locations.length}/3!`);
-  }
-
-  const [cinema] = articlesByTag.cinema;
-  const [a1, a2] = sampleSize(articles, 2).map(getId);
 
   const state = {
     blocks: [
-      { type: 'featured', articleId: getId(cinema), frozen: true },
+      { type: 'featured', articleId: getArticleId('kafka'), frozen: true },
       { type: 'diary' },
       {
         type: 'latestArticles',
-        articlesIds: [{ id: a1, frozen: true }, { id: a2, frozen: true }],
+        articlesIds: [
+          { id: getArticleId('belkino1'), frozen: true },
+          { id: getArticleId('dubouka'), frozen: true }
+        ],
       },
-      hasPersonalities && {
-        type: 'tagsByTopic',
-        topicSlug: 'personalities',
-        tagsIds: sampleSize(personalities, 3),
-        style: '1-2',
-      },
+      // hasPersonalities && {
+      //   type: 'tagsByTopic',
+      //   topicSlug: 'personalities',
+      //   tagsIds: sampleSize(personalities, 3),
+      //   style: '1-2',
+      // },
       {
         type: 'articlesByTag3',
         tagId: getId(tagsBySlug.linguistics),
-        articlesIds: sampleSize(articlesByTag.linguistics, 3),
+        articlesIds: ['somin', 'rusyn', 'sorbian'].map(getArticleId),
       },
-      {
-        type: 'articlesByTag2',
-        tagId: getId(tagsBySlug.modernism),
-        articlesIds: sampleSize(articlesByTag.modernism, 2),
-      },
+      // {
+      //   type: 'articlesByTag2',
+      //   tagId: getId(tagsBySlug.modernism),
+      //   articlesIds: sampleSize(articlesByTag.modernism, 2),
+      // },
       {
         type: 'banner',
         banner: 'mapa',
       },
-      hasLocations && {
+      {
         type: 'tagsByTopic',
         topicSlug: 'locations',
-        tagsIds: sampleSize(locations, 3),
+        tagsIds: mapIds([tagsBySlug.europe, tagsBySlug.bssr, tagsBySlug.minsk]),
         style: '2-1',
       },
       {
         type: 'articlesByTag2',
-        tagId: getId(tagsBySlug.minsk),
-        articlesIds: sampleSize(articlesByTag.minsk, 2),
-      },
-      {
-        type: 'articlesByTag2',
         tagId: getId(tagsBySlug.libra),
-        articlesIds: sampleSize(articlesByTag.libra, 2),
+        articlesIds: ['banksy', 'dali'].map(getArticleId),
       },
     ].filter(Boolean),
     data: {
@@ -160,11 +164,20 @@ const initSidebarState = async metadataTestingUser => {
   const tags = rawTags.filter(({ slug }) => articlesByTag[slug] && articlesByTag[slug].length);
 
   const topics = await Topic.find().exec();
-  const tagsByTopic = getTagsByTopic({ tags, topics });
+  const allTagsByTopic = getTagsByTopic({ tags, topics });
+  const tagsBySlug = keyBy(tags, 'slug');
+
+  const sidebarTags = Object.entries({
+    times: ['xx-century', 'today', 'dauniej', 'modernism'],
+    locations: ['belarus', 'bssr', 'minsk', 'europe', 'eastern-europe'],
+  }).reduce((acc, [k, v]) => {
+    acc[k] = v.map(slug => getId(tagsBySlug[slug]));
+    return acc;
+  }, {});
 
   const blocks = SIDEBAR_BLOCKS.map(topic => ({
     topic,
-    tags: tagsByTopic[topic],
+    tags: sidebarTags[topic] || allTagsByTopic[topic],
   }));
 
   const state = { blocks, data: { tags: mapIds(tags) } };
@@ -206,6 +219,7 @@ const run = async () => {
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);
+    console.error(JSON.stringify(err.message, null, 2));
     process.exit();
   }
   process.exit();
