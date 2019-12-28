@@ -30,6 +30,14 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 ## development tips
 
+### gm
+
+> you should install [`gm`](https://github.com/aheckmann/gm) locally:
+
+```bash
+brew install graphicsmagick
+```
+
 ### selective testing
 
 usage:
@@ -48,3 +56,7 @@ etc.
   - `fix(<scope>): <subject>` - increases **patch** version: 1.0.0 -> 1.0.1
   - `feat(<scope>): <subject>` - increases **minor** version: 1.0.0 -> 1.1.0
   - `major(<scope>): <subject>` - increases **major** version: 1.0.0 -> 2.0.0
+
+## submodules
+
+- use `git submodule update --init`

@@ -12,7 +12,7 @@ export const ENUM = ['enum/name', 'fibery/rank'];
 export const STATE = { 'workflow/state': ENUM };
 
 export const FILES = {
-  'fibery/files': {
+  'Files/Files': {
     'q/select': ['id', 'name', 'secret', 'content-type'].map(key => `fibery/${key}`),
     'q/limit': 'q/no-limit',
   },
