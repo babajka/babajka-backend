@@ -18,7 +18,7 @@ const joiDiarySchema = Joi.object({
   // ColloquialDateHash is a hash of date, equals to (month * 100 + day).
   // This is for diaries to be easily sorted with mongoose tools.
   colloquialDateHash: Joi.colloquialDateHash().required(),
-  year: Joi.number(),
+  year: Joi.number().allow(null),
 
   createdAt: Joi.date().default(Date.now, 'time of creation'),
   active: Joi.boolean().default(true),
