@@ -23,11 +23,59 @@ const getQuery = d => {
   if (!d) {
     return null;
   }
-  const { day, month } = d;
-  return { day, month };
+  const { day, month, fiberyId: slug } = d;
+  return { day, month, slug };
 };
 
 const getMonthNum = ({ rank }) => rank / ENUM_BASE + 1;
+
+const getPrevNextDiaries = async today => {
+  let [prevD, prevPrevD] = await Diary.find({ colloquialDateHash: { $lt: today } })
+    .sort({ colloquialDateHash: 'desc' })
+    .limit(2)
+    .populate('author');
+
+  if (!prevD) {
+    // The very beginning of the year might be requested.
+    [prevD, prevPrevD] = await Diary.find({})
+      .sort({ colloquialDateHash: 'desc' })
+      .limit(2)
+      .populate('author');
+
+    if (!prevD) {
+      // We have no diaries at all.
+      throw new HttpError(HttpStatus.NO_CONTENT, 'errors.diariesMissing');
+    }
+  }
+
+  let [nextD] = await Diary.find({ colloquialDateHash: { $gt: today } })
+    .sort({ colloquialDateHash: 'asc' })
+    .limit(1);
+
+  if (!nextD) {
+    // The very end of the year might be requested.
+    [nextD] = await Diary.find({})
+      .sort({ colloquialDateHash: 'asc' })
+      .limit(1);
+  }
+
+  return { prevD, prevPrevD, nextD };
+};
+
+export const getBySlug = async ({ params: { slug } }, res, next) => {
+  try {
+    const diary = await Diary.findOne({ fiberyId: slug, active: true }).populate('author');
+    const { prevD, nextD } = await getPrevNextDiaries(diary.colloquialDateHash);
+
+    return sendJson(res)({
+      data: serializeDiary(diary),
+      prev: getQuery(prevD),
+      next: getQuery(nextD),
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 export const getDay = async ({ params: { month, day } }, res, next) => {
   try {
@@ -35,46 +83,14 @@ export const getDay = async ({ params: { month, day } }, res, next) => {
     const todayDiaries = await Diary.find({ colloquialDateHash: today, active: true }).populate(
       'author'
     );
-    let todayDiary = sample(todayDiaries);
-
-    let [prevD, prevPrevD] = await Diary.find({ colloquialDateHash: { $lt: today } })
-      .sort({ colloquialDateHash: 'desc' })
-      .limit(2)
-      .populate('author');
-
-    if (!prevD) {
-      // The very beginning of the year might be requested.
-      [prevD, prevPrevD] = await Diary.find({})
-        .sort({ colloquialDateHash: 'desc' })
-        .limit(2)
-        .populate('author');
-
-      if (!prevD) {
-        // We have no diaries at all.
-        throw new HttpError(HttpStatus.NO_CONTENT, 'errors.diariesMissing');
-      }
-    }
-
-    let [nextD] = await Diary.find({ colloquialDateHash: { $gt: today } })
-      .sort({ colloquialDateHash: 'asc' })
-      .limit(1);
-
-    if (!nextD) {
-      // The very end of the year might be requested.
-      [nextD] = await Diary.find({})
-        .sort({ colloquialDateHash: 'asc' })
-        .limit(1);
-    }
-
-    if (!todayDiary) {
-      // TODO: add sentry call with warning
-      todayDiary = prevD;
-      prevD = prevPrevD;
-    }
+    const { prevD, prevPrevD, nextD } = await getPrevNextDiaries(today);
+    // TODO: add sentry call with warning (no today diary)
+    const todayDiary = sample(todayDiaries) || prevD;
+    const prevDiary = todayDiary ? prevD : prevPrevD;
 
     return sendJson(res)({
       data: serializeDiary(todayDiary),
-      prev: getQuery(prevD),
+      prev: getQuery(prevDiary),
       next: getQuery(nextD),
     });
   } catch (err) {
