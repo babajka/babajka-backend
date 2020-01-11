@@ -47,8 +47,10 @@ export const validateDiary = data => defaultValidator(data, joiDiarySchema);
 export const buildColloquialDateHash = (month, day) =>
   parseInt(month, 10) * 100 + parseInt(day, 10);
 
-export const serializeDiary = object =>
-  pick(object, ['locale', 'text', 'author', 'year', 'month', 'day']);
+export const serializeDiary = object => ({
+  ...pick(object, ['locale', 'text', 'author', 'year', 'month', 'day']),
+  slug: object.fiberyId,
+});
 
 export const serializeDiaries = list => list.map(serializeDiary);
 

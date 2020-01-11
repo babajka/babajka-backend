@@ -23,10 +23,10 @@ export const INIT_ARTICLES_FIBERY_ID = {
 
 const importArticles = metadataTestingUser =>
   Promise.all(
-  Object.values(INIT_ARTICLES_FIBERY_ID).map(fId =>
+    Object.values(INIT_ARTICLES_FIBERY_ID).map(fId =>
       fiberyImport(
         {
-          body: { url: `https://wir.fibery.io/Content~Marketing/139#Article/${fId}`, },
+          body: { url: `https://wir.fibery.io/Content~Marketing/139#Article/${fId}` },
           user: metadataTestingUser,
         },
         mockRes,
@@ -43,7 +43,7 @@ const run = async () => {
   await connectDb();
   const metadataTestingUser = await retrieveMetadataTestingUser();
   await importArticles(metadataTestingUser);
-  console.log(`Mongoose: update ${ARTICLES.length} articles`);
+  console.log(`Mongoose: update ${Object.keys(INIT_ARTICLES_FIBERY_ID).length} articles`);
   process.exit();
 };
 

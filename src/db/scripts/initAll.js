@@ -12,7 +12,6 @@
 
 import mongoose from 'mongoose';
 import keyBy from 'lodash/keyBy';
-import sampleSize from 'lodash/sampleSize';
 
 import connectDb from 'db';
 import { User } from 'api/user';
@@ -33,7 +32,12 @@ import importArticles, { INIT_ARTICLES_FIBERY_ID } from './importArticles';
 import importDiaries from './importDiaries';
 import { retrieveMetadataTestingUser } from './utils';
 
-const SIDEBAR_BLOCKS = ['themes', 'personalities', 'times', 'locations' /*, 'brands', 'authors'*/];
+const SIDEBAR_BLOCKS = [
+  'themes',
+  'personalities',
+  'times',
+  'locations' /* , 'brands', 'authors' */,
+];
 
 const USERS = [
   {
@@ -76,14 +80,13 @@ const initUsers = () =>
 
 export const initMainPageState = async metadataTestingUser => {
   const articles = await Article.find();
-  const topics = await Topic.find().exec();
   const tags = await Tag.find().exec();
   const tagsBySlug = keyBy(tags, 'slug');
   const articlesByTag = getArticlesByTag({ articles, tags });
   const articlesByFid = articles.reduce((acc, cur) => {
     acc[cur.fiberyPublicId] = cur;
     return acc;
-  }, {})
+  }, {});
   const tagsWithArticles = tags.filter(
     ({ slug }) => articlesByTag[slug] && articlesByTag[slug].length
   );
@@ -102,7 +105,7 @@ export const initMainPageState = async metadataTestingUser => {
   const getArticleId = name => {
     const fId = INIT_ARTICLES_FIBERY_ID[name];
     return getId(articlesByFid[fId]);
-  }
+  };
 
   const state = {
     blocks: [
@@ -112,7 +115,7 @@ export const initMainPageState = async metadataTestingUser => {
         type: 'latestArticles',
         articlesIds: [
           { id: getArticleId('belkino1'), frozen: true },
-          { id: getArticleId('dubouka'), frozen: true }
+          { id: getArticleId('dubouka'), frozen: true },
         ],
       },
       // hasPersonalities && {
