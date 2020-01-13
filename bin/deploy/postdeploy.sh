@@ -1,12 +1,22 @@
 #!/usr/bin bash
 set -e
 
-DEPLOYMENTS_PATH="/home/wir-dev/deployed"
+MODE=$1
+
+DEPLOYMENTS_PATH="/home/wir-$MODE/deployed"
 
 rm -rf "${DEPLOYMENTS_PATH}/backend"
 mv "${DEPLOYMENTS_PATH}/swap-backend/babajka-backend" "${DEPLOYMENTS_PATH}/backend"
 
 cd "${DEPLOYMENTS_PATH}/backend"
+
+JOB=""
+if [ $MODE == "dev" ]
+then
+  JOB="backend-staging"
+else
+  JOB="backend-production"
+fi
 
 # In order for the command below to work properly make sure that lines
 # case $- in
@@ -16,4 +26,4 @@ cd "${DEPLOYMENTS_PATH}/backend"
 # in ~/.bashrc file on remote machine are commented out.
 #
 # Short explanation is: pm2 is not using interactive ssh.
-pm2 restart pm2-config.json --only=backend-staging
+pm2 restart pm2-config.json --only=$JOB
