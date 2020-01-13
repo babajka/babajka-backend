@@ -20,7 +20,7 @@ before_deploy:
   - eval "$(ssh-agent -s)"
   - chmod 600 /tmp/babajka_dev_rsa
   - ssh-add /tmp/babajka_dev_rsa
-  - sh bin/dev/before-deploy.sh dev
+  - sh bin/deploy/before-deploy.sh dev
 deploy:
   - provider: script
     skip_cleanup: true
@@ -29,8 +29,8 @@ deploy:
       branch: develop
   - provider: script
     skip_cleanup: true
-    script: ssh wir-dev@dev.wir.by 'bash -s' < bin/dev/postdeploy.sh
+    script: ssh wir-dev@dev.wir.by 'bash -s' < bin/deploy/postdeploy.sh dev
     on:
       branch: develop
 after_deploy:
-  - sh bin/dev/after-deploy.sh dev
+  - sh bin/deploy/after-deploy.sh dev
