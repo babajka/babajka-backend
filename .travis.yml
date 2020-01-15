@@ -13,24 +13,33 @@ notifications:
     rooms:
       secure: UEaeWdN3yYZJA2oe37iVhpFgKy0XWLhOIPpsU09k/olARvP1y2oH5SpSBiySf0GpqfyEmiiqtVdGQ36A9HxIfO+AnFAYk5FObdLnm0iremWQE0KsLPgE3LUYDX2VzI+Z7Bt4K9umsloKwtBtS4oOpm0mo+NcKn/5R8WrgZKLFwSEx0k/s3JtOW21W59vT/96J30tX8AJmCE9txC/MjIHLpVUPKV4HMhpjMu+OkCeW//oC3guSRocq0du63OyIig+TiE0hojR7sxkzSgONGtaDkGxcW+BIdXzAfR1eUKKAr1UB7XHAag+ShW+hiVlthRas89M29U9RG8QHGAo2abDZLRC3GIRmdAH9bTrlk0RpdhUMN50yQO5YSy3h2JOlbcIBYPfxgqggMtTzU0JgeTbDZVrNKwUFpat6LPehlwiHRmOriQNYVf1eiv4MxHxtoKYfIs3iNAfjedcOg9aIA1bTWVJOUqsGEeZ8uJmvlhmZo2wjW8jCvxCrSs83x4OgkvBiQP1ME3Aoqdj6z0gtGJEMEAMUo5LJu+RmPWU2w4OE02HNK7aowdO8icb+6sIUS2ZdbGvhaMFdDEInL+yD57qSOcL2nTNX4myO5P4sshdchbBmJZ8TI/vNLdRpT99zjGo6+MWiLNGcmzQCXwK2rbKAHWB38UUB+dwClZH99ZuJkI=
 addons:
-  ssh_known_hosts: dev.wir.by
+  ssh_known_hosts:
+    - dev.wir.by
+    - prod.wir.by
 before_deploy:
   - openssl aes-256-cbc -K $encrypted_4d81b79f98ff_key -iv $encrypted_4d81b79f98ff_iv
     -in babajka_dev_rsa.enc -out /tmp/babajka_dev_rsa -d
   - eval "$(ssh-agent -s)"
   - chmod 600 /tmp/babajka_dev_rsa
   - ssh-add /tmp/babajka_dev_rsa
-  - sh bin/deploy/before-deploy.sh dev
+  - |
+    if [ $TRAVIS_BRANCH == "develop" ]; then
+      MODE="dev"
+    elif [ $TRAVIS_BRANCH == "master" ]; then
+      MODE="prod"
+    else
+      exit 1
+    fi
+  - bash bin/deploy/before-deploy.sh $MODE
+  - HOST="wir-$MODE@$MODE.wir.by"
+  - SWAPPATH="/home/wir-$MODE/deployed/swap-backend/"
 deploy:
   - provider: script
     skip_cleanup: true
-    script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR wir-dev@dev.wir.by:/home/wir-dev/deployed/swap-backend/
+    script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR $HOST:$SWAPPATH && ssh $HOST 'bash -s' < bin/deploy/postdeploy.sh $MODE
     on:
-      branch: develop
-  - provider: script
-    skip_cleanup: true
-    script: ssh wir-dev@dev.wir.by 'bash -s' < bin/deploy/postdeploy.sh dev
-    on:
-      branch: develop
+      branch:
+        - develop
+        - master
 after_deploy:
-  - sh bin/deploy/after-deploy.sh dev
+  - bash bin/deploy/after-deploy.sh $MODE
