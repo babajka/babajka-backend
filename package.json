@@ -24,8 +24,8 @@
     "test:with-coverage": "cross-env NODE_ENV=testing nyc npm run test && npm run coverage",
     "semantic-release": "semantic-release",
     "travis-deploy-once": "travis-deploy-once",
-    "deploy-dev-from-local": "sh bin/deploy/deploy-from-local.sh dev",
-    "deploy-prod-from-local-no-kidding": "sh bin/deploy/deploy-from-local.sh prod",
+    "deploy-dev-from-local": "bash bin/deploy/deploy-from-local.sh dev",
+    "deploy-prod-from-local": "bash bin/deploy/deploy-from-local.sh prod",
     "postinstall": "patch-package",
     "gds": "github-deploy-status -u babajka -p babajka-backend"
   },

@@ -1,16 +1,28 @@
 #!/usr/bin/env bash
 set -e
 
+bold=$(tput bold)
+normal=$(tput sgr0)
+
 MODE=$1
-if [ $MODE != "dev" ] && [ $MODE != "prod" ]
-then
+if [ $MODE != "dev" ] && [ $MODE != "prod" ]; then
   echo '[FAIL] Mode (dev or prod) must be provided.'
   exit 1
 fi
 
+if [ $MODE == "prod" ]; then
+  echo "You're about to deploy to ${bold}prod${normal}. Are you sure? (put the number)"
+  select yn in "Yes" "No"; do
+    case $yn in
+      "Yes" ) break;;
+      "No" ) exit 0;;
+    esac
+  done
+fi
+
 # load env
 export $(cat .env | xargs)
-sh bin/deploy/before-deploy.sh $MODE
+bash bin/deploy/before-deploy.sh $MODE
 
 BACKEND_REMOTE_SWAP_PATH="/home/wir-$MODE/deployed/swap-backend/babajka-backend/"
 HOST="wir-$MODE@$MODE.wir.by"
@@ -26,4 +38,4 @@ echo '[OK] Dependencies are installed'
 ssh $HOST 'bash -s' < bin/deploy/postdeploy.sh $MODE
 echo '[OK] Deployed'
 
-sh bin/deploy/after-deploy.sh $MODE
+bash bin/deploy/after-deploy.sh $MODE

@@ -10,12 +10,12 @@ mv "${DEPLOYMENTS_PATH}/swap-backend/babajka-backend" "${DEPLOYMENTS_PATH}/backe
 
 cd "${DEPLOYMENTS_PATH}/backend"
 
-JOB=""
-if [ $MODE == "dev" ]
-then
+if [ $MODE == "dev" ]; then
   JOB="backend-staging"
-else
+elif [ $MODE == "prod" ]; then
   JOB="backend-production"
+else
+  exit 1
 fi
 
 # In order for the command below to work properly make sure that lines
