@@ -83,11 +83,41 @@ describe('Diary API', () => {
           expect(data.year).to.equal(2018);
           expect(data.month).to.equal('02');
           expect(data.day).to.equal('28');
+          expect(data.slug).to.equal('diary-2');
+
           expect(prev.month).to.equal('02');
           expect(prev.day).to.equal('27');
+          expect(prev.slug).to.equal('diary-1');
+
           expect(next.month).to.equal('03');
           expect(next.day).to.equal('04');
+          expect(next.slug).to.equal('diary-3');
         }));
+
+    it('should diary by slug', () =>
+      request
+        .get('/api/specials/diary/getBySlug/diary-2/')
+        .expect(HttpStatus.OK)
+        .expect(({ body: { data, prev, next } }) => {
+          expect(data.author.slug).to.equal(author2.slug);
+          expect(data.year).to.equal(2018);
+          expect(data.month).to.equal('02');
+          expect(data.day).to.equal('28');
+          expect(data.slug).to.equal('diary-2');
+
+          expect(prev.month).to.equal('02');
+          expect(prev.day).to.equal('27');
+          expect(prev.slug).to.equal('diary-1');
+
+          expect(next.month).to.equal('03');
+          expect(next.day).to.equal('04');
+          expect(next.slug).to.equal('diary-3');
+        }));
+
+    it('should return 404 by unknown slug', () => request
+      .get('/api/specials/diary/getBySlug/diary-bad-slug/')
+      .expect(HttpStatus.NOT_FOUND)
+    );
 
     it('should return the first diary of the year', () =>
       request
@@ -97,8 +127,10 @@ describe('Diary API', () => {
           expect(data.author.slug).to.equal(author1.slug);
           expect(data.month).to.equal('01');
           expect(data.day).to.equal('15');
+
           expect(prev.month).to.equal('05');
           expect(prev.day).to.equal('17');
+
           expect(next.month).to.equal('02');
           expect(next.day).to.equal('27');
         }));
@@ -111,8 +143,10 @@ describe('Diary API', () => {
           expect(data.author.slug).to.equal(author1.slug);
           expect(data.month).to.equal('05');
           expect(data.day).to.equal('17');
+
           expect(prev.month).to.equal('03');
           expect(prev.day).to.equal('04');
+
           expect(next.month).to.equal('01');
           expect(next.day).to.equal('15');
         }));
@@ -125,8 +159,10 @@ describe('Diary API', () => {
           expect(data.author.slug).to.equal(author1.slug);
           expect(data.month).to.equal('03');
           expect(data.day).to.equal('04');
+
           expect(prev.month).to.equal('02');
           expect(prev.day).to.equal('28');
+
           expect(next.month).to.equal('05');
           expect(next.day).to.equal('17');
         }));
