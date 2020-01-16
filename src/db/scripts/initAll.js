@@ -129,14 +129,14 @@ export const initMainPageState = async metadataTestingUser => {
         tagId: getId(tagsBySlug.linguistics),
         articlesIds: ['somin', 'rusyn', 'sorbian'].map(getArticleId),
       },
-      // {
-      //   type: 'articlesByTag2',
-      //   tagId: getId(tagsBySlug.modernism),
-      //   articlesIds: sampleSize(articlesByTag.modernism, 2),
-      // },
       {
         type: 'banner',
         banner: 'mapa',
+      },
+      {
+        type: 'articlesByTag2',
+        tagId: getId(tagsBySlug.belarus),
+        articlesIds: ['dushy', 'budynki'].map(getArticleId),
       },
       {
         type: 'tagsByTopic',

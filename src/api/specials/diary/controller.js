@@ -9,7 +9,7 @@ import { getInitObjectMetadata } from 'api/helpers/metadata';
 
 import fibery from 'services/fibery';
 import { ENUM_BASE } from 'services/fibery/constants';
-import { validateList } from 'utils/validation';
+import { validateList, checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
 import Diary, {
@@ -65,6 +65,7 @@ const getPrevNextDiaries = async today => {
 export const getBySlug = async ({ params: { slug } }, res, next) => {
   try {
     const diary = await Diary.findOne({ fiberyId: slug, active: true }).populate('author');
+    checkIsFound(diary);
     const { prevD, nextD } = await getPrevNextDiaries(diary.colloquialDateHash);
 
     return sendJson(res)({
@@ -85,11 +86,11 @@ export const getDay = async ({ params: { month, day } }, res, next) => {
     );
     const { prevD, prevPrevD, nextD } = await getPrevNextDiaries(today);
     // TODO: add sentry call with warning (no today diary)
-    const todayDiary = sample(todayDiaries) || prevD;
+    const todayDiary = sample(todayDiaries)
     const prevDiary = todayDiary ? prevD : prevPrevD;
 
     return sendJson(res)({
-      data: serializeDiary(todayDiary),
+      data: serializeDiary(todayDiary || prevD),
       prev: getQuery(prevDiary),
       next: getQuery(nextD),
     });
