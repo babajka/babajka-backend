@@ -40,3 +40,29 @@ export const updateTags = async (
   const dbTags = await Tag.find({ fiberyId: { $in: fiberyIds } });
   return skipMap ? dbTags : mapIds(dbTags);
 };
+
+export const mapTagsByTopic = tags =>
+  tags.reduce((acc, tag) => {
+    const key = tag.topicSlug;
+    acc[key] = acc[key] || [];
+    acc[key].push(tag);
+    return acc;
+  }, {});
+
+const getTitle = ({ title }, lang) => title[lang];
+
+const formatters = {
+  authors: ({ firstName, lastName }, lang) => `${firstName[lang]} ${lastName[lang]}`,
+  personalities: ({ name }, lang) => name[lang],
+  brands: getTitle,
+  locations: getTitle,
+  themes: getTitle,
+  times: getTitle,
+};
+
+export const toString = (lang = 'be') => tag => {
+  const { topicSlug, content } = tag;
+  return formatters[topicSlug](content, lang);
+};
+
+export const mapToString = (tags, lang) => tags.map(toString(lang));
