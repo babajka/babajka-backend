@@ -147,7 +147,7 @@ export const mapFiberyArticle = async ({
   articleId: rest.fiberyId,
   active: true,
   type: getType({ video, audio }),
-  publishAt: new Date(publishAt),
+  publishAt: publishAt && new Date(publishAt),
   keywords: keywords || ' ',
 });
 
