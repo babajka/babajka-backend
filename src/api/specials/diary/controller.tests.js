@@ -114,10 +114,8 @@ describe('Diary API', () => {
           expect(next.slug).to.equal('diary-3');
         }));
 
-    it('should return 404 by unknown slug', () => request
-      .get('/api/specials/diary/getBySlug/diary-bad-slug/')
-      .expect(HttpStatus.NOT_FOUND)
-    );
+    it('should return 404 by unknown slug', () =>
+      request.get('/api/specials/diary/getBySlug/diary-bad-slug/').expect(HttpStatus.NOT_FOUND));
 
     it('should return the first diary of the year', () =>
       request

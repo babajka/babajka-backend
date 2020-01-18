@@ -86,7 +86,7 @@ export const getDay = async ({ params: { month, day } }, res, next) => {
     );
     const { prevD, prevPrevD, nextD } = await getPrevNextDiaries(today);
     // TODO: add sentry call with warning (no today diary)
-    const todayDiary = sample(todayDiaries)
+    const todayDiary = sample(todayDiaries);
     const prevDiary = todayDiary ? prevD : prevPrevD;
 
     return sendJson(res)({
