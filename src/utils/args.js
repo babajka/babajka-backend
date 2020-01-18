@@ -4,12 +4,16 @@ import commandLineArgs from 'command-line-args';
 const optionDefinitions = [
   { name: 'secretPath', type: String },
   { name: 'imagesDir', type: String },
+  { name: 'staticDir', type: String },
 ];
 
-const { secretPath, imagesDir = 'images' } = commandLineArgs(optionDefinitions, { partial: true });
+const args = commandLineArgs(optionDefinitions, { partial: true });
+const { secretPath, imagesDir = 'images', staticDir = 'static' } = args;
 
-if (!fs.existsSync(imagesDir)) {
-  fs.mkdirSync(imagesDir);
-}
+[imagesDir, staticDir].forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+});
 
-export { secretPath, imagesDir };
+export { secretPath, imagesDir, staticDir };

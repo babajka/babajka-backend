@@ -23,6 +23,7 @@ module.exports = {
         'user',
         'utils',
         'files',
+        'rss',
       ],
     ],
     'scope-empty': [2, 'never'],
