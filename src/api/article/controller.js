@@ -1,5 +1,6 @@
 import fibery from 'services/fibery';
 import { updateTags } from 'api/tag/utils';
+import { generateRssFeed, saveRssFeed } from 'api/rss/utils';
 import { checkIsFound, isValidId } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
@@ -81,10 +82,14 @@ export const fiberyImport = async ({ body: { url }, user }, res, next) => {
     }
 
     await article.save();
+    // update rss feed
+    await saveRssFeed(await generateRssFeed());
     return getArticleById(id, user)
       .then(sendJson(res))
       .catch(next);
   } catch (err) {
+    // clean up db from inconsistent data
+    await Article.deleteMany({ locales: { $size: 0 } });
     return next(err);
   }
 };

@@ -6,3 +6,6 @@ init-db:
 
 deploy-dev-from-local:
 	npm run deploy-dev-from-local
+
+lint:
+	npm run lint
