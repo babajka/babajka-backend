@@ -9,7 +9,6 @@ import storageRoutes from 'api/storage';
 import tagRoutes from 'api/tag';
 import topicRoutes from 'api/topic';
 import filesProxy from 'api/files';
-import rssRoutes from 'api/rss';
 
 const router = Router();
 
@@ -22,6 +21,5 @@ router.use('/tags', tagRoutes);
 router.use('/topics', topicRoutes);
 router.use('/users', userRoutes);
 router.use('/files', filesProxy);
-router.use('/rss', rssRoutes);
 
 export default router;

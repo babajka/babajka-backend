@@ -73,7 +73,7 @@ const RELATED_ENT_FIELDS = {
       'user/Cover': IMAGE,
     }),
   Video: addAppName('Youtube Link'),
-  Podcast: addAppName('SoundCloud Link'),
+  Podcast: [addAppName('SoundCloud Link'), FILES],
   Cover: COLOR_THEME.concat(FILES),
 };
 

@@ -1,11 +1,17 @@
+import fs from 'fs';
+
+import HttpError from 'node-http-error';
 import fromPairs from 'lodash/fromPairs';
 import omit from 'lodash/omit';
 
-import { getImageUrl } from 'services/fibery/getters';
+import { getFileUrl } from 'services/fibery/getters';
 import { parseSoundcloudUrl } from 'services/soundcloud';
+import { getFilesHeaders } from 'api/files/utils';
 import parseYoutubeUrl from 'lib/utils/parseYoutubeUrl';
+
 import { TOPIC_SLUGS } from 'constants/topic';
 import { DEFAULT_COLOR } from 'utils/joi/color';
+import { audioDir, AUDIO_SUBDIR } from 'utils/args';
 
 import Article from './article.model';
 
@@ -14,6 +20,12 @@ const BRAND_LOGO_REGEX = /(black|white)/;
 const DEFAULT_COVERS = { vertical: null, horizontal: null };
 const TEMP_VIDEO_URL = 'https://www.youtube.com/watch?v=2nV-ryyyZWs';
 const TEMP_AUDIO_URL = 'https://soundcloud.com/dillonfrancis/fix-me';
+const AUDIO_TYPE = 'audio/mpeg';
+
+// TODO: somehow with es6 import request=undefined
+// but works in api/files (╯°□°）╯︵ ┻━┻
+// import request from 'request';
+const request = require('request');
 
 const matchImages = (regex, files, initial = {}) =>
   files.reduce(
@@ -21,7 +33,7 @@ const matchImages = (regex, files, initial = {}) =>
       const [type] = regex.exec(name) || [];
 
       if (type) {
-        acc[type] = getImageUrl(secret);
+        acc[type] = getFileUrl(secret);
       }
 
       return acc;
@@ -40,7 +52,7 @@ const mapImage = image => {
     return null;
   }
   const [{ secret } = {}] = image.files;
-  return getImageUrl(secret);
+  return getFileUrl(secret);
 };
 
 const mapTagContent = ({ image, diaryImage, ...rest }, topic) => {
@@ -85,7 +97,7 @@ const mapCollection = c => {
     return c;
   }
   const [{ secret } = {}] = c.cover.files;
-  return { ...c, cover: getImageUrl(secret) };
+  return { ...c, cover: getFileUrl(secret) };
 };
 
 const mapVideo = ({ url }) => {
@@ -97,13 +109,15 @@ const mapVideo = ({ url }) => {
   return { platform: 'youtube', id, url };
 };
 
-const mapAudio = async ({ url }) => {
+const mapAudio = async ({ url, files }) => {
   if (!url) {
     // eslint-disable-next-line no-param-reassign
     url = TEMP_AUDIO_URL;
   }
   const id = await parseSoundcloudUrl(url);
-  return { platform: 'soundcloud', id, url };
+  const [mp3] = files.filter(({ contentType }) => contentType === AUDIO_TYPE);
+  const source = mp3 && mp3.secret;
+  return { platform: 'soundcloud', id, url, source };
 };
 
 // filter out locales without `slug`
@@ -155,4 +169,27 @@ export const getArticle = async data => {
   const { fiberyId } = data;
   const article = await Article.findOneAndUpdate({ fiberyId }, data);
   return article || Article(data);
+};
+
+export const fetchAudio = async ({ audio, locales }, next) => {
+  const { source } = audio || {};
+  if (!source) {
+    return audio;
+  }
+
+  const { slug } = locales.be || Object.values(locales)[0];
+  const filename = `${slug}.mp3`;
+
+  const req = request
+    .get(getFilesHeaders(source))
+    .on('response', res => {
+      if (res.statusCode !== 200) {
+        next(new HttpError(res.statusCode, `[fetchAudio]: ${source} ${res.statusMessage}`));
+        return;
+      }
+      req.pipe(fs.createWriteStream(`${audioDir}/${filename}`));
+    })
+    .on('error', next);
+
+  return { ...audio, source: `${AUDIO_SUBDIR}/${filename}` };
 };

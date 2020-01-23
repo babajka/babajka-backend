@@ -93,7 +93,12 @@ const getArticleData = async url => {
         },
       }),
       video: toWirFormat({ mapping: { 'Youtube Link': 'url' } }),
-      audio: toWirFormat({ mapping: { 'SoundCloud Link': 'url' } }),
+      audio: toWirFormat({
+        mapping: { 'SoundCloud Link': 'url' },
+        formatters: {
+          files: map(toWirFormat()),
+        },
+      }),
       cover: toWirFormat({
         formatters: {
           theme: formatEnum,

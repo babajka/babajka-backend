@@ -4,11 +4,10 @@ import { Router } from 'express';
 import request from 'request';
 import gm from 'gm';
 
-import config from 'config';
 import { isFileExist } from 'utils/io';
 import { imagesDir } from 'utils/args';
 
-const { host, token } = config.services.fibery;
+import { getFilesHeaders } from './utils';
 
 const filesProxy = async (
   { params: { secret }, query: { w = '', h = '', f = 'png' } },
@@ -26,26 +25,25 @@ const filesProxy = async (
   }
 
   // fallback to fibery
-  const url = `https://${host}/api/files/${secret}`;
-  const options = {
-    url,
-    headers: { Authorization: `Token ${token}` },
-  };
-
+  const options = getFilesHeaders(secret);
   request
     .get(options)
     .on('error', next)
     .pipe(res);
 
-  // TODO: handle 404 (now we create empty files)
-
   // asynchronously save file
-  gm(request.get(options))
-    .resize(w, h)
-    // .colors(32)
-    .interlace('Line') // interlaced png or progressive jpeg
-    .stream(f)
-    .pipe(fs.createWriteStream(filepath));
+  const imageReq = request.get(options).on('response', imageRes => {
+    if (imageRes.statusCode !== 200) {
+      console.error(`[filesProxy]: ${secret} ${imageRes.statusCode} ${imageRes.statusMessage}`);
+      return;
+    }
+    gm(imageReq)
+      .resize(w, h)
+      // .colors(32)
+      .interlace('Line') // interlaced png or progressive jpeg
+      .stream(f)
+      .pipe(fs.createWriteStream(filepath));
+  });
 };
 
 const router = Router();

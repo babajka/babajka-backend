@@ -10,7 +10,11 @@ const optionDefinitions = [
 const args = commandLineArgs(optionDefinitions, { partial: true });
 const { secretPath, imagesDir = 'images', staticDir = 'static' } = args;
 
-[imagesDir, staticDir].forEach(dir => {
+export const AUDIO_SUBDIR = '/audio';
+export const audioDir = `${staticDir}${AUDIO_SUBDIR}`;
+export const rssDir = `${staticDir}/rss`;
+
+[imagesDir, staticDir, audioDir, rssDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   }

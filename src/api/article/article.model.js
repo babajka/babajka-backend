@@ -50,6 +50,7 @@ const joiArticleSchema = Joi.object({
     platform: Joi.string().valid(['soundcloud']),
     id: Joi.string(),
     url: Joi.string().uri(),
+    source: Joi.string(),
   }).allow(null),
   color: Joi.color(),
   // Text on article card may be rendered in one of the following ways.

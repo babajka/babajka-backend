@@ -10,6 +10,7 @@ import config from 'config';
 import getLogger from 'config/logger';
 import auth, { passport } from 'auth';
 import { sendJson } from 'utils/api';
+import { staticDir } from 'utils/args';
 
 export const publicPath = path.resolve(`${__dirname}/../`, config.publicPath);
 const app = express();
@@ -32,6 +33,7 @@ app.use(express.static(publicPath));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(express.static(staticDir));
 app.use('/auth', auth);
 app.use('/api', api);
 
