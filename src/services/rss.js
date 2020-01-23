@@ -4,9 +4,9 @@ import RSS from 'rss';
 import Article, { DEFAULT_ARTICLE_QUERY } from 'api/article/article.model';
 import { Tag } from 'api/tag';
 import { mapTagsByTopic, mapToString } from 'api/tag/utils';
-import { staticDir } from 'utils/args';
+import { rssDir } from 'utils/args';
 
-export const RSS_FEED_FILENAME = `${staticDir}/articles.rss.xml`;
+export const RSS_FEED_FILENAME = `${rssDir}/articles.rss.xml`;
 
 // FIXE
 const HOST = 'https://beta.wir.by';

@@ -1,6 +1,6 @@
 import fibery from 'services/fibery';
 import { updateTags } from 'api/tag/utils';
-import { generateRssFeed, saveRssFeed } from 'api/rss/utils';
+import { generateRssFeed, saveRssFeed } from 'services/rss';
 import { checkIsFound, isValidId } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
@@ -10,7 +10,7 @@ import Article, { DEFAULT_ARTICLE_QUERY } from './article.model';
 import LocalizedArticle from './localized/model';
 import { updateLocales } from './localized/utils';
 import { updateCollection } from './collection/utils';
-import { mapFiberyArticle, getArticle } from './utils';
+import { mapFiberyArticle, getArticle, fetchAudio } from './utils';
 
 export const getAll = ({ query: { skip, take }, user }, res, next) =>
   Article.customQuery({
@@ -66,6 +66,9 @@ export const fiberyImport = async ({ body: { url }, user }, res, next) => {
   try {
     const rawArticle = await fibery.getArticleData(url);
     const data = await mapFiberyArticle(rawArticle);
+
+    data.audio = await fetchAudio(data, next);
+
     // FIXME: metadata.createdAt everytime new
     const metadata = getInitObjectMetadata(user);
     const { tags, locales, collection, ...rest } = data;
