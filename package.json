@@ -53,6 +53,7 @@
     "mongoose": "^5.6.11",
     "morgan": "^1.9.1",
     "multer": "^2.0.0-alpha.6",
+    "music-metadata": "^6.3.0",
     "node-fetch": "^2.6.0",
     "node-http-error": "^2.0.0",
     "passport": "^0.4.0",

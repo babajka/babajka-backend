@@ -1,5 +1,8 @@
 import fs from 'fs';
+import stream from 'stream';
+import util from 'util';
 
+import { parseStream } from 'music-metadata';
 import HttpError from 'node-http-error';
 import fromPairs from 'lodash/fromPairs';
 import omit from 'lodash/omit';
@@ -12,8 +15,11 @@ import parseYoutubeUrl from 'lib/utils/parseYoutubeUrl';
 import { TOPIC_SLUGS } from 'constants/topic';
 import { DEFAULT_COLOR } from 'utils/joi/color';
 import { audioDir, AUDIO_SUBDIR } from 'utils/args';
+import { isFileExist } from 'utils/io';
 
 import Article from './article.model';
+
+const pipeline = util.promisify(stream.pipeline);
 
 const IMAGE_TYPE_REGEX = /(horizontal|page|vertical)/;
 const BRAND_LOGO_REGEX = /(black|white)/;
@@ -171,25 +177,43 @@ export const getArticle = async data => {
   return article || Article(data);
 };
 
-export const fetchAudio = async ({ audio, locales }, next) => {
+export const getSomeLocale = ({ locales }) => locales.be || Object.values(locales)[0];
+
+export const fetchAudio = async ({ audio, locales }) => {
   const { source } = audio || {};
   if (!source) {
     return audio;
   }
 
-  const { slug } = locales.be || Object.values(locales)[0];
+  const { slug } = getSomeLocale({ locales });
   const filename = `${slug}.mp3`;
+  const path = `${audioDir}/${filename}`;
+  const meta = {};
+  let error = false;
 
-  const req = request
-    .get(getFilesHeaders(source))
-    .on('response', res => {
-      if (res.statusCode !== 200) {
-        next(new HttpError(res.statusCode, `[fetchAudio]: ${source} ${res.statusMessage}`));
-        return;
-      }
-      req.pipe(fs.createWriteStream(`${audioDir}/${filename}`));
-    })
-    .on('error', next);
+  const req = request.get(getFilesHeaders(source)).on('response', res => {
+    if (res.statusCode !== 200) {
+      error = new HttpError(res.statusCode, `[fetchAudio]: ${source} ${res.statusMessage}`);
+      return;
+    }
+    meta.size = +res.headers['content-length'];
+    meta.mimeType = res.headers['content-type'];
+  });
 
-  return { ...audio, source: `${AUDIO_SUBDIR}/${filename}` };
+  const alreadyFetched = await isFileExist(path);
+  if (!alreadyFetched) {
+    await pipeline(req, fs.createWriteStream(path));
+  }
+  if (error) {
+    // clean up
+    await fs.promises.unlink(path);
+    throw error;
+  }
+  const { format } = await parseStream(fs.createReadStream(path), meta);
+  meta.duration = Math.floor(format.duration);
+  return {
+    ...audio,
+    source: `${AUDIO_SUBDIR}/${filename}`,
+    ...meta,
+  };
 };
