@@ -51,6 +51,9 @@ const joiArticleSchema = Joi.object({
     id: Joi.string(),
     url: Joi.string().uri(),
     source: Joi.string(),
+    mimeType: Joi.string(),
+    duration: Joi.number(),
+    size: Joi.number(),
   }).allow(null),
   color: Joi.color(),
   // Text on article card may be rendered in one of the following ways.

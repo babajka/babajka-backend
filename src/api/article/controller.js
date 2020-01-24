@@ -1,6 +1,6 @@
 import fibery from 'services/fibery';
+import rss from 'services/rss';
 import { updateTags } from 'api/tag/utils';
-import { generateRssFeed, saveRssFeed } from 'services/rss';
 import { checkIsFound, isValidId } from 'utils/validation';
 import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
@@ -67,7 +67,7 @@ export const fiberyImport = async ({ body: { url }, user }, res, next) => {
     const rawArticle = await fibery.getArticleData(url);
     const data = await mapFiberyArticle(rawArticle);
 
-    data.audio = await fetchAudio(data, next);
+    data.audio = await fetchAudio(data);
 
     // FIXME: metadata.createdAt everytime new
     const metadata = getInitObjectMetadata(user);
@@ -85,8 +85,8 @@ export const fiberyImport = async ({ body: { url }, user }, res, next) => {
     }
 
     await article.save();
-    // update rss feed
-    await saveRssFeed(await generateRssFeed());
+    await rss.saveArticlesFeed(await rss.generateArticlesFeed());
+    await rss.savePodcastsFeed(await rss.generatePodcastsFeed());
     return getArticleById(id, user)
       .then(sendJson(res))
       .catch(next);
