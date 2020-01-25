@@ -122,8 +122,7 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
   const articleIndex = mapIds(articles).indexOf(getId(article));
   result.collection = {
     ...omit(article.collectionId.toObject(), ['articles']),
-    prev: formatArticle(articles[articleIndex - 1]),
-    next: formatArticle(articles[articleIndex + 1]),
+    articles: articles.map(formatArticle),
     articleIndex,
   };
   return result;
