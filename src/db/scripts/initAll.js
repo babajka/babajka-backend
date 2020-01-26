@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 
 // The script updates databases with data from Fibery.io.
-// The script is executed as follows:
-//   npm run init-db-secret
 //
-// Examples:
-// * to populate local db:
-//   npm run init-db
-// * to populate remote db:
-//   npm run init-db -- --secretPath=/home/user/secret.json
+// Usage:
+//   npm run init-db -- \
+//    --secretPath='secret-file.json' \
+//    --userEmail='developer@babajka.io'
+//
+// Remember to specify --userEmail to choose the user to be permofming the script.
+//
+// `import-articles` or `import-diaries` may be called separately with the same arguments.
 
 import mongoose from 'mongoose';
 import keyBy from 'lodash/keyBy';
