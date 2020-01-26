@@ -14,7 +14,8 @@ const RSS_PODCASTS_FILENAME = `${rssDir}/podcasts.rss.xml`;
 const HOST = 'https://wir.by';
 const description =
   'Асветніцкая пляцоўка пра беларускую і сусветную культуру з артыкуламі, лекцыямі даследчыкаў, гульнямі і спецпраектамі';
-const cover = 'https://res.cloudinary.com/wir-by/image/upload/v1550513082/logo/W.png';
+const cover =
+  'https://res.cloudinary.com/wir-by/image/upload/v1580048273/production/meta/preview-square.png';
 
 const getRssOptions = options => ({
   title: 'Wir.by',
