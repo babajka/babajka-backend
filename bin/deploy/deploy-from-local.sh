@@ -27,8 +27,9 @@ bash bin/deploy/before-deploy.sh $MODE
 BACKEND_REMOTE_SWAP_PATH="/home/wir-$MODE/deployed/swap-backend/babajka-backend/"
 HOST="wir-$MODE@$MODE.wir.by"
 
+# TODO(@uladbohdan): --exclude everything from .gitignore
 ssh $HOST "mkdir -p \"${BACKEND_REMOTE_SWAP_PATH}\""
-rsync -r --delete-after --exclude=.git --exclude=node_modules . \
+rsync -r --delete-after --exclude=.git --exclude=node_modules --exclude=static --exclude=images . \
   $HOST:"${BACKEND_REMOTE_SWAP_PATH}"
 echo '[OK] Backend pushed to server'
 
