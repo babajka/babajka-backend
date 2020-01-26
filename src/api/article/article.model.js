@@ -119,10 +119,11 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
   }
 
   const { articles } = article.collectionId;
-  const articleIndex = mapIds(articles).indexOf(getId(article));
+  const sortedArticles = articles.sort((a, b) => a.publishAt - b.publishAt);
+  const articleIndex = mapIds(sortedArticles).indexOf(getId(article));
   result.collection = {
     ...omit(article.collectionId.toObject(), ['articles']),
-    articles: articles.map(formatArticle),
+    articles: sortedArticles.map(formatArticle),
     articleIndex,
   };
   return result;
@@ -157,7 +158,7 @@ export const POPULATE_OPTIONS = {
     populate: {
       path: 'articles',
       match: queryUnpublished(user),
-      select: ['_id'],
+      select: ['_id', 'publishAt'],
       populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
     },
   }),

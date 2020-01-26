@@ -33,7 +33,9 @@ app.use(express.static(publicPath));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(express.static(staticDir));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(express.static(staticDir));
+}
 app.use('/auth', auth);
 app.use('/api', api);
 
