@@ -3,7 +3,7 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 
 import { User } from 'api/user';
-import { ValidationError } from 'utils/validation';
+import { ValidationError } from 'utils/joi';
 import { cutUrlParams } from 'utils/formatting';
 import config from 'config';
 
@@ -21,10 +21,7 @@ passport.use(
     },
     (req, email, password, done) => {
       let user;
-      // Below we restrict Users with any roles other than 'regular' to login.
-      // This is to prevent situations somebody tries to login as User with role 'author':
-      // such users do not have a password and are not yet allowed to login.
-      User.findOne({ email, role: 'regular' })
+      User.findOne({ email })
         .then(result => {
           if (!result) {
             throw new ValidationError({ email: 'auth.wrongEmail' });

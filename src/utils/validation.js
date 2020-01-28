@@ -1,10 +1,15 @@
 import HttpError from 'node-http-error';
+import HttpStatus from 'http-status-codes';
+
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 import mongoose from 'mongoose';
+import Joi from 'utils/joi';
+
+import { MAIN_PAGE_ENTITIES, SIDEBAR_ENTITIES } from 'constants/storage';
 
 export function ValidationError(message) {
-  return HttpError(400, message);
+  return HttpError(HttpStatus.BAD_REQUEST, message);
 }
 
 export const validatePassword = password => {
@@ -16,7 +21,7 @@ export const validatePassword = password => {
 const checkForbiddenFields = body => {
   const errors = {};
 
-  ['brand', 'collection'].forEach(field => {
+  ['author', 'authorEmail', 'brand', 'brandSlug', 'collection'].forEach(field => {
     if (Object.prototype.hasOwnProperty.call(body, field)) {
       errors[field] = 'frontend is forbidden to send this field to backend';
     }
@@ -30,7 +35,7 @@ const createArticleValidator = ({ body }, res, next) => {
 
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
-      ['title', 'subtitle', 'slug', 'content'].forEach(field => {
+      ['title', 'subtitle', 'slug', 'text'].forEach(field => {
         if (!localeData[field]) {
           set(errors, ['locales', locale, field], 'errors.fieldRequired');
         }
@@ -51,7 +56,7 @@ const createArticleValidator = ({ body }, res, next) => {
 const updateArticleValidator = ({ body }, res, next) => {
   const errors = checkForbiddenFields(body);
 
-  ['brandSlug', 'type', 'imagePreviewUrl'].forEach(field => {
+  ['type', 'images'].forEach(field => {
     if (body[field] === '') {
       errors[field] = 'errors.fieldUnremovable';
     }
@@ -59,7 +64,7 @@ const updateArticleValidator = ({ body }, res, next) => {
 
   if (body.locales) {
     Object.entries(body.locales).forEach(([locale, localeData]) => {
-      ['title', 'subtitle', 'slug', 'content', 'locale'].forEach(field => {
+      ['title', 'subtitle', 'slug', 'text', 'locale'].forEach(field => {
         if (localeData[field] === '') {
           set(errors, ['locales', locale, field], 'errors.fieldUnremovable');
         }
@@ -73,9 +78,59 @@ const updateArticleValidator = ({ body }, res, next) => {
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
+const getDataSchema = entities =>
+  Joi.object().pattern(Joi.string().valid(entities), Joi.array().items(Joi.objectId()));
+
+const joiMainPageDataSchema = getDataSchema(MAIN_PAGE_ENTITIES);
+const joiSidebarDataSchema = getDataSchema(SIDEBAR_ENTITIES);
+
+export const checkMainPageEntitiesFormat = data =>
+  Joi.validate(data, joiMainPageDataSchema).error === null;
+
+const setMainPageValidator = ({ body }, res, next) => {
+  const valid = checkMainPageEntitiesFormat(body.data);
+  return next(!valid && new ValidationError({ mainPageEntities: 'not valid' }));
+};
+
+const checkSidebarEntitiesFormat = data => Joi.validate(data, joiSidebarDataSchema).error === null;
+
+const setSidebarValidator = ({ body }, res, next) => {
+  const valid = checkSidebarEntitiesFormat(body.data);
+  return next(!valid && new ValidationError({ sidebarEntities: 'not valid' }));
+};
+
+const mailRequestValidator = ({ body }, res, next) => {
+  const errors = {};
+  const validUserStatuses = ['subscribed', 'unsubscribed'];
+  const validLanguages = ['be', 'ru', 'en'];
+
+  const validators = {
+    emailAddress: emailAddress => emailAddress,
+    userStatus: status => validUserStatuses.includes(status),
+    language: language => body.userStatus === 'unsubscribed' || validLanguages.includes(language),
+  };
+
+  Object.keys(validators).forEach(field => {
+    if (!validators[field](body[field])) {
+      errors[field] = `value '${body[field]}' is not valid.`;
+    }
+  });
+
+  const valid = Object.keys(errors).length === 0;
+  return next(
+    !valid &&
+      new ValidationError({
+        mailRequest: errors,
+      })
+  );
+};
+
 export const precheck = {
   createArticle: createArticleValidator,
   updateArticle: updateArticleValidator,
+  setMainPage: setMainPageValidator,
+  setSidebar: setSidebarValidator,
+  mailRequest: mailRequestValidator,
 };
 
 export const requireFields = (...fields) => (req, res, next) => {
@@ -90,7 +145,7 @@ export const requireFields = (...fields) => (req, res, next) => {
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
-export const checkIsFound = (object, code = 404) => {
+export const checkIsFound = (object, code = HttpStatus.NOT_FOUND) => {
   if (!object) {
     throw new HttpError(code);
   }
@@ -99,27 +154,15 @@ export const checkIsFound = (object, code = 404) => {
 
 export const isValidId = id => mongoose.Types.ObjectId.isValid(id);
 
-export const slugValidator = {
-  validator: v => /^[a-zA-Z0-9_-]+$/.test(v),
-  message: 'errors.failedMatchRegex',
-};
-
-export const colloquialDateHashValidator = {
-  // Colloquial Date Hash has MMDD format.
-  validator: v => {
-    const month = parseInt(v, 10) / 100;
-    const day = parseInt(v, 10) % 100;
-    return month >= 0 && month <= 12 && day >= 0 && day <= 31;
-  },
-  message: 'errors.failedMatchRegex',
-};
-
-export const permissionsObjectValidator = {
-  validator: v => {
-    if (v instanceof Array || typeof v !== 'object') {
-      return false;
+export const validateList = (data, validator, name) => {
+  const errors = data.map(validator).reduce((acc, error, index) => {
+    if (!error) {
+      return acc;
     }
-    return Object.values(v).every(val => typeof val === 'boolean');
-  },
-  message: 'errors.badPermissions',
+    // data for render error on frontend
+    return acc.concat({ data: data[index], error });
+  }, []);
+  if (errors.length) {
+    throw new ValidationError({ [name]: errors });
+  }
 };

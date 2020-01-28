@@ -3,18 +3,23 @@ import session from 'express-session';
 import connectMongo from 'connect-mongo';
 import merge from 'lodash/merge';
 import fs from 'fs';
-import path from 'path';
 
+import { secretPath } from 'utils/args';
 import defaultConfig from './config.json';
 
 const MongoStore = connectMongo(session);
-const secretPath = process.argv[2] || path.join(__dirname, 'secret.json');
+
 let secret = null;
 
-try {
-  secret = JSON.parse(fs.readFileSync(secretPath, 'utf8'));
-} catch (err) {
-  console.error(`Error: ${err.message}. Used default configs as secret`);
+if (secretPath) {
+  try {
+    secret = JSON.parse(fs.readFileSync(secretPath, 'utf8'));
+  } catch (err) {
+    console.error(`Failed to parse provided secret: ${err.message}. Default config will be used`);
+  }
+} else {
+  /* eslint-disable-next-line no-console */
+  console.log('No secret file provided. Default config will be used');
 }
 
 const config = secret ? merge(defaultConfig, secret) : defaultConfig;
@@ -22,7 +27,7 @@ config.port = process.env.PORT || config.port;
 config.session.store = new MongoStore({ mongooseConnection: mongoose.connection });
 
 if (process.env.NODE_ENV === 'testing') {
-  config.mongodb.url = 'mongodb://localhost/babajka-test';
+  config.mongodb.url = 'mongodb://127.0.0.1/babajkatest';
 }
 
 export default config;

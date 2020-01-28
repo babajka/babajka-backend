@@ -1,18 +1,18 @@
 /* eslint-disable no-console */
 
 // The script resets password for the user specified.
-// This cannot currently be done by other means.
+// This cannot currently be done by any other means.
 //
 // Usage:
-//  npm run set-password -- 'secret-file.json' email newPassword
-//
-// Example:
-//  npm run set-password -- '' admin@babajka.io password
-// (this changes password to 'password' for admin@babajka.io user in local DB)
+//  npm run set-password -- \
+//    --secretPath='secret-file.json' \
+//    --userEmail='admin@babajka.io' \
+//    --newPassword='newPassword'
 //
 // Be sure to choose the password which satisfies validation conditions;
 // otherwise the script will fail.
 
+import { userEmail, newPassword } from 'utils/args';
 import connectDb from 'db';
 
 import { User } from 'api/user';
@@ -20,18 +20,15 @@ import { User } from 'api/user';
 (async () => {
   await connectDb()
     .then(() => {
-      const email = process.argv[3] || '';
-      const newPassword = process.argv[4] || '';
-      if (email.length === 0 || newPassword.length === 0) {
+      if (userEmail.length === 0 || newPassword.length === 0) {
         throw new Error('bad params');
       }
-      return { email, newPassword };
     })
-    .then(async ({ email, newPassword }) => {
-      const user = await User.findOne({ email }).exec();
+    .then(async () => {
+      const user = await User.findOne({ email: userEmail }).exec();
       await user.setPassword(newPassword);
       await user.save();
-      console.log(`successfully updated password of user ${email}`);
+      console.log(`successfully updated password of user ${userEmail}`);
     })
     .catch(err => {
       console.log(`failed to execute:`, err.message);

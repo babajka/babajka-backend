@@ -1,13 +1,16 @@
 import { createServer } from 'http';
 import path from 'path';
+
 import config from 'config';
 import app, { publicPath } from 'server';
 import connectDb from 'db';
 
 connectDb();
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
+app.set('view engine', 'ejs');
+
+app.get('/', (req, res) => {
+  res.render(path.join(publicPath, 'index'));
 });
 
 createServer(app).listen(config.port, () => {

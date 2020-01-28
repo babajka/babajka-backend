@@ -2,7 +2,7 @@
   "port": 8080,
   "publicPath": "public",
   "mongodb": {
-    "url": "mongodb://localhost/babajka",
+    "url": "mongodb://127.0.0.1/babajka",
     "options": {}
   },
   "auth": {
@@ -14,7 +14,8 @@
     "saveUninitialized": false,
     "cookie": {
       "maxAge": 3600000,
-      "secure": false
+      "secure": false,
+      "httpOnly": false
     },
     "name": "csid"
   },
@@ -27,6 +28,25 @@
     "google": {
       "clientId": "MUST BE SET IN BABAJKA SECRET CONFIG",
       "clientSecret": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    }
+  },
+  "services": {
+    "cloudinary": {
+      "cloudName": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "folder": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "apiKey": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "apiSecret": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    },
+    "mailchimp": {
+      "apiKey": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "listId": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    },
+    "fibery": {
+      "host": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "token": "MUST BE SET IN BABAJKA SECRET CONFIG"
+    },
+    "soundcloud": {
+      "client_id": "MUST BE SET IN BABAJKA SECRET CONFIG"
     }
   }
 }

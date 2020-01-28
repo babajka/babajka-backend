@@ -1,6 +1,8 @@
 import { Router } from 'express';
 
-import { serializeUser } from 'api/user';
+import HttpStatus from 'http-status-codes';
+
+import { getUserResponse } from 'api/user';
 import { requireFields, validatePassword } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
@@ -12,7 +14,7 @@ const router = Router();
 router.post('/login', requireFields('email', 'password'), (req, res, next) =>
   local
     .login(req, res, next)
-    .then(user => sendJson(res)(serializeUser(user)))
+    .then(user => sendJson(res)(getUserResponse(user)))
     .catch(next)
 );
 
@@ -23,7 +25,7 @@ router.post('/register', requireFields('email', 'password', 'firstName'), (req, 
 
   return local
     .register(req, res, next)
-    .then(user => sendJson(res)(serializeUser(user)))
+    .then(user => sendJson(res)(getUserResponse(user)))
     .catch(next);
 });
 
@@ -33,7 +35,7 @@ router.get('/google/callback', social.google.callback, (req, res) => res.redirec
 // eslint-disable-next-line no-unused-vars
 router.get('/logout', requireAuth, (req, res, next) => {
   req.logOut();
-  res.sendStatus(200);
+  res.sendStatus(HttpStatus.OK);
 });
 
 export { passport, requireAuth, verifyPermission };

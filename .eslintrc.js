@@ -21,11 +21,17 @@ module.exports = {
     'mocha/no-skipped-tests': 'error',
     'mocha/no-synchronous-tests': 'error',
     'mocha/no-top-level-hooks': 'error',
-    'mocha/valid-suite-description': ['warn', '^[A-Z#]'],
-    'mocha/valid-test-description': 'warn',
+    'mocha/valid-suite-description': ['warn', /^[A-Z#]/],
+    // valid cases:
+    // it('should bla')
+    // it('[prefix] should boo')
+    // prettier-ignore
+    'mocha/valid-test-description': ['warn', /^(\[.+\] )?should/],
 
+    'import/no-cycle': 'warn',
     // we use named export in utils
     'import/prefer-default-export': 'off',
+    'import/no-cycle': 'warn',
     // disable comma-dangle in functions
     'comma-dangle': [
       'error',
@@ -40,10 +46,16 @@ module.exports = {
     'no-console': ['error', { allow: ['warn', 'error'] }],
     // `_id` comes from Mongo
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    // we use '_' placeholder, for example in array desctruction:  [_, second] = arr
+    'no-unused-vars': ['error', { varsIgnorePattern: '^_+', argsIgnorePattern: '^_+' }],
+
+    'func-names': 'off',
   },
   settings: {
     'import/resolver': {
-      'babel-module': {},
+      node: {
+        moduleDirectory: ['node_modules', './src'],
+      },
     },
   },
 };

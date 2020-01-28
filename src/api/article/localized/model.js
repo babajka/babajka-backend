@@ -1,52 +1,25 @@
 import mongoose from 'mongoose';
 
-import { slugValidator } from 'utils/validation';
+import Joi, { joiToMongoose, defaultValidator } from 'utils/joi';
 
-const { Schema } = mongoose;
+const joiLocalizedArticleSchema = Joi.object({
+  articleId: Joi.objectId().required(),
+  locale: Joi.locale().required(),
+  title: Joi.string().required(),
+  subtitle: Joi.string().required(),
+  text: Joi.object().required(),
+  slug: Joi.slug(),
+  metadata: Joi.metadata().required(),
+  active: Joi.boolean().default(true),
+});
 
-const LocalizedArticleSchema = new Schema(
-  {
-    articleId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-    },
-    locale: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    subtitle: {
-      type: String,
-      required: true,
-    },
-    video: String,
-    image: String,
-    content: Schema.Types.Mixed,
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      validate: slugValidator,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  {
-    usePushEach: true,
-    minimize: false,
-  }
-);
+const LocalizedArticleSchema = joiToMongoose(joiLocalizedArticleSchema, {
+  usePushEach: true,
+  minimize: false,
+});
 
 const LocalizedArticle = mongoose.model('LocalizedArticle', LocalizedArticleSchema);
+
+export const validateLocalization = data => defaultValidator(data, joiLocalizedArticleSchema);
 
 export default LocalizedArticle;

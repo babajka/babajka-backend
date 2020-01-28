@@ -1,22 +1,19 @@
 {
-  "id": "a7af2ec8-b8d4-b355-00b9-2f6cb42d60c9",
-  "name": "babajka",
-  "values": [
-    {
-      "enabled": true,
-      "key": "DOMAIN",
-      "value": "http://localhost:8080",
-      "type": "text"
-    },
-    {
-      "enabled": true,
-      "key": "API_URL",
-      "value": "/api",
-      "type": "text"
-    }
-  ],
-  "timestamp": 1509204624579,
-  "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2017-10-28T15:32:36.485Z",
-  "_postman_exported_using": "Postman/5.1.3"
+	"id": "e187b8f6-63c4-4cb2-bc4d-3bb48ed25c0c",
+	"name": "Babajka Local Backend",
+	"values": [
+		{
+			"key": "DOMAIN",
+			"value": "http://localhost:8080",
+			"enabled": true
+		},
+		{
+			"key": "API_URL",
+			"value": "/api",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2019-01-16T17:38:59.972Z",
+	"_postman_exported_using": "Postman/6.7.1"
 }

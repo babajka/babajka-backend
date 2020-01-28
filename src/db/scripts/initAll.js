@@ -1,190 +1,234 @@
 /* eslint-disable no-console */
 
+// The script updates databases with data from Fibery.io.
+//
+// Usage:
+//   npm run init-db -- \
+//    --secretPath='secret-file.json' \
+//    --userEmail='developer@babajka.io'
+//
+// Remember to specify --userEmail to choose the user to be permofming the script.
+//
+// `import-articles` or `import-diaries` may be called separately with the same arguments.
+
 import mongoose from 'mongoose';
-import omit from 'lodash/omit';
-import pick from 'lodash/pick';
+import keyBy from 'lodash/keyBy';
 
 import connectDb from 'db';
 import { User } from 'api/user';
-import { Article, ArticleBrand, ArticleCollection, LocalizedArticle } from 'api/article';
+import { Article, ArticleCollection } from 'api/article';
+import { StorageEntity } from 'api/storage/model';
 import { Diary } from 'api/specials';
+import { Tag } from 'api/tag';
+import { Topic } from 'api/topic';
+import { getInitObjectMetadata } from 'api/helpers/metadata';
+
 import * as permissions from 'constants/permissions';
+import { MAIN_PAGE_KEY, SIDEBAR_KEY } from 'constants/storage';
 
-import usersData from 'db/data/users.json';
-import articleBrandsData from 'db/data/articleBrands.json';
-import articleCollectionsData from 'db/data/articleCollections.json';
-import articlesData from 'db/data/articles.json';
-import diariesData from 'db/data/diary.json';
+import { addTopics } from 'utils/testing';
+import { getId, mapIds, getTagsByTopic, getArticlesByTag } from 'utils/getters';
 
-const TEXT_BY_LOCALE = {
-  be: 'Здароў!',
-  ru: 'Приветик!',
-  en: 'Hello!',
-};
+import importArticles, { INIT_ARTICLES_FIBERY_ID } from './importArticles';
+import importDiaries from './importDiaries';
+import { retrieveMetadataTestingUser } from './utils';
 
-const getArticleContent = locale => ({
-  entityMap: {
-    '0': { type: 'LINK', mutability: 'MUTABLE', data: { url: 'http://wir.by/' } },
+const SIDEBAR_BLOCKS = [
+  'themes',
+  'personalities',
+  'times',
+  'locations' /* , 'brands', 'authors' */,
+];
+
+const USERS = [
+  {
+    email: 'admin@babajka.io',
+    firstName: 'Fox',
+    lastName: 'Muller',
+    password: 'password',
+    permissionsPreset: 'admin',
   },
-  blocks: [
-    {
-      key: '761n6',
-      text: TEXT_BY_LOCALE[locale],
-      type: 'header-one',
-      depth: 0,
-      inlineStyleRanges: [],
-      entityRanges: [],
-      data: {},
-    },
-    {
-      key: 'cuvud',
-      text: 'link to wir by',
-      type: 'blockquote',
-      depth: 0,
-      inlineStyleRanges: [],
-      entityRanges: [{ offset: 0, length: 14, key: 0 }],
-      data: {},
-    },
-  ],
-});
+  {
+    email: 'creator@babajka.io',
+    firstName: 'Dana',
+    lastName: 'Scally',
+    password: 'password1',
+    permissionsPreset: 'contentManager',
+  },
+  {
+    email: 'user@babajka.io',
+    firstName: 'Джон',
+    lastName: 'Сміт',
+    password: 'password2',
+    bio: 'бла-бла-бла',
+    imageUrl: '/test/images/einstein.jpeg',
+  },
+];
 
 const initUsers = () =>
   Promise.all(
-    usersData.map(async userData => {
+    USERS.map(async userData => {
       const permPreset = userData.permissionsPreset || 'user';
 
       const user = new User(userData);
       user.permissions = permissions[permPreset];
 
-      if (userData.role !== 'author') {
-        await user.setPassword(userData.password);
-      }
+      await user.setPassword(userData.password);
+
       return user.save();
     })
   );
 
-const initArticleBrands = () =>
-  Promise.all(
-    articleBrandsData.map(async articleBrandData => new ArticleBrand(articleBrandData).save())
+export const initMainPageState = async metadataTestingUser => {
+  const articles = await Article.find();
+  const tags = await Tag.find().exec();
+  const tagsBySlug = keyBy(tags, 'slug');
+  const articlesByTag = getArticlesByTag({ articles, tags });
+  const articlesByFid = articles.reduce((acc, cur) => {
+    acc[cur.fiberyPublicId] = cur;
+    return acc;
+  }, {});
+  const tagsWithArticles = tags.filter(
+    ({ slug }) => articlesByTag[slug] && articlesByTag[slug].length
   );
+  // const { personalities = [], locations = [] } = getTagsByTopic({ tags: tagsWithArticles, topics });
+  //
+  // const hasPersonalities = personalities.length > 2;
+  // if (!hasPersonalities) {
+  //   console.log(`Not enough personalities tags ${personalities.length}/3!`);
+  // }
+  //
+  // const hasLocations = locations.length > 2;
+  // if (!hasLocations) {
+  //   console.log(`Not enough locations tags ${locations.length}/3!`);
+  // }
 
-const getArticleBrandsDict = async () => {
-  const articleBrandsDict = {};
-  const articleBrands = await ArticleBrand.find().exec();
-  await articleBrands.forEach(item => {
-    articleBrandsDict[item.slug] = item._id;
-  });
-  return articleBrandsDict;
-};
-
-const getAuthorsDict = async () => {
-  const authorsDict = {};
-  const authors = await User.find({ role: 'author' }).exec();
-  await authors.forEach(author => {
-    authorsDict[author.email] = author._id;
-  });
-  return authorsDict;
-};
-
-const initArticles = (articleBrandsDict, authorsDict) =>
-  Promise.all(
-    articlesData.map(async rawArticleData => {
-      const articleLocales = rawArticleData.locales;
-      const articleData = omit(rawArticleData, ['locales', 'videoId']);
-      articleData.brand = articleBrandsDict[articleData.brand];
-      if (articleData.authorEmail) {
-        articleData.author = authorsDict[articleData.authorEmail];
-      }
-      if (articleData.publishAt) {
-        articleData.publishAt = new Date(articleData.publishAt);
-      }
-      if (articleData.type === 'video') {
-        articleData.video = {
-          platform: 'youtube',
-          videoId: rawArticleData.videoId,
-          videoUrl: `https://www.youtube.com/watch?v=${rawArticleData.videoId}`,
-        };
-      }
-      const article = new Article(articleData);
-      Promise.all(
-        Object.keys(articleLocales).map(locale => {
-          const data = new LocalizedArticle({
-            ...articleLocales[locale],
-            locale,
-            articleId: article._id,
-            content: getArticleContent(locale),
-          });
-          article.locales.push(data._id);
-          return data.save();
-        })
-      );
-      return article.save();
-    })
-  );
-
-// Returns a mapping of slugs to id-s.
-const getArticlesDict = async () => {
-  const articlesDict = {};
-  const articles = await Article.find().populate('locales', ['slug']);
-  await articles.forEach(item => {
-    item.locales.forEach(localization => {
-      articlesDict[localization.slug] = item._id;
-    });
-  });
-  return articlesDict;
-};
-
-const initArticleCollections = articlesDict => {
-  const createCollection = async collectionData => {
-    const subDict = pick(articlesDict, collectionData.articleSlugs);
-    const body = { ...collectionData, articles: Object.values(subDict) };
-    const collection = await new ArticleCollection(body).save();
-    await Promise.all(
-      Object.values(subDict).map(id =>
-        Article.findOneAndUpdate({ _id: id }, { collectionId: collection._id }).exec()
-      )
-    );
+  const getArticleId = name => {
+    const fId = INIT_ARTICLES_FIBERY_ID[name];
+    return getId(articlesByFid[fId]);
   };
 
-  return Promise.all(articleCollectionsData.map(createCollection));
+  const state = {
+    blocks: [
+      { type: 'featured', articleId: getArticleId('kafka'), frozen: true },
+      { type: 'diary' },
+      {
+        type: 'latestArticles',
+        articlesIds: [
+          { id: getArticleId('belkino1'), frozen: true },
+          { id: getArticleId('dubouka'), frozen: true },
+        ],
+      },
+      // hasPersonalities && {
+      //   type: 'tagsByTopic',
+      //   topicSlug: 'personalities',
+      //   tagsIds: sampleSize(personalities, 3),
+      //   style: '1-2',
+      // },
+      {
+        type: 'articlesByTag3',
+        tagId: getId(tagsBySlug.linguistics),
+        articlesIds: ['somin', 'rusyn', 'sorbian'].map(getArticleId),
+      },
+      {
+        type: 'banner',
+        banner: 'mapa',
+      },
+      {
+        type: 'articlesByTag2',
+        tagId: getId(tagsBySlug.belarus),
+        articlesIds: ['dushy', 'budynki'].map(getArticleId),
+      },
+      {
+        type: 'tagsByTopic',
+        topicSlug: 'locations',
+        tagsIds: mapIds([tagsBySlug.europe, tagsBySlug.bssr, tagsBySlug.minsk]),
+        style: '2-1',
+      },
+      {
+        type: 'articlesByTag2',
+        tagId: getId(tagsBySlug.libra),
+        articlesIds: ['banksy', 'dali'].map(getArticleId),
+      },
+    ].filter(Boolean),
+    data: {
+      articles: mapIds(articles),
+      tags: mapIds(tagsWithArticles),
+    },
+  };
+
+  return StorageEntity.setValue(MAIN_PAGE_KEY, state, getId(metadataTestingUser));
 };
 
-const initDiaries = () =>
-  Promise.all(diariesData.map(async diaryData => new Diary(diaryData).save()));
+const initSidebarState = async metadataTestingUser => {
+  const rawTags = await Tag.find();
 
-(async () => {
+  const articles = await Article.find();
+  const articlesByTag = getArticlesByTag({ articles, tags: rawTags });
+  const tags = rawTags.filter(({ slug }) => articlesByTag[slug] && articlesByTag[slug].length);
+
+  const topics = await Topic.find().exec();
+  const allTagsByTopic = getTagsByTopic({ tags, topics });
+  const tagsBySlug = keyBy(tags, 'slug');
+
+  const sidebarTags = Object.entries({
+    times: ['xx-century', 'today', 'dauniej', 'modernism'],
+    locations: ['belarus', 'bssr', 'minsk', 'europe', 'eastern-europe'],
+  }).reduce((acc, [k, v]) => {
+    acc[k] = v.map(slug => getId(tagsBySlug[slug]));
+    return acc;
+  }, {});
+
+  const blocks = SIDEBAR_BLOCKS.map(topic => ({
+    topic,
+    tags: sidebarTags[topic] || allTagsByTopic[topic],
+  }));
+
+  const state = { blocks, data: { tags: mapIds(tags) } };
+  return StorageEntity.setValue(SIDEBAR_KEY, state, getId(metadataTestingUser));
+};
+
+const run = async () => {
   try {
     await connectDb();
     await mongoose.connection.db.dropDatabase();
     console.log('Mongoose: drop database');
 
     await initUsers();
-    const usersCount = await User.count();
-    console.log(`Mongoose: insert ${usersCount} user(s)`);
+    console.log(`Mongoose: insert ${await User.countDocuments()} users`);
 
-    await initArticleBrands();
-    const articleBrandsCount = await ArticleBrand.count();
-    console.log(`Mongoose: insert ${articleBrandsCount} article brand(s)`);
+    const metadataTestingUser = await retrieveMetadataTestingUser();
+    const commonMetadata = getInitObjectMetadata(metadataTestingUser);
+    const topics = await addTopics(commonMetadata);
+    console.log(`Mongoose: insert ${topics.length} topics`);
 
-    const articleBrandsDict = await getArticleBrandsDict();
-    const authorsDict = await getAuthorsDict();
+    await importArticles(metadataTestingUser);
+    const articlesCount = await Article.countDocuments();
+    console.log(`Mongoose: insert ${articlesCount} articles`);
+    console.log(`Mongoose: insert ${await ArticleCollection.countDocuments()} article collections`);
 
-    await initArticles(articleBrandsDict, authorsDict);
-    const articlesCount = await Article.count();
-    console.log(`Mongoose: insert ${articlesCount} article(s)`);
-    const articleDict = await getArticlesDict();
+    await importDiaries(metadataTestingUser);
+    console.log(`Mongoose: insert ${await Diary.countDocuments()} diaries`);
+    console.log(`Mongoose: insert ${await Tag.countDocuments()} tags`);
 
-    await initArticleCollections(articleDict);
-    const articleCollectionsCount = await ArticleCollection.count();
-    console.log(`Mongoose: insert ${articleCollectionsCount} article collection(s)`);
+    if (articlesCount) {
+      await initMainPageState(metadataTestingUser);
+      console.log('Mongoose: main page state pushed');
 
-    await initDiaries();
-    const diariesCount = await Diary.count();
-    console.log(`Mongoose: insert ${diariesCount} diary(es)`);
+      await initSidebarState(metadataTestingUser);
+      console.log('Mongoose: sidebar state pushed');
+    }
+
+    // PLACEHOLDER.
   } catch (err) {
     console.log('Mongoose: error during database init');
     console.error(err);
+    console.error(JSON.stringify(err.message, null, 2));
     process.exit();
   }
   process.exit();
-})();
+};
+
+if (require.main === module) {
+  run();
+}

@@ -3,12 +3,14 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
+import HttpStatus from 'http-status-codes';
 
 import api from 'api';
 import config from 'config';
 import getLogger from 'config/logger';
 import auth, { passport } from 'auth';
 import { sendJson } from 'utils/api';
+import { staticDir } from 'utils/args';
 
 export const publicPath = path.resolve(`${__dirname}/../`, config.publicPath);
 const app = express();
@@ -31,6 +33,9 @@ app.use(express.static(publicPath));
 app.use(passport.initialize());
 app.use(passport.session());
 
+if (process.env.NODE_ENV !== 'production') {
+  app.use(express.static(staticDir));
+}
 app.use('/auth', auth);
 app.use('/api', api);
 
@@ -39,8 +44,11 @@ app.use((err, req, res, next) => {
   if (!err.status) {
     // log only 500 errors
     console.error(err.message);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(err.stack);
+    }
   }
-  sendJson(res, err.status || 500)({ error: err.message });
+  sendJson(res, err.status || HttpStatus.INTERNAL_SERVER_ERROR)({ error: err.message });
 });
 
 export default app;
