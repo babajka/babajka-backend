@@ -28,6 +28,8 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 - `npm run test` to test without coveralls
 
+- `npm run deploy-from-local` to deploy code on [`api.wir.by`](http://api.wir.by)
+
 ## development tips
 
 ### gm
