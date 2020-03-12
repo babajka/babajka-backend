@@ -53,6 +53,10 @@ export const fiberyPreview = async ({ body: { url } }, res, next) => {
   try {
     const data = await fibery.getArticleData(url);
     const article = await mapFiberyArticle(data);
+    if (article.collection) {
+      article.collection.articles = [];
+      article.collection.articleIndex = 0;
+    }
     return sendJson(res)({ article });
   } catch (err) {
     return next(err);

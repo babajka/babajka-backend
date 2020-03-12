@@ -10,6 +10,7 @@ const router = Router();
 // :year might be added to the URL once we decide to distinguish them.
 router.get('/get/:month/:day/', controller.getDay);
 router.get('/getBySlug/:slug/', controller.getBySlug);
+router.get('/today', controller.getToday);
 router.get(
   '/fibery/import',
   requireAuth,

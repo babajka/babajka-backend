@@ -106,9 +106,6 @@ const mapCollection = c => {
   return {
     ...c,
     cover: getFileUrl(secret),
-    // WARNING: mock data for preview
-    articleIndex: 1,
-    articles: [],
   };
 };
 
