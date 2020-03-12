@@ -99,6 +99,19 @@ export const getDay = async ({ params: { month, day } }, res, next) => {
   }
 };
 
+export const getToday = (req, res, next) =>
+  getDay(
+    {
+      ...req,
+      params: {
+        month: new Date().getMonth() + 1,
+        day: new Date().getDate(),
+      },
+    },
+    res,
+    next
+  );
+
 export const fiberyImport = async ({ user }, res, next) => {
   try {
     // FIXME: metadata.createdAt everytime new
