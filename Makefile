@@ -9,3 +9,6 @@ deploy-dev-from-local:
 
 lint:
 	npm run lint
+
+test:
+	npm test

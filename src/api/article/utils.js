@@ -103,7 +103,13 @@ const mapCollection = c => {
     return c;
   }
   const [{ secret } = {}] = c.cover.files;
-  return { ...c, cover: getFileUrl(secret) };
+  return {
+    ...c,
+    cover: getFileUrl(secret),
+    // WARNING: mock data for preview
+    articleIndex: 1,
+    articles: [],
+  };
 };
 
 const mapVideo = ({ url }) => {
@@ -163,12 +169,12 @@ export const mapFiberyArticle = async ({
   locales: mapLocales(locales),
   video: video && mapVideo(video),
   audio: audio && (await mapAudio(audio)),
-  // FIXME:
-  articleId: rest.fiberyId,
   active: true,
   type: getType({ video, audio }),
   publishAt: publishAt && new Date(publishAt),
   keywords: keywords || ' ',
+  // WARNING: mock data for preview
+  articleId: rest.fiberyId,
 });
 
 export const getArticle = async data => {
