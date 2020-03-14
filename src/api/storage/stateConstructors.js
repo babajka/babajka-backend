@@ -90,6 +90,17 @@ const handleBlock = (type, params, entities, articlesMap, tagsMap, appendArticle
 
     return block;
   }
+  // TAG_LIST (SIDEBAR)
+  if (type === 'tagList') {
+    return {
+      topic: params,
+      tags: entities.map(tagId => {
+        const id = tagsMap[tagId];
+        appendTag(id);
+        return id;
+      }),
+    };
+  }
 
   return null;
 };
@@ -104,11 +115,11 @@ const buildMap = Model =>
       }, {})
     );
 
-export const buildMainPageState = async fiberyData => {
-  const mainPageState = {
+export const buildState = async fiberyData => {
+  // Method handles both MainPageState and SidebarState.
+  const state = {
     blocks: {},
     data: {
-      // TODO: to handle duplicates in data.
       articles: [],
       tags: [],
     },
@@ -117,17 +128,20 @@ export const buildMainPageState = async fiberyData => {
   const articlesMap = await buildMap(Article);
   const tagsMap = await buildMap(Tag);
 
-  mainPageState.blocks = fiberyData.map(({ type, params, entities }) =>
+  state.blocks = fiberyData.map(({ type, params, entities }) =>
     handleBlock(
       type,
       params,
       entities,
       articlesMap,
       tagsMap,
-      id => mainPageState.data.articles.push(id),
-      id => mainPageState.data.tags.push(id)
+      id => state.data.articles.push(id),
+      id => state.data.tags.push(id)
     )
   );
 
-  return mainPageState;
+  state.data.articles = [...new Set(state.data.articles)];
+  state.data.tags = [...new Set(state.data.tags)];
+
+  return state;
 };
