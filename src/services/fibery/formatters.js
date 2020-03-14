@@ -2,7 +2,9 @@ import set from 'lodash/set';
 import identity from 'lodash/identity';
 
 import { map } from 'utils/func';
-import { lowerFirst } from 'utils/formatting';
+import { lowerFirst, snakeToCamel } from 'utils/formatting';
+
+import { MAIN_PAGE_BLOCKS } from './constants';
 
 // https://regex101.com/r/nsTMgf/1
 const FIELD_REGEX = /.+\/([^-\n]+)(?:-(.+))?/;
@@ -53,3 +55,74 @@ export const TAG_FORMATTER = toWirFormat({
 });
 
 export const TAGS_FORMATTER = map(TAG_FORMATTER);
+
+const getCellContent = row => {
+  const {
+    // type: table_row
+    content: [
+      {
+        // type: table_cell
+        content: [
+          {
+            // type: heading
+            // type: paragraph,
+            content: rawContent,
+          },
+        ],
+      },
+    ],
+  } = row;
+  return rawContent;
+};
+
+const getTextCellContent = row => {
+  const [
+    {
+      // type: text
+      text: textContent,
+    },
+  ] = getCellContent(row);
+  return textContent.toLowerCase();
+};
+
+const getEntityListCellContent = row =>
+  getCellContent(row).reduce((acc, obj) => {
+    if (obj.type !== 'entity') {
+      return acc;
+    }
+    acc.push(obj.attrs.id);
+    return acc;
+  }, []);
+
+const CONTENT_GETTERS = {
+  text: getTextCellContent,
+  entities: getEntityListCellContent,
+};
+
+const processMainPageBlock = block => {
+  if (block.type !== 'table') {
+    return null;
+  }
+  const resolvedBlock = {};
+  const [rowName, rowParams, rowContent] = block.content;
+
+  const blockName = getTextCellContent(rowName);
+  if (!Object.keys(MAIN_PAGE_BLOCKS).includes(blockName)) {
+    throw new Error(`block with invalid name: ${blockName}`);
+  }
+  resolvedBlock.type = snakeToCamel(blockName);
+
+  const paramsType = MAIN_PAGE_BLOCKS[blockName].params;
+  if (rowParams && paramsType) {
+    resolvedBlock.params = CONTENT_GETTERS[paramsType](rowParams);
+  }
+
+  if (rowContent && blockName !== 'diary' && blockName !== 'banner') {
+    resolvedBlock.entities = getEntityListCellContent(rowContent);
+  }
+
+  return resolvedBlock;
+};
+
+export const processMainPageState = rawDocumentContent =>
+  rawDocumentContent.map(processMainPageBlock).filter(Boolean);

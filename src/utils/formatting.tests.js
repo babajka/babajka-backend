@@ -1,6 +1,6 @@
 import { expect } from 'utils/testing';
 
-import { cutUrlParams } from './formatting';
+import { cutUrlParams, snakeToCamel } from './formatting';
 
 describe('Formatting Tests', () => {
   it('should work with empty string', () => expect(cutUrlParams('')).to.equal(''));
@@ -15,4 +15,7 @@ describe('Formatting Tests', () => {
 
   it('should cut a string with no question marks', () =>
     expect(cutUrlParams('https://wir.by')).to.equal('https://wir.by'));
+
+  it('should transform snakeToCamel', () =>
+    expect(snakeToCamel('this_is_snake-string_02')).to.equal('thisIsSnakeString02'));
 });

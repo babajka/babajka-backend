@@ -111,3 +111,10 @@ export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
       TAGS_IMAGES.Personalities
     ),
   });
+
+export const DOCUMENT_VIEW = {
+  'q/from': 'fibery/view',
+  'q/select': FIBERY_DEFAULT.concat('fibery/meta'),
+  'q/limit': 1,
+  'q/where': ['=', 'fibery/public-id', '$id'],
+};
