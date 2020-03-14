@@ -11,6 +11,7 @@ import fibery from 'services/fibery';
 import { ENUM_BASE } from 'services/fibery/constants';
 import { validateList, checkIsFound } from 'utils/validation';
 import { sendJson } from 'utils/api';
+import { getLocalTime } from 'utils/formatting';
 
 import Diary, {
   buildColloquialDateHash,
@@ -99,18 +100,20 @@ export const getDay = async ({ params: { month, day } }, res, next) => {
   }
 };
 
-export const getToday = (req, res, next) =>
-  getDay(
+export const getToday = (req, res, next) => {
+  const today = getLocalTime();
+  return getDay(
     {
       ...req,
       params: {
-        month: new Date().getMonth() + 1,
-        day: new Date().getDate(),
+        month: today.getMonth() + 1,
+        day: today.getDate(),
       },
     },
     res,
     next
   );
+};
 
 export const fiberyImport = async ({ user }, res, next) => {
   try {

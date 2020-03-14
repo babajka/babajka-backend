@@ -6,3 +6,7 @@ export const joinNames = (firstName, lastName) => {
 };
 
 export const lowerFirst = key => `${key[0].toLowerCase()}${key.slice(1)}`;
+
+const MINSK_OFFSET = 180 * 60 * 1000;
+
+export const getLocalTime = () => new Date(Date.now() + MINSK_OFFSET);
