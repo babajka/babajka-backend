@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/babajka/babajka-backend/compare/v2.0.0...v2.0.1) (2020-03-14)
+
+### Bug Fixes
+
+- **fibery:** fix preview collection article crash [[#73](https://github.com/babajka/babajka-backend/issues/73)](<[11c5aa1](https://github.com/babajka/babajka-backend/commit/11c5aa1)>)
+- **specials:** add get today diary api [[#73](https://github.com/babajka/babajka-backend/issues/73)](<[e2c1c5f](https://github.com/babajka/babajka-backend/commit/e2c1c5f)>)
+
 # [2.0.0](https://github.com/babajka/babajka-backend/compare/v1.0.1...v2.0.0) (2020-01-28)
 
 ### Bug Fixes
