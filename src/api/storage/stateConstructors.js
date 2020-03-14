@@ -1,7 +1,7 @@
 import { Article } from 'api/article';
 import { Tag } from 'api/tag';
 
-const handleBlock = (type, params, entities, articlesMap, tagsMap, appendArticle, appendTag) => {
+const handleBlock = (type, params, entities, getArticleId, getTagId) => {
   // FEATURED
   if (type === 'featured') {
     if (!params.includes('frozen')) {
@@ -10,12 +10,10 @@ const handleBlock = (type, params, entities, articlesMap, tagsMap, appendArticle
         frozen: false,
       };
     }
-    const id = articlesMap[entities[0]];
-    appendArticle(id);
     return {
       type,
       frozen: true,
-      articleId: id,
+      articleId: getArticleId(entities[0]),
     };
   }
   // DIARY
@@ -31,17 +29,16 @@ const handleBlock = (type, params, entities, articlesMap, tagsMap, appendArticle
     const data = [];
 
     if (params.includes('frozen1')) {
-      const id = articlesMap[entities[0]];
-      appendArticle(id);
-      data.push({ frozen: true, articleId: id });
+      data.push({ frozen: true, articleId: getArticleId(entities[0]) });
     } else {
       data.push({ frozen: false });
     }
 
     if (params.includes('frozen2')) {
-      const id = articlesMap[entities[params.includes('frozen1') ? 1 : 0]];
-      appendArticle(id);
-      data.push({ frozen: true, articleId: id });
+      data.push({
+        frozen: true,
+        articleId: getArticleId(entities[params.includes('frozen1') ? 1 : 0]),
+      });
     } else {
       data.push({ frozen: false });
     }
@@ -65,48 +62,31 @@ const handleBlock = (type, params, entities, articlesMap, tagsMap, appendArticle
       block.style = '2-1';
     }
 
-    const tagsIds = entities.map(fId => {
-      const id = tagsMap[fId];
-      appendTag(id);
-      return id;
-    });
-    block.tagsIds = tagsIds;
+    block.tagsIds = entities.map(fId => getTagId(fId));
 
     return block;
   }
   // ARTICLES_BY_TAG_2_3
   if (type === 'articlesByTag2' || type === 'articlesByTag3') {
-    const block = { type };
-
-    const tagId = tagsMap[params[0]];
-    block.tagId = tagId;
-    appendTag(tagId);
-
-    block.articlesIds = entities.map(aId => {
-      const id = articlesMap[aId];
-      appendArticle(id);
-      return id;
-    });
-
-    return block;
+    return {
+      type,
+      tagId: getTagId(params[0]),
+      articlesIds: entities.map(aId => getArticleId(aId)),
+    };
   }
   // TAG_LIST (SIDEBAR)
   if (type === 'tagList') {
     return {
       topic: params,
-      tags: entities.map(tagId => {
-        const id = tagsMap[tagId];
-        appendTag(id);
-        return id;
-      }),
+      tags: entities.map(tagId => getTagId(tagId)),
     };
   }
 
   return null;
 };
 
-const buildMap = Model =>
-  Model.find({})
+const buildMap = (Model, query = {}) =>
+  Model.find(query)
     .select('_id fiberyId')
     .then(dbData =>
       dbData.reduce((acc, { _id, fiberyId }) => {
@@ -115,33 +95,43 @@ const buildMap = Model =>
       }, {})
     );
 
+// Method handles both MainPageState and SidebarState.
 export const buildState = async fiberyData => {
-  // Method handles both MainPageState and SidebarState.
   const state = {
     blocks: {},
-    data: {
-      articles: [],
-      tags: [],
-    },
+    data: {},
   };
 
-  const articlesMap = await buildMap(Article);
+  const articlesSet = new Set();
+  const tagsSet = new Set();
+
+  const articlesMap = await buildMap(Article, { publishAt: { $lt: Date.now() } });
   const tagsMap = await buildMap(Tag);
 
+  const getArticleId = fiberyId => {
+    const id = articlesMap[fiberyId];
+    if (id) {
+      articlesSet.add(id);
+      return id;
+    }
+    throw new Error(`no published article with fiberyId: ${fiberyId}`);
+  };
+
+  const getTagId = fiberyId => {
+    const id = tagsMap[fiberyId];
+    if (id) {
+      tagsSet.add(id);
+      return id;
+    }
+    throw new Error(`no tag in database with fiberyId: ${fiberyId}`);
+  };
+
   state.blocks = fiberyData.map(({ type, params, entities }) =>
-    handleBlock(
-      type,
-      params,
-      entities,
-      articlesMap,
-      tagsMap,
-      id => state.data.articles.push(id),
-      id => state.data.tags.push(id)
-    )
+    handleBlock(type, params, entities, getArticleId, getTagId)
   );
 
-  state.data.articles = [...new Set(state.data.articles)];
-  state.data.tags = [...new Set(state.data.tags)];
+  state.data.articles = [...articlesSet];
+  state.data.tags = [...tagsSet];
 
   return state;
 };
