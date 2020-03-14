@@ -7,7 +7,12 @@ import config from 'config';
 import { ValidationError } from 'utils/joi';
 import { map } from 'utils/func';
 
-import { /* STATE_READY, */ DOC_SECRET_NAME, DOC_FORMAT } from './constants';
+import {
+  /* STATE_READY, */
+  DOC_SECRET_NAME,
+  DOC_FORMAT,
+  MAIN_PAGE_STATE_PUBLIC_ID,
+} from './constants';
 import {
   FIBERY_DEFAULT,
   ARTICLE_FIELDS,
@@ -17,6 +22,7 @@ import {
   RELATED_ENTITIES,
   CONTENT,
   DIARY_FIELDS,
+  DOCUMENT_VIEW,
 } from './query';
 import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales, mapSecrets } from './utils';
 // import { getState } from './getters';
@@ -26,6 +32,7 @@ import {
   IMAGE_FORMATTER,
   TAGS_FORMATTER,
   TAG_FORMATTER,
+  processMainPageState,
 } from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
@@ -143,4 +150,18 @@ const getDiaries = async () => {
   return diaries.map(formatDiary);
 };
 
-export default { getArticleData, getDiaries };
+const getMainPageState = async () => {
+  const [document] = await fibery.entity.query(DOCUMENT_VIEW, { $id: MAIN_PAGE_STATE_PUBLIC_ID });
+  if (!document) {
+    throw new HttpError(HttpStatus.NOT_FOUND);
+  }
+  const secret = document['fibery/meta'].documentSecret;
+  const rawContent = JSON.parse(await fibery.document.get(secret, DOC_FORMAT));
+  if (!rawContent) {
+    throw new HttpError(HttpStatus.NOT_FOUND);
+  }
+
+  return processMainPageState(rawContent.content.doc.content);
+};
+
+export default { getArticleData, getDiaries, getMainPageState };

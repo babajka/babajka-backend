@@ -1,5 +1,7 @@
 import pick from 'lodash/pick';
 
+import fibery from 'services/fibery';
+
 import { sendJson } from 'utils/api';
 
 import { checkIsFound } from 'utils/validation';
@@ -10,6 +12,7 @@ import { Tag } from 'api/tag';
 import { Topic } from 'api/topic';
 
 import { StorageEntity } from './model';
+import { buildMainPageState } from './mainPageState';
 
 const MAIN_PAGE_ENTITIES_QUERIES = {
   articles: ({ query, user }) => Article.customQuery({ query, user }),
@@ -96,3 +99,14 @@ export const setSidebar = ({ body, user }, res, next) =>
     .then(entity => entity.document)
     .then(sendJson(res))
     .catch(next);
+
+export const fiberyMainPage = async ({ user }, res, next) => {
+  try {
+    const fiberyData = await fibery.getMainPageState();
+    const mainPageState = await buildMainPageState(fiberyData);
+    const { document } = await StorageEntity.setValue(MAIN_PAGE_KEY, mainPageState, user._id);
+    return sendJson(res)(document);
+  } catch (err) {
+    return next(err);
+  }
+};
