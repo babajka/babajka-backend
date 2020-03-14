@@ -12,7 +12,7 @@ import { Tag } from 'api/tag';
 import { Topic } from 'api/topic';
 
 import { StorageEntity } from './model';
-import { buildMainPageState } from './mainPageState';
+import { buildState } from './stateConstructors';
 
 const MAIN_PAGE_ENTITIES_QUERIES = {
   articles: ({ query, user }) => Article.customQuery({ query, user }),
@@ -103,8 +103,19 @@ export const setSidebar = ({ body, user }, res, next) =>
 export const fiberyMainPage = async ({ user }, res, next) => {
   try {
     const fiberyData = await fibery.getMainPageState();
-    const mainPageState = await buildMainPageState(fiberyData);
+    const mainPageState = await buildState(fiberyData);
     const { document } = await StorageEntity.setValue(MAIN_PAGE_KEY, mainPageState, user._id);
+    return sendJson(res)(document);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const fiberySidebar = async ({ user }, res, next) => {
+  try {
+    const fiberyData = await fibery.getSidebarState();
+    const sidebarState = await buildState(fiberyData);
+    const { document } = await StorageEntity.setValue(SIDEBAR_KEY, sidebarState, user._id);
     return sendJson(res)(document);
   } catch (err) {
     return next(err);

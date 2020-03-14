@@ -16,7 +16,7 @@ export const MAIN_PAGE_STATE_PUBLIC_ID = 223;
 
 export const SIDEBAR_STATE_PUBLIC_ID = 272;
 
-export const MAIN_PAGE_BLOCKS = {
+export const CONSTRUCTOR_BLOCKS = {
   featured: { params: 'text' },
   diary: {},
   latest_articles: { params: 'text' },
@@ -24,4 +24,5 @@ export const MAIN_PAGE_BLOCKS = {
   articles_by_tag_2: { params: 'entities' },
   articles_by_tag_3: { params: 'entities' },
   banner: { params: 'text' },
+  tag_list: { params: 'text' },
 };
