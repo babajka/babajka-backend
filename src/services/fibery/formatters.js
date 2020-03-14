@@ -4,7 +4,7 @@ import identity from 'lodash/identity';
 import { map } from 'utils/func';
 import { lowerFirst, snakeToCamel } from 'utils/formatting';
 
-import { MAIN_PAGE_BLOCKS } from './constants';
+import { CONSTRUCTOR_BLOCKS } from './constants';
 
 // https://regex101.com/r/nsTMgf/1
 const FIELD_REGEX = /.+\/([^-\n]+)(?:-(.+))?/;
@@ -99,7 +99,7 @@ const CONTENT_GETTERS = {
   entities: getEntityListCellContent,
 };
 
-const processMainPageBlock = block => {
+const processDocumentConstructorBlock = block => {
   if (block.type !== 'table') {
     return null;
   }
@@ -107,12 +107,12 @@ const processMainPageBlock = block => {
   const [rowName, rowParams, rowContent] = block.content;
 
   const blockName = getTextCellContent(rowName);
-  if (!Object.keys(MAIN_PAGE_BLOCKS).includes(blockName)) {
+  if (!Object.keys(CONSTRUCTOR_BLOCKS).includes(blockName)) {
     throw new Error(`block with invalid name: ${blockName}`);
   }
   resolvedBlock.type = snakeToCamel(blockName);
 
-  const paramsType = MAIN_PAGE_BLOCKS[blockName].params;
+  const paramsType = CONSTRUCTOR_BLOCKS[blockName].params;
   if (rowParams && paramsType) {
     resolvedBlock.params = CONTENT_GETTERS[paramsType](rowParams);
   }
@@ -124,5 +124,5 @@ const processMainPageBlock = block => {
   return resolvedBlock;
 };
 
-export const processMainPageState = rawDocumentContent =>
-  rawDocumentContent.map(processMainPageBlock).filter(Boolean);
+export const processDocumentConstructor = rawDocumentContent =>
+  rawDocumentContent.map(processDocumentConstructorBlock).filter(Boolean);

@@ -35,4 +35,11 @@ router.post(
   controller.fiberyMainPage
 );
 
+router.post(
+  '/fibery/sidebar',
+  requireAuth,
+  verifyPermission('canManageArticles'),
+  controller.fiberySidebar
+);
+
 export default router;

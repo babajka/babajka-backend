@@ -12,6 +12,7 @@ import {
   DOC_SECRET_NAME,
   DOC_FORMAT,
   MAIN_PAGE_STATE_PUBLIC_ID,
+  SIDEBAR_STATE_PUBLIC_ID,
 } from './constants';
 import {
   FIBERY_DEFAULT,
@@ -32,7 +33,7 @@ import {
   IMAGE_FORMATTER,
   TAGS_FORMATTER,
   TAG_FORMATTER,
-  processMainPageState,
+  processDocumentConstructor,
 } from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
@@ -150,8 +151,8 @@ const getDiaries = async () => {
   return diaries.map(formatDiary);
 };
 
-const getMainPageState = async () => {
-  const [document] = await fibery.entity.query(DOCUMENT_VIEW, { $id: MAIN_PAGE_STATE_PUBLIC_ID });
+const getDocument = async fiberyPublicID => {
+  const [document] = await fibery.entity.query(DOCUMENT_VIEW, { $id: fiberyPublicID });
   if (!document) {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
@@ -161,7 +162,11 @@ const getMainPageState = async () => {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
 
-  return processMainPageState(rawContent.content.doc.content);
+  return processDocumentConstructor(rawContent.content.doc.content);
 };
 
-export default { getArticleData, getDiaries, getMainPageState };
+const getMainPageState = () => getDocument(MAIN_PAGE_STATE_PUBLIC_ID);
+
+const getSidebarState = () => getDocument(SIDEBAR_STATE_PUBLIC_ID);
+
+export default { getArticleData, getDiaries, getMainPageState, getSidebarState };
