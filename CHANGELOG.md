@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/babajka/babajka-backend/compare/v2.0.1...v2.0.2) (2020-03-15)
+
+### Bug Fixes
+
+- **specials:** fix today's diary timezone bug [[#75](https://github.com/babajka/babajka-backend/issues/75)](<[a60108d](https://github.com/babajka/babajka-backend/commit/a60108d)>)
+
 ## [2.0.1](https://github.com/babajka/babajka-backend/compare/v2.0.0...v2.0.1) (2020-03-14)
 
 ### Bug Fixes
