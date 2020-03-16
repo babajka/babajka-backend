@@ -27,6 +27,7 @@ export default (silent = false) => {
       useFindAndModify: false,
       // https://github.com/Automattic/mongoose/issues/2671
       // useCreateIndex: true, // - breaks `unique: true`
+      useUnifiedTopology: true,
     },
     () => {
       if (process.env.NODE_ENV === 'testing') {
