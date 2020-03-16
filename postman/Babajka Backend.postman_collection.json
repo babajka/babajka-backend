@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2f6679e5-0eda-4e06-a015-bff4420a945f",
+		"_postman_id": "2ec2b488-b0f6-463e-9c2e-de660c020894",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -62,12 +62,18 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "admin@babajka.io",
+									"value": "developer@babajka.io",
 									"type": "text"
 								},
 								{
+									"key": "email",
+									"value": "admin@babajka.io",
+									"type": "text",
+									"disabled": true
+								},
+								{
 									"key": "password",
-									"value": "password",
+									"value": "LOOKUP IN SLACK",
 									"type": "text"
 								}
 							]
@@ -103,7 +109,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Users",
@@ -144,7 +151,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Articles",
@@ -249,25 +257,6 @@
 							"urlencoded": [
 								{
 									"key": "url",
-									"value": "https://wir.fibery.io/Content~Marketing/DEV-TEST-Articels-132#Article/TEST-DEV-Sample-Article-1",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "url",
-									"value": "https://wir.fibery.io/Content~Marketing/test-DEV-Articles-132#Article/TEST-DEV-2",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "url",
-									"value": "fsdsdsdfdsf",
-									"description": "bad url",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "url",
 									"value": "https://wir.fibery.io/Content~Marketing/temp-First-Articles-139#Article/0005-.-1-38",
 									"type": "text"
 								}
@@ -306,25 +295,6 @@
 									"key": "url",
 									"value": "https://wir.fibery.io/Content~Marketing/DEV-TEST-Articels-132#Article/TEST-DEV-Sample-Article-1",
 									"type": "text"
-								},
-								{
-									"key": "url",
-									"value": "https://wir.fibery.io/Content~Marketing/Content-Plan-5#Article/2",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "url",
-									"value": "fsdsdsdfdsf",
-									"description": "bad url",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "url",
-									"value": "https://wir.fibery.io/Content~Marketing/temp-First-Articles-139#Article/0005-.-1-38",
-									"type": "text",
-									"disabled": true
 								}
 							]
 						},
@@ -581,7 +551,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Collections",
@@ -712,7 +683,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Specials",
@@ -739,7 +711,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Storage",
@@ -790,6 +763,25 @@
 					"response": []
 				},
 				{
+					"name": "Main Page State: Fibery import",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/storage/fibery/main-page",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"storage",
+								"fibery",
+								"main-page"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Sidebar State: get",
 					"request": {
 						"method": "GET",
@@ -806,8 +798,28 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Sidebar State: Fibery import",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/storage/fibery/sidebar",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"storage",
+								"fibery",
+								"sidebar"
+							]
+						}
+					},
+					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Topics/Tags",
@@ -888,7 +900,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Mail",
@@ -937,7 +950,9 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
