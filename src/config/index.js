@@ -24,6 +24,7 @@ if (secretPath) {
 
 const config = secret ? merge(defaultConfig, secret) : defaultConfig;
 config.port = process.env.PORT || config.port;
+config.services.fibery.token = process.env.FIBERY_TOKEN || config.services.fibery.token;
 config.session.store = new MongoStore({ mongooseConnection: mongoose.connection });
 
 if (process.env.NODE_ENV === 'testing') {

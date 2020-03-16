@@ -42,7 +42,7 @@
       "listId": "MUST BE SET IN BABAJKA SECRET CONFIG"
     },
     "fibery": {
-      "host": "MUST BE SET IN BABAJKA SECRET CONFIG",
+      "host": "wir.fibery.io",
       "token": "MUST BE SET IN BABAJKA SECRET CONFIG"
     },
     "soundcloud": {
