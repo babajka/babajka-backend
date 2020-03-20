@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import userRoutes from 'api/user';
 import articleRoutes from 'api/article';
+import analyticsRoutes from 'api/article/analytics';
 import coreRoutes from 'api/core';
 import mailRoutes from 'api/mail';
 import specialsRoutes from 'api/specials';
@@ -13,6 +14,7 @@ import filesProxy from 'api/files';
 const router = Router();
 
 router.use('/articles', articleRoutes);
+router.use('/analytics', analyticsRoutes);
 router.use('/core', coreRoutes);
 router.use('/mail', mailRoutes);
 router.use('/specials', specialsRoutes);
