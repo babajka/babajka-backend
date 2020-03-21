@@ -4,10 +4,13 @@ import HttpStatus from 'http-status-codes';
 import mongoose from 'mongoose';
 import keyBy from 'lodash/keyBy';
 import omit from 'lodash/omit';
+import set from 'lodash/set';
 
 import { checkPermissions } from 'api/user';
 import { mapIds, getId } from 'utils/getters';
 import Joi, { joiToMongoose, defaultValidator } from 'utils/joi';
+
+import ContentAnalytics from './analytics/model';
 
 const joiArticleSchema = Joi.object({
   fiberyId: Joi.string()
@@ -194,6 +197,27 @@ export const DEFAULT_ARTICLE_QUERY = user => ({
   ],
 });
 
+const populateWithAnalytics = user => async articles => {
+  if (!checkPermissions(user, 'canManageArticles')) {
+    return articles;
+  }
+
+  await ContentAnalytics.find()
+    .then(obj => keyBy(obj, 'slug'))
+    .then(analytics => {
+      articles.forEach(({ locales: localizedArticles }, idx) => {
+        Object.values(localizedArticles).forEach(({ locale, slug }) => {
+          const analytic = analytics[slug];
+          if (analytic && analytic.metrics) {
+            set(articles, [idx, 'locales', locale, '_doc', 'metrics'], analytic.metrics);
+          }
+        });
+      });
+    });
+
+  return articles;
+};
+
 ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
   return this.find(query)
     .populate(POPULATE_OPTIONS.collection(user))
@@ -203,7 +227,8 @@ ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, lim
     .sort(sort)
     .skip(skip)
     .limit(limit)
-    .then(articles => articles.map(serializeArticle));
+    .then(articles => articles.map(serializeArticle))
+    .then(populateWithAnalytics(user));
 };
 
 const Article = mongoose.model('Article', ArticleSchema);
