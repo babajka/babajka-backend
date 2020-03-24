@@ -85,7 +85,7 @@ const getArticleData = async url => {
   });
 
   const formatArticle = toWirFormat({
-    mapping: { Podcast: 'audio', publication: 'publishAt' },
+    mapping: { Podcast: 'audio', 'Publication Time': 'publishAt' },
     mapper: (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
     formatters: {
       authors: TAGS_FORMATTER,
