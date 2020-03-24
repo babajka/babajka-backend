@@ -121,3 +121,10 @@ export const fiberySidebar = async ({ user }, res, next) => {
     return next(err);
   }
 };
+
+export const getByKey = ({ params: { documentKey } }, res, next) =>
+  StorageEntity.getValue(documentKey)
+    .then(checkIsFound)
+    .then(entity => entity.document)
+    .then(sendJson(res))
+    .catch(next);

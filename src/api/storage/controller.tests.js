@@ -9,6 +9,7 @@ import {
   addThemesTag,
   addTopics,
   defaultObjectMetadata,
+  addAdminUser,
 } from 'utils/testing';
 import { mapIds } from 'utils/getters';
 
@@ -17,9 +18,11 @@ import 'db/connect';
 
 import { TOPIC_SLUGS } from 'constants/topic';
 
+import { StorageEntity } from './model';
+
 const request = supertest.agent(app.listen());
 
-describe('Storage API', () => {
+describe('Storage API with postprocessing', () => {
   let dbArticleIds;
   let sessionCookie;
   let validMainPageState;
@@ -117,5 +120,29 @@ describe('Storage API', () => {
       .expect(({ body: { blocks, data: { tags } } }) => {
         expect(blocks).to.deep.equal(validSidebarState.blocks);
         expect(tags).have.length(1);
+      }));
+});
+
+describe('Storage Direct API', () => {
+  const documentKey = 'randomKey';
+
+  before(async () => {
+    await dropData();
+
+    const { _id: userId } = await addAdminUser();
+
+    await StorageEntity.setValue(documentKey, { enabled: true, options: 'none' }, userId);
+  });
+
+  it('should fail to get document with non-existing key', () =>
+    request.get('/api/storage/byKey/brokenKey').expect(HttpStatus.NOT_FOUND));
+
+  it('should successfully get document by key', () =>
+    request
+      .get(`/api/storage/byKey/${documentKey}`)
+      .expect(HttpStatus.OK)
+      .expect(({ body }) => {
+        expect(body.enabled).to.be.true();
+        expect(body.options).to.equal('none');
       }));
 });
