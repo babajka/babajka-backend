@@ -42,4 +42,6 @@ router.post(
   controller.fiberySidebar
 );
 
+router.get('/byKey/:documentKey', controller.getByKey);
+
 export default router;
