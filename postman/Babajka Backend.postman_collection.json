@@ -550,6 +550,23 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Articles: get all Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/analytics",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"analytics"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -813,6 +830,25 @@
 								"storage",
 								"fibery",
 								"sidebar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Features enabled",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}{{API_URL}}/storage/byKey/features",
+							"host": [
+								"{{DOMAIN}}{{API_URL}}"
+							],
+							"path": [
+								"storage",
+								"byKey",
+								"features"
 							]
 						}
 					},
