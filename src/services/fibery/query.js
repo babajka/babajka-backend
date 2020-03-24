@@ -3,7 +3,7 @@ import { DOC_SECRET_NAME } from './constants';
 
 export const FIBERY_DEFAULT = ['fibery/id', 'fibery/public-id'];
 
-export const ARTICLE_FIELDS = ['Keywords', 'publication-date'];
+export const ARTICLE_FIELDS = ['Keywords', 'Publication Time'];
 
 export const ARTICLE_LOC_FIELDS = ['Title', 'Subtitle', 'Slug'];
 

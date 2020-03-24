@@ -70,24 +70,19 @@ const joiArticleSchema = Joi.object({
 // FIXME: falls with { audio: null, video: null }
 // .nand('video', 'audio');
 
-const IMAGES_BY_TYPE = {
-  text: ['page', 'horizontal', 'vertical'],
-  video: ['horizontal', 'vertical'],
-  audio: ['horizontal', 'vertical'],
-};
+const COVER_FORMATS = ['page', 'horizontal', 'vertical'];
 
-const getImagesSchema = type =>
+const getImagesSchema = () =>
   Joi.object(
-    IMAGES_BY_TYPE[type].reduce((acc, cur) => {
+    COVER_FORMATS.reduce((acc, cur) => {
       acc[cur] = Joi.image();
       return acc;
     }, {})
   );
 
 export const validateArticle = data => {
-  const { type } = data;
   const schema = joiArticleSchema.keys({
-    images: getImagesSchema(type).required(),
+    images: getImagesSchema().required(),
     // TODO: conditional require `video` or `audio`
   });
   return defaultValidator(data, schema);
