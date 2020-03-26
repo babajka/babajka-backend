@@ -197,18 +197,16 @@ const populateWithAnalytics = user => async articles => {
     return articles;
   }
 
-  await ContentAnalytics.find()
-    .then(obj => keyBy(obj, 'slug'))
-    .then(analytics => {
-      articles.forEach(({ locales: localizedArticles }, idx) => {
-        Object.values(localizedArticles).forEach(({ locale, slug }) => {
-          const analytic = analytics[slug];
-          if (analytic && analytic.metrics) {
-            set(articles, [idx, 'locales', locale, '_doc', 'metrics'], analytic.metrics);
-          }
-        });
-      });
+  const analytics = keyBy(await ContentAnalytics.find(), 'slug');
+
+  articles.forEach(({ locales: localizedArticles }, idx) => {
+    Object.values(localizedArticles).forEach(({ locale, slug }) => {
+      const analytic = analytics[slug];
+      if (analytic && analytic.metrics) {
+        set(articles, [idx, 'locales', locale, '_doc', 'metrics'], analytic.metrics);
+      }
     });
+  });
 
   return articles;
 };
