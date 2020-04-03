@@ -35,7 +35,7 @@ const handleBlock = (type, params, entities, transformArticleId, transformTagId)
       const data = [];
 
       if (params.includes('frozen1')) {
-        data.push({ frozen: true, articleId: transformArticleId(entities[0]) });
+        data.push({ frozen: true, id: transformArticleId(entities[0]) });
       } else {
         data.push({ frozen: false });
       }
@@ -43,7 +43,7 @@ const handleBlock = (type, params, entities, transformArticleId, transformTagId)
       if (params.includes('frozen2')) {
         data.push({
           frozen: true,
-          articleId: transformArticleId(entities[params.includes('frozen1') ? 1 : 0]),
+          id: transformArticleId(entities[params.includes('frozen1') ? 1 : 0]),
         });
       } else {
         data.push({ frozen: false });
