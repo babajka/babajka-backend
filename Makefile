@@ -12,3 +12,9 @@ lint:
 
 test:
 	npm test
+
+install:
+	npm i
+
+ngrok:
+	ngrok http 8080

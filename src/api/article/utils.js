@@ -21,7 +21,7 @@ import Article from './article.model';
 
 const pipeline = util.promisify(stream.pipeline);
 
-const IMAGE_TYPE_REGEX = /(horizontal|page|vertical)/;
+const IMAGE_TYPE_REGEX = /(horizontal|page|vertical|podcast)/;
 const BRAND_LOGO_REGEX = /(black|white)/;
 const DEFAULT_COVERS = { vertical: null, horizontal: null };
 const TEMP_VIDEO_URL = 'https://www.youtube.com/watch?v=2nV-ryyyZWs';
@@ -102,10 +102,26 @@ const mapCollection = c => {
   if (!c || !c.cover) {
     return c;
   }
-  const [{ secret } = {}] = c.cover.files;
+
+  const { collection, podcasts } = c.cover.files.reduce(
+    (acc, file) => {
+      if (file.name.startsWith('podcast')) {
+        acc.podcasts.push(file);
+      } else {
+        acc.collection.push(file);
+      }
+      return acc;
+    },
+    { collection: [], podcasts: [] }
+  );
+
+  const { secret } = collection.pop() || {};
+  const { secret: podcastSecret } = podcasts.pop() || {};
+
   return {
     ...c,
     cover: getFileUrl(secret),
+    podcastCover: getFileUrl(podcastSecret),
   };
 };
 
