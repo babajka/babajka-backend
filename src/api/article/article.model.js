@@ -70,7 +70,7 @@ const joiArticleSchema = Joi.object({
 // FIXME: falls with { audio: null, video: null }
 // .nand('video', 'audio');
 
-const COVER_FORMATS = ['page', 'horizontal', 'vertical'];
+const COVER_FORMATS = ['page', 'horizontal', 'vertical', 'podcast'];
 
 const getImagesSchema = () =>
   Joi.object(
@@ -152,7 +152,7 @@ export const queryUnpublished = user => {
 export const POPULATE_OPTIONS = {
   collection: user => ({
     path: 'collectionId',
-    select: '-_id name slug description cover articles',
+    select: '-_id name slug description cover articles podcastCover',
     populate: {
       path: 'articles',
       match: queryUnpublished(user),

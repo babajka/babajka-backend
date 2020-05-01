@@ -10,23 +10,29 @@ import { rssDir } from 'utils/args';
 const RSS_ARTICLES_FILENAME = `${rssDir}/articles.rss.xml`;
 const RSS_PODCASTS_FILENAME = `${rssDir}/podcasts.rss.xml`;
 
-// FIXME
 const HOST = 'https://wir.by';
-const description =
+const EMAIL = 'hello@wir.by';
+const ITUNES_CATEGORY = 'Education';
+const ITUNES_SUBCATEGORY = 'Courses';
+const ITUNES_AUTHOR = 'Wir.by';
+const ITUNES_OWNER = 'Wir Team';
+const ITUNES_TITLE = 'Wir.by Podcasts';
+const DESCRIPTION =
   'Асветніцкая пляцоўка пра беларускую і сусветную культуру з артыкуламі, лекцыямі даследчыкаў, гульнямі і спецпраектамі';
-const cover =
+const COVER =
   'https://res.cloudinary.com/wir-by/image/upload/v1580048273/production/meta/preview-square.png';
 
 const getRssOptions = options => ({
   title: 'Wir.by',
-  description,
+  description: DESCRIPTION,
   site_url: HOST,
   generator: HOST,
-  image_url: cover,
+  image_url: COVER,
   copyright: `© Wir.by, ${new Date().getFullYear()}`,
-  managingEditor: 'hello@wir.by (Wir Team)',
+  managingEditor: `${EMAIL} (${ITUNES_OWNER})`,
   webMaster: 'ivan@wir.by (Ivan Pazhitnykh)',
   language: 'be',
+  categories: [ITUNES_CATEGORY, ITUNES_SUBCATEGORY],
   ...options,
 });
 
@@ -40,9 +46,6 @@ const generatePodcastsFeed = async () => {
     sort: { publishAt: 'desc' },
   });
 
-  const itunesAuthor = 'Wir.by';
-  const itunesTitle = 'Wir.by Podcasts';
-
   const feed = new RSS(
     getRssOptions({
       feed_url: `${HOST}/rss/podcasts/`,
@@ -50,18 +53,33 @@ const generatePodcastsFeed = async () => {
         itunes: 'http://www.itunes.com/dtds/podcast-1.0.dtd',
         googleplay: 'http://www.google.com/schemas/play-podcasts/1.0',
       },
-      // FIXME:
       custom_elements: [
-        { 'itunes:subtitle': itunesTitle },
-        { 'itunes:author': itunesAuthor },
-        { 'googleplay:author': itunesAuthor },
-        { 'itunes:summary': description },
+        { 'itunes:subtitle': ITUNES_TITLE },
+        { 'itunes:author': ITUNES_AUTHOR },
+        { 'googleplay:author': ITUNES_AUTHOR },
+        { 'itunes:summary': DESCRIPTION },
         {
-          'itunes:owner': [{ 'itunes:name': 'Wir Team' }, { 'itunes:email': 'hello@wir.by' }],
+          'itunes:owner': [{ 'itunes:name': ITUNES_OWNER }, { 'itunes:email': EMAIL }],
         },
-        { 'itunes:image': { _attr: { href: cover } } },
-        { 'googleplay:image': { _attr: { href: cover } } },
-        { 'itunes:category': [{ _attr: { text: 'Education' } }] },
+        { 'itunes:image': { _attr: { href: COVER } } },
+        { 'googleplay:image': { _attr: { href: COVER } } },
+        {
+          'itunes:category': [
+            {
+              _attr: {
+                text: ITUNES_CATEGORY,
+              },
+            },
+            {
+              'itunes:category': {
+                _attr: {
+                  text: ITUNES_SUBCATEGORY,
+                },
+              },
+            },
+          ],
+        },
+        { 'itunes:explicit': 'no' },
       ],
     })
   );
@@ -69,7 +87,7 @@ const generatePodcastsFeed = async () => {
   audioArticles.forEach(article => {
     const localized = getSomeLocale(article);
     const { source, mimeType: type, size, duration } = article.audio;
-    const { horizontal } = article.images;
+    const { podcast } = article.images;
     const { title, slug, subtitle } = localized;
     if (!source) {
       console.error(`[generatePodcastsFeed]: ${slug} article missing audio source`);
@@ -88,9 +106,13 @@ const generatePodcastsFeed = async () => {
       date: article.publishAt,
       enclosure: { url: `${HOST}${source}`, type, size },
       custom_elements: [
-        { 'itunes:author': author || itunesAuthor },
+        { 'itunes:author': author || ITUNES_AUTHOR },
         { 'itunes:subtitle': subtitle },
-        { 'itunes:image': { _attr: { href: `${HOST}${horizontal}` } } },
+        {
+          'itunes:image': {
+            _attr: { href: `${HOST}${podcast || article.collection.podcastCover}` },
+          },
+        },
         { 'itunes:duration': duration },
       ],
     });

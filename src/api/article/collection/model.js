@@ -19,6 +19,7 @@ export const joiArticleCollectionSchema = Joi.object({
   slug: Joi.slug(),
   active: Joi.boolean().default(true),
   cover: Joi.image(),
+  podcastCover: Joi.image(),
   createdAt: Joi.date().default(Date.now, 'time of creation'),
 });
 
