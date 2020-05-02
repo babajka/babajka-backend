@@ -16,14 +16,13 @@ const ITUNES_CATEGORY = 'Education';
 const ITUNES_SUBCATEGORY = 'Courses';
 const ITUNES_AUTHOR = 'Wir.by';
 const ITUNES_OWNER = 'Wir Team';
-const ITUNES_TITLE = 'Wir.by Podcasts';
 const DESCRIPTION =
   'Асветніцкая пляцоўка пра беларускую і сусветную культуру з артыкуламі, лекцыямі даследчыкаў, гульнямі і спецпраектамі';
 const COVER =
-  'https://res.cloudinary.com/wir-by/image/upload/v1580048273/production/meta/preview-square.png';
+  'https://res.cloudinary.com/wir-by/image/upload/f_auto,q_auto/v1588427207/production/meta/preview-square-compressed.png';
 
 const getRssOptions = options => ({
-  title: 'Wir.by',
+  title: 'Wir.by — Беларуская і сусветная культура',
   description: DESCRIPTION,
   site_url: HOST,
   generator: HOST,
@@ -54,7 +53,6 @@ const generatePodcastsFeed = async () => {
         googleplay: 'http://www.google.com/schemas/play-podcasts/1.0',
       },
       custom_elements: [
-        { 'itunes:subtitle': ITUNES_TITLE },
         { 'itunes:author': ITUNES_AUTHOR },
         { 'googleplay:author': ITUNES_AUTHOR },
         { 'itunes:summary': DESCRIPTION },
@@ -86,9 +84,12 @@ const generatePodcastsFeed = async () => {
 
   audioArticles.forEach(article => {
     const localized = getSomeLocale(article);
+    const { collection } = article;
     const { source, mimeType: type, size, duration } = article.audio;
     const { podcast } = article.images;
-    const { title, slug, subtitle } = localized;
+    const { slug, subtitle } = localized;
+    let { title } = localized;
+
     if (!source) {
       console.error(`[generatePodcastsFeed]: ${slug} article missing audio source`);
       return;
@@ -96,6 +97,11 @@ const generatePodcastsFeed = async () => {
     const url = `${HOST}/article/${slug}/`;
     const { themes = [], authors = [] } = mapTagsByTopic(article.tags);
     const [author] = mapToString(authors);
+
+    const image = podcast || (collection && collection.podcastCover) || COVER;
+    if (collection) {
+      title = `${title} (${collection.name.be}, #${collection.articleIndex + 1})`;
+    }
 
     feed.item({
       title,
@@ -110,7 +116,7 @@ const generatePodcastsFeed = async () => {
         { 'itunes:subtitle': subtitle },
         {
           'itunes:image': {
-            _attr: { href: `${HOST}${podcast || article.collection.podcastCover}` },
+            _attr: { href: `${HOST}${image}` },
           },
         },
         { 'itunes:duration': duration },
