@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2ec2b488-b0f6-463e-9c2e-de660c020894",
+		"_postman_id": "4c84b5d3-e700-442c-b303-8a4e58358e33",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -981,6 +981,51 @@
 							],
 							"path": [
 								"mail"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "RSS",
+			"item": [
+				{
+					"name": "Articles Feed",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://wir.by/rss",
+							"protocol": "https",
+							"host": [
+								"wir",
+								"by"
+							],
+							"path": [
+								"rss"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Articles Podcasts Feed",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://wir.by/rss/podcasts",
+							"protocol": "https",
+							"host": [
+								"wir",
+								"by"
+							],
+							"path": [
+								"rss",
+								"podcasts"
 							]
 						}
 					},
