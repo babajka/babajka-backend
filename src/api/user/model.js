@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { genSalt, hash, compare } from 'bcrypt';
 import castArray from 'lodash/castArray';
 import pick from 'lodash/pick';
+import jwt from 'jsonwebtoken';
 
 import config from 'config';
 import Joi, { joiToMongoose } from 'utils/joi';
@@ -62,6 +63,7 @@ export const serializeUser = object => {
   if (!obj.permissions) {
     obj.permissions = {};
   }
+  obj.token = jwt.sign(obj.email, config.jwt.secret);
   return obj;
 };
 

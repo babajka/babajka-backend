@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 
 import { User } from 'api/user';
 import { ValidationError } from 'utils/joi';
@@ -93,6 +94,20 @@ passport.use(
   )
 );
 
+passport.use(
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: config.jwt.secret,
+    },
+    (decodedJwtPayload, done) => {
+      User.findOne({ email: decodedJwtPayload })
+        .then(user => done(null, user))
+        .catch(done);
+    }
+  )
+);
+
 const authenticate = (strategy, options) => (req, res, next) =>
   new Promise((resolve, reject) =>
     passport.authenticate(strategy, options, (err, user) => {
@@ -121,5 +136,13 @@ const social = {
   },
 };
 
-export { local, social };
+const tokenAuth = (req, res, next) => {
+  if (req.user) {
+    return next();
+  }
+
+  return passport.authenticate('jwt', { session: false });
+};
+
+export { local, social, tokenAuth };
 export default passport;
