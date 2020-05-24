@@ -19,6 +19,9 @@
     },
     "name": "csid"
   },
+  "jwt": {
+    "secret": "MUST BE SET IN BABAJKA SECRET CONFIG"
+  },
   "logger": {
     "mode": "dev",
     "writeToFile": false,
