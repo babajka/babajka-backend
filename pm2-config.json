@@ -9,6 +9,11 @@
       "name": "backend-production",
       "script": "npm",
       "args": "run start-prod -- --secretPath=/home/wir-prod/secret-production.json --imagesDir=/home/wir-prod/images-cache --staticDir=/home/wir-prod/static"
+    },
+    {
+      "name": "backend-pi",
+      "script": "npm",
+      "args": "run start-prod -- --secretPath=/home/pi/babajka/secret-staging.json --imagesDir=/home/pi/babajka/images-cache --staticDir=/home/pi/babajka/static"
     }
   ]
 }
