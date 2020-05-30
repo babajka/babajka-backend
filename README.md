@@ -40,6 +40,12 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 brew install graphicsmagick
 ```
 
+or (for the server)
+
+```bash
+sudo apt install graphicsmagick
+```
+
 ### selective testing
 
 usage:
