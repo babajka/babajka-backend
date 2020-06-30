@@ -10,11 +10,13 @@ import storageRoutes from 'api/storage';
 import tagRoutes from 'api/tag';
 import topicRoutes from 'api/topic';
 import filesProxy from 'api/files';
+import collectionsRoutes from 'api/article/collection';
 
 const router = Router();
 
 router.use('/articles', articleRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/collections', collectionsRoutes);
 router.use('/core', coreRoutes);
 router.use('/mail', mailRoutes);
 router.use('/specials', specialsRoutes);
