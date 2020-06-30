@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 
-import { serializeArticle, queryUnpublished } from 'api/article/article.model';
+import { serializeArticle, queryUnpublished, POPULATE_OPTIONS } from 'api/article/article.model';
 
 import Joi, { joiToMongoose } from 'utils/joi';
 
@@ -30,7 +30,7 @@ const ArticleCollectionSchema = joiToMongoose(joiArticleCollectionSchema, {
 const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionSchema);
 
 export const serializeCollection = collection => ({
-  ...omit(collection.toObject(), ['__v']),
+  ...omit(collection.toObject(), ['_id', '__v', 'fiberyId', 'fiberyPublicId']),
   articles: collection.articles.map(article =>
     serializeArticle(article, { includeCollection: false })
   ),
@@ -40,9 +40,7 @@ export const COLLECTION_POPULATE_OPTIONS = {
   articles: user => ({
     path: 'articles',
     match: queryUnpublished(user),
-    populate: {
-      path: 'locales',
-    },
+    populate: POPULATE_OPTIONS.locales,
   }),
 };
 
