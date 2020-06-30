@@ -9,5 +9,5 @@ export const getOne = ({ params: { slug }, user }, res, next) =>
     .then(checkIsFound)
     .then(serializeCollection)
     .then(checkIsFound)
-    .then(sendJson(res))
+    .then(collection => sendJson(res)({ collection }))
     .catch(next);
