@@ -112,7 +112,7 @@ const formatArticle = article =>
 export const serializeArticle = (article, { includeCollection = true } = {}) => {
   const result = formatArticle(article);
 
-  if (!includeCollection || !article.collectionId) {
+  if (!article.collectionId) {
     return result;
   }
 
@@ -121,9 +121,11 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
   const articleIndex = mapIds(sortedArticles).indexOf(getId(article));
   result.collection = {
     ...omit(article.collectionId.toObject(), ['articles']),
-    articles: sortedArticles.map(formatArticle),
     articleIndex,
   };
+  if (includeCollection) {
+    result.collection.articles = sortedArticles.map(formatArticle);
+  }
   return result;
 };
 
@@ -174,7 +176,7 @@ export const POPULATE_OPTIONS = {
   ],
   tags: {
     path: 'tags',
-    select: '-__v -metadata',
+    select: '-__v -metadata -fiberyId -fiberyPublicId',
     populate: {
       path: 'topic',
       select: 'slug',

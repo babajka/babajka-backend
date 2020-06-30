@@ -39,8 +39,22 @@ export const serializeCollection = collection => ({
 export const COLLECTION_POPULATE_OPTIONS = {
   articles: user => ({
     path: 'articles',
+    select: '-metadata -fiberyId -fiberyPublicId',
     match: queryUnpublished(user),
-    populate: POPULATE_OPTIONS.locales,
+    populate: [
+      POPULATE_OPTIONS.locales,
+      POPULATE_OPTIONS.tags,
+      {
+        // This population is to evaluate the order of articles inside of the collection.
+        path: 'collectionId',
+        select: '-_id slug description name cover podcastCover articles',
+        populate: {
+          path: 'articles',
+          match: queryUnpublished(user),
+          select: ['_id', 'publishAt'],
+        },
+      },
+    ],
   }),
 };
 
