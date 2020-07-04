@@ -4,10 +4,10 @@
 //
 // Usage:
 //   npm run init-db -- \
-//    --secretPath='secret-file.json' \
-//    --userEmail='developer@babajka.io'
+//    --secret-path='secret-file.json' \
+//    --user-email='developer@babajka.io'
 //
-// Remember to specify --userEmail to choose the user to be permofming the script.
+// Remember to specify --user-email to choose the user to be permofming the script.
 //
 // `import-articles` or `import-diaries` may be called separately with the same arguments.
 

@@ -5,9 +5,9 @@
 //
 // Usage:
 //  npm run set-password -- \
-//    --secretPath='secret-file.json' \
-//    --userEmail='admin@babajka.io' \
-//    --newPassword='newPassword'
+//    --secret-path='secret-file.json' \
+//    --user-email='admin@babajka.io' \
+//    --new-password='newPassword'
 //
 // Be sure to choose the password which satisfies validation conditions;
 // otherwise the script will fail.

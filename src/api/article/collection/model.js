@@ -31,9 +31,12 @@ const ArticleCollection = mongoose.model('ArticleCollection', ArticleCollectionS
 
 export const serializeCollection = collection => ({
   ...omit(collection.toObject(), ['_id', '__v', 'fiberyId', 'fiberyPublicId']),
-  articles: collection.articles.map(article =>
-    serializeArticle(article, { includeCollection: false })
-  ),
+  articles: collection.articles
+    .map(article => serializeArticle(article, { includeCollection: false }))
+    .sort(
+      ({ collection: { articleIndex: idx1 } }, { collection: { articleIndex: idx2 } }) =>
+        idx1 - idx2
+    ),
 });
 
 export const COLLECTION_POPULATE_OPTIONS = {
