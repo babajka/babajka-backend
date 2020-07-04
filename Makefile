@@ -18,3 +18,13 @@ install:
 
 ngrok:
 	ngrok http 8080
+
+docker-build:
+	docker build -t babajka/backend .
+
+docker-publish:
+	docker build -t babajka/backend .
+	docker push babajka/backend
+
+docker-run-locally:
+	docker run -dp 8080:8080 -v /Users/uladpersonal/babajka-secret:/babajka/secrets babajka/backend
