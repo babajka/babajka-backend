@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4c84b5d3-e700-442c-b303-8a4e58358e33",
+		"_postman_id": "e9a053ba-d9c2-41de-af6b-f1bfb0a5535b",
 		"name": "Babajka Backend",
 		"description": "Babajka API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -62,18 +62,12 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "developer@babajka.io",
+									"value": "{{LOGIN_USERNAME}}",
 									"type": "text"
 								},
 								{
-									"key": "email",
-									"value": "admin@babajka.io",
-									"type": "text",
-									"disabled": true
-								},
-								{
 									"key": "password",
-									"value": "LOOKUP IN SLACK",
+									"value": "{{LOGIN_PASSWORD}}",
 									"type": "text"
 								}
 							]
@@ -575,126 +569,18 @@
 			"name": "Collections",
 			"item": [
 				{
-					"name": "Collections: remove",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection-x",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"collections",
-								"collection-x"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Collections: create",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"slug\": \"collection-2\",\n\t\"name\": {\n\t\t\"be\": \"Калекцыя 2\",\n\t\t\"en\": \"Collection 2\"\n\t},\n\t\"description\": {\n\t\t\"be\": \"Апісанне калекцыі 2\",\n\t\t\"en\": \"Collection 2 description\"\n\t}\n}"
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"collections"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Collections: get all",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"collections"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Collections: update",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "active",
-									"value": "true",
-									"type": "text"
-								},
-								{
-									"key": "description.en",
-									"value": "new EN description",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
-							"host": [
-								"{{DOMAIN}}{{API_URL}}"
-							],
-							"path": [
-								"articles",
-								"collections",
-								"collection0"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Collections: get one",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{DOMAIN}}{{API_URL}}/articles/collections/collection0",
+							"raw": "{{DOMAIN}}{{API_URL}}/collections/starbellit",
 							"host": [
 								"{{DOMAIN}}{{API_URL}}"
 							],
 							"path": [
-								"articles",
 								"collections",
-								"collection0"
+								"starbellit"
 							]
 						}
 					},
@@ -981,51 +867,6 @@
 							],
 							"path": [
 								"mail"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "RSS",
-			"item": [
-				{
-					"name": "Articles Feed",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "https://wir.by/rss",
-							"protocol": "https",
-							"host": [
-								"wir",
-								"by"
-							],
-							"path": [
-								"rss"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Articles Podcasts Feed",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "https://wir.by/rss/podcasts",
-							"protocol": "https",
-							"host": [
-								"wir",
-								"by"
-							],
-							"path": [
-								"rss",
-								"podcasts"
 							]
 						}
 					},
