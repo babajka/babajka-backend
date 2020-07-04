@@ -3,12 +3,12 @@
     {
       "name": "backend-staging",
       "script": "npm",
-      "args": "run start-prod -- --secretPath=/home/wir-dev/secret-staging.json --imagesDir=/home/wir-dev/images-cache --staticDir=/home/wir-dev/static"
+      "args": "run start-prod -- --secret-path=/home/wir-dev/secret-staging.json --images-dir=/home/wir-dev/images-cache --static-dir=/home/wir-dev/static"
     },
     {
       "name": "backend-production",
       "script": "npm",
-      "args": "run start-prod -- --secretPath=/home/wir-prod/secret-production.json --imagesDir=/home/wir-prod/images-cache --staticDir=/home/wir-prod/static"
+      "args": "run start-prod -- --secret-path=/home/wir-prod/secret-production.json --images-dir=/home/wir-prod/images-cache --static-dir=/home/wir-prod/static"
     }
   ]
 }

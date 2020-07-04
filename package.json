@@ -8,9 +8,9 @@
   "scripts": {
     "start": "nodemon -w index.js -w . --exec node -r esm esm.js",
     "start-prod": "node -r esm esm.js",
-    "start-secret": "npm start -- --secretPath=src/config/secret.json",
+    "start-secret": "npm start -- --secret-path=src/config/secret.json",
     "init-db": "babel-node src/db/scripts/initAll.js",
-    "init-db-secret": "npm run init-db -- --secretPath=src/config/secret.json",
+    "init-db-secret": "npm run init-db -- --secret-path=src/config/secret.json",
     "import-articles": "babel-node src/db/scripts/importArticles.js",
     "import-diaries": "babel-node src/db/scripts/importDiaries.js",
     "grant-permissions": "babel-node src/db/scripts/grantPermissions.js",
