@@ -4,9 +4,9 @@
 //
 // Usage:
 //   npm run grant-permissions -- \
-//     --secretPath='secret-file.json' \
-//     --userEmail='user@babajka.io' \
-//     --userRole='contentManager'
+//     --secret-path='secret-file.json' \
+//     --user-email='user@babajka.io' \
+//     --user-role='contentManager'
 //
 // * role is one from the constants/permissions file. Use 'user' to remove
 //   all permissions.

@@ -2,23 +2,23 @@ import fs from 'fs';
 import commandLineArgs from 'command-line-args';
 
 const optionDefinitions = [
-  { name: 'secretPath', type: String },
-  { name: 'imagesDir', type: String },
-  { name: 'staticDir', type: String },
+  { name: 'secret-path', type: String },
+  { name: 'images-dir', type: String },
+  { name: 'static-dir', type: String },
   // Arguments below are for helper db scripts.
-  { name: 'userEmail', type: String },
-  { name: 'userRole', type: String },
-  { name: 'newPassword', type: String },
+  { name: 'user-email', type: String },
+  { name: 'user-role', type: String },
+  { name: 'new-password', type: String },
 ];
 
 const args = commandLineArgs(optionDefinitions, { partial: true });
 const {
-  secretPath,
-  imagesDir = 'images',
-  staticDir = 'static',
-  userEmail,
-  userRole,
-  newPassword,
+  'secret-path': secretPath,
+  'images-dir': imagesDir = 'images',
+  'static-dir': staticDir = 'static',
+  'user-email': userEmail,
+  'user-role': userRole,
+  'new-password': newPassword,
 } = args;
 
 export const AUDIO_SUBDIR = '/audio';
