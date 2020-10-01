@@ -12,9 +12,9 @@ export const FILES_PREFIX = '/api/files/';
 
 export const ENUM_BASE = 1000000;
 
-export const MAIN_PAGE_STATE_PUBLIC_ID = 223;
+export const MAIN_PAGE_STATE_PUBLIC_ID = '223';
 
-export const SIDEBAR_STATE_PUBLIC_ID = 272;
+export const SIDEBAR_STATE_PUBLIC_ID = '272';
 
 export const CONSTRUCTOR_BLOCKS = {
   featured: { params: 'text' },
