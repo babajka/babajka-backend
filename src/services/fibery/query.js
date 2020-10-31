@@ -84,12 +84,16 @@ export const RELATED_ENTITIES = Object.entries(RELATED_ENT_FIELDS).reduce((acc, 
   return acc;
 }, []);
 
-export const CONTENT = mapAppNameLocales(['Text']).reduce((acc, key) => {
-  acc.push({
-    [key]: [DOC_SECRET_NAME],
-  });
-  return acc;
-}, []);
+export const SUGGESTED_ARTICLES = mapAppName(['Suggested Articles']);
+
+export const CONTENT = mapAppNameLocales(['Text'])
+  .concat(SUGGESTED_ARTICLES)
+  .reduce((acc, key) => {
+    acc.push({
+      [key]: [DOC_SECRET_NAME],
+    });
+    return acc;
+  }, []);
 
 export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
   .concat(

@@ -7,6 +7,7 @@ import config from 'config';
 import { ValidationError } from 'utils/joi';
 import { map } from 'utils/func';
 
+import { buildState } from 'api/storage/stateConstructors';
 import {
   /* STATE_READY, */
   DOC_SECRET_NAME,
@@ -24,6 +25,7 @@ import {
   CONTENT,
   DIARY_FIELDS,
   DOCUMENT_VIEW,
+  SUGGESTED_ARTICLES,
 } from './query';
 import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales, mapSecrets } from './utils';
 // import { getState } from './getters';
@@ -37,6 +39,11 @@ import {
 } from './formatters';
 
 const fibery = new Fibery(config.services.fibery);
+
+const getDoc = (docs, secret) => {
+  const { content = null } = docs[secret] || {};
+  return content && content.doc;
+};
 
 const getArticleData = async url => {
   const publicId = getArticlePublicId(url);
@@ -72,20 +79,32 @@ const getArticleData = async url => {
   //   throw new ValidationError({ state: 'invalid' });
   // }
 
+  const suggestedSecret = article[SUGGESTED_ARTICLES][DOC_SECRET_NAME];
   const localeBySecret = mapAppNameLocales(['Text']).reduce((acc, key) => {
     const secret = article[key][DOC_SECRET_NAME];
     acc[secret] = key;
     return acc;
   }, {});
-  const secrets = mapSecrets(Object.keys(localeBySecret));
+  const secrets = mapSecrets(Object.keys(localeBySecret).concat(suggestedSecret));
   const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
   Object.entries(localeBySecret).forEach(([secret, key]) => {
-    const { content = null } = docs[secret] || {};
-    article[key] = content && content.doc;
+    article[key] = getDoc(docs, secret);
   });
+  const suggestedDoc = getDoc(docs, suggestedSecret);
+  if (suggestedDoc) {
+    article[SUGGESTED_ARTICLES] = await buildState(
+      processDocumentConstructor(suggestedDoc.content)
+    );
+  } else {
+    article[SUGGESTED_ARTICLES] = null;
+  }
 
   const formatArticle = toWirFormat({
-    mapping: { Podcast: 'audio', 'Publication Time': 'publishAt' },
+    mapping: {
+      Podcast: 'audio',
+      'Publication Time': 'publishAt',
+      'Suggested Articles': 'suggestedArticles',
+    },
     mapper: (key, lang = '') => (lang ? `locales.${lang}.${key}` : key),
     formatters: {
       authors: TAGS_FORMATTER,

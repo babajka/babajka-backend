@@ -46,7 +46,7 @@
     "google-spreadsheet": "^2.0.7",
     "http-status-codes": "^1.3.0",
     "joigoose": "^4.0.8",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "mailchimp-api-v3": "^1.12.1",
     "md5": "^2.2.1",
     "module-alias": "^2.1.0",
@@ -54,7 +54,7 @@
     "morgan": "^1.9.1",
     "multer": "^2.0.0-alpha.6",
     "music-metadata": "^6.3.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "node-http-error": "^2.0.0",
     "passport": "^0.4.0",
     "passport-google-oauth": "^1.0.0",
@@ -82,7 +82,7 @@
     "./src"
   ],
   "devDependencies": {
-    "@babel/cli": "^7.1.2",
+    "@babel/cli": "^7.12.1",
     "@babel/core": "^7.3.3",
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
