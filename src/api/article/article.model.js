@@ -66,6 +66,8 @@ const joiArticleSchema = Joi.object({
   tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
   // Keywords are for SEO optimization and search engines.
   keywords: Joi.string(),
+  // The main page state blocks for related articles
+  suggestedArticles: Joi.object(),
 });
 // FIXME: falls with { audio: null, video: null }
 // .nand('video', 'audio');

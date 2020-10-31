@@ -80,6 +80,11 @@ const handleBlock = (type, params, entities, transformArticleId, transformTagId)
       topic: params,
       tags: entities.map(tagId => transformTagId(tagId)),
     }),
+    // LIST (SUGGESTED ARTICLES)
+    list: () => ({
+      type,
+      articles: entities.map(aId => transformArticleId(aId)),
+    }),
   };
 
   return handlers[type]();

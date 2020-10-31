@@ -62,17 +62,13 @@ const getCellContent = row => {
     content: [
       {
         // type: table_cell
-        content: [
-          {
-            // type: heading
-            // type: paragraph,
-            content: rawContent,
-          },
-        ],
+        content: tableCell,
       },
     ],
   } = row;
-  return rawContent;
+
+  // type: heading, type: paragraph -> to array of it content
+  return tableCell.reduce((acc, { content }) => acc.concat(content), []);
 };
 
 const getTextCellContent = row => {
