@@ -20,6 +20,7 @@ export const getAll = ({ query: { skip, take }, user }, res, next) =>
     skip: parseInt(skip) || 0, // eslint-disable-line radix
     // A limit() value of 0 is equivalent to setting no limit.
     limit: parseInt(take) || 0, // eslint-disable-line radix
+    populateContent: false,
   })
     .then(async data => ({
       data,
@@ -38,6 +39,7 @@ const getArticleById = (_id, user) =>
     query: { _id, active: true },
     user,
     limit: 1,
+    populateSuggestions: true,
   }).then(articles => articles[0]);
 
 export const getOne = ({ params: { slugOrId }, user }, res, next) =>

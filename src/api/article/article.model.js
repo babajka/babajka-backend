@@ -10,6 +10,8 @@ import { checkPermissions } from 'api/user';
 import { mapIds, getId } from 'utils/getters';
 import Joi, { joiToMongoose, defaultValidator } from 'utils/joi';
 
+import { populateStateData, STATE_ENTITIES_QUERIES } from 'api/storage/controller';
+
 import ContentAnalytics from './analytics/model';
 
 const joiArticleSchema = Joi.object({
@@ -66,7 +68,7 @@ const joiArticleSchema = Joi.object({
   tags: Joi.array().items(Joi.objectId().meta({ ref: 'Tag' })),
   // Keywords are for SEO optimization and search engines.
   keywords: Joi.string(),
-  // The main page state blocks for related articles
+  // The main page state blocks for suggested articles.
   suggestedArticles: Joi.object(),
 });
 // FIXME: falls with { audio: null, video: null }
@@ -92,7 +94,7 @@ export const validateArticle = data => {
 
 const ArticleSchema = joiToMongoose(joiArticleSchema, { usePushEach: true }, validateArticle);
 
-const formatArticle = article =>
+const formatArticle = (article, { keepSuggestions = false } = {}) =>
   article
     ? {
         ...omit(article.toObject(), [
@@ -104,6 +106,7 @@ const formatArticle = article =>
           'metadata.createdBy.displayName',
           'metadata.updatedBy._id',
           'metadata.updatedBy.displayName',
+          !keepSuggestions && 'suggestedArticles',
         ]),
         locales: keyBy(article.locales, 'locale'),
       }
@@ -111,8 +114,11 @@ const formatArticle = article =>
 
 // includeCollection flag here is to be able to avoid including collections
 // in case we're serializing an article into the ArticleCollection object.
-export const serializeArticle = (article, { includeCollection = true } = {}) => {
-  const result = formatArticle(article);
+export const serializeArticle = (
+  article,
+  { includeCollection = true, keepSuggestions = false } = {}
+) => {
+  const result = formatArticle(article, { keepSuggestions });
 
   if (!article.collectionId) {
     return result;
@@ -126,7 +132,7 @@ export const serializeArticle = (article, { includeCollection = true } = {}) => 
     articleIndex,
   };
   if (includeCollection) {
-    result.collection.articles = sortedArticles.map(formatArticle);
+    result.collection.articles = sortedArticles.map(a => formatArticle(a, { keepSuggestions }));
   }
   return result;
 };
@@ -164,14 +170,14 @@ export const POPULATE_OPTIONS = {
       populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
     },
   }),
-  locales: {
+  locales: populateContent => ({
     path: 'locales',
-    select: '-_id -__v',
+    select: '-_id -__v'.concat(populateContent ? '' : ' -text'),
     populate: [
       { path: 'metadata.createdBy', select: 'email' },
       { path: 'metadata.updatedBy', select: 'email' },
     ],
-  },
+  }),
   metadata: [
     { path: 'metadata.updatedBy', select: 'email' },
     { path: 'metadata.createdBy', select: 'email' },
@@ -215,17 +221,48 @@ const populateWithAnalytics = user => async articles => {
   return articles;
 };
 
-ArticleSchema.statics.customQuery = function({ query = {}, user, sort, skip, limit } = {}) {
+const populateWithSuggestedState = user => async article => {
+  if (!article.suggestedArticles) {
+    return article;
+  }
+
+  return {
+    ...article,
+    suggestedArticles: {
+      ...article.suggestedArticles,
+      data: await populateStateData({
+        dataLists: article.suggestedArticles.data,
+        user,
+        entitiesQueries: STATE_ENTITIES_QUERIES,
+      }),
+    },
+  };
+};
+
+ArticleSchema.statics.customQuery = function({
+  query = {},
+  user,
+  sort,
+  skip,
+  limit,
+  populateSuggestions = false,
+  populateContent = true,
+} = {}) {
   return this.find(query)
     .populate(POPULATE_OPTIONS.collection(user))
-    .populate(POPULATE_OPTIONS.locales)
+    .populate(POPULATE_OPTIONS.locales(populateContent))
     .populate(POPULATE_OPTIONS.metadata)
     .populate(POPULATE_OPTIONS.tags)
     .sort(sort)
     .skip(skip)
     .limit(limit)
-    .then(articles => articles.map(serializeArticle))
-    .then(populateWithAnalytics(user));
+    .then(articles =>
+      articles.map(a => serializeArticle(a, { keepSuggestions: populateSuggestions }))
+    )
+    .then(populateWithAnalytics(user))
+    .then(articles =>
+      populateSuggestions ? articles.map(populateWithSuggestedState(user)) : articles
+    );
 };
 
 const Article = mongoose.model('Article', ArticleSchema);
