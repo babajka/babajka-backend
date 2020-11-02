@@ -14,59 +14,74 @@ import { Topic } from 'api/topic';
 import { StorageEntity } from './model';
 import { buildState } from './stateConstructors';
 
-const MAIN_PAGE_ENTITIES_QUERIES = {
-  articles: ({ query, user }) => Article.customQuery({ query, user }),
+export const STATE_ENTITIES_QUERIES = {
+  articles: ({ query, user }) => Article.customQuery({ query, user, populateContent: false }),
   tags: ({ query }) => Tag.customQuery({ query }),
   topics: () => Topic.getAll(),
 };
 
+const MAIN_PAGE_ENTITIES_QUERIES = STATE_ENTITIES_QUERIES;
+
 const SIDEBAR_ENTITIES_QUERIES = pick(MAIN_PAGE_ENTITIES_QUERIES, ['tags']);
+
+export const populateStateData = async ({
+  dataLists,
+  user,
+  entitiesQueries,
+  includeLatestArticles = false,
+}) => {
+  const result = {};
+
+  const promises = Object.entries(entitiesQueries).map(([supportedEntity, queryFunction]) =>
+    queryFunction({
+      query: {
+        _id: {
+          $in: dataLists[supportedEntity],
+        },
+      },
+      user,
+    }).then(list => {
+      result[supportedEntity] = list;
+    })
+  );
+
+  if (includeLatestArticles) {
+    promises.push(
+      Article.customQuery({
+        query: {
+          active: true,
+          locales: { $exists: true },
+          // FIXME:
+          // publishAt: { $lt: Date.now() },
+        },
+        limit: 3,
+        sort: { publishAt: 'desc' },
+        user,
+        populateContent: false,
+      }).then(list => {
+        result.latestArticles = list;
+      })
+    );
+  }
+
+  await Promise.all(promises);
+
+  return result;
+};
 
 const getState = ({ user, storageKey, entitiesQueries, includeLatestArticles = false }) =>
   StorageEntity.getValue(storageKey)
     .then(checkIsFound)
     .then(entity => entity.document)
-    .then(async ({ blocks, data }) => {
-      const result = {
-        blocks,
-        data: {},
-      };
-
-      const promises = Object.entries(entitiesQueries).map(([supportedEntity, queryFunction]) =>
-        queryFunction({
-          query: {
-            _id: {
-              $in: data[supportedEntity],
-            },
-          },
-          user,
-        }).then(list => {
-          result.data[supportedEntity] = list;
-        })
-      );
-
-      if (includeLatestArticles) {
-        promises.push(
-          Article.customQuery({
-            query: {
-              active: true,
-              locales: { $exists: true },
-              // FIXME:
-              // publishAt: { $lt: Date.now() },
-            },
-            limit: 3,
-            sort: { publishAt: 'desc' },
-            user,
-          }).then(list => {
-            result.data.latestArticles = list;
-          })
-        );
-      }
-
-      await Promise.all(promises);
-
-      return result;
-    });
+    .then(async ({ blocks, data }) => ({
+      blocks,
+      data: await populateStateData({
+        dataLists: data,
+        user,
+        entitiesQueries,
+        includeLatestArticles,
+      }),
+    }));
 
 export const getSidebar = ({ user }, res, next) =>
   getState({
