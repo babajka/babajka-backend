@@ -83,10 +83,7 @@ const getTextCellContent = row => {
 
 const getEntityListCellContent = row =>
   getCellContent(row).reduce((acc, obj) => {
-    if (!obj) {
-      return acc;
-    }
-    if (obj.type !== 'entity') {
+    if (!obj || obj.type !== 'entity') {
       return acc;
     }
     acc.push(obj.attrs.id);
