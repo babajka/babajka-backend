@@ -25,5 +25,5 @@ export const CONSTRUCTOR_BLOCKS = {
   articles_by_tag_3: { params: 'entities' },
   banner: { params: 'text' },
   tag_list: { params: 'text' },
-  list: {},
+  list: { params: 'text' },
 };
