@@ -118,11 +118,6 @@ const processDocumentConstructorBlock = block => {
 
   if (rowContent && blockName !== 'diary' && blockName !== 'banner') {
     resolvedBlock.entities = getEntityListCellContent(rowContent);
-
-    if (resolvedBlock.entities.length === 0) {
-      // It's ok to have block template in fibery: it should be ignored unless it is filled with data.
-      return null;
-    }
   }
 
   return resolvedBlock;

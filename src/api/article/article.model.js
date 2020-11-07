@@ -234,6 +234,7 @@ const populateWithSuggestedState = user => async article => {
         dataLists: article.suggestedArticles.data,
         user,
         entitiesQueries: STATE_ENTITIES_QUERIES,
+        includeLatestArticles: true,
       }),
     },
   };
