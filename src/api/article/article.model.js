@@ -69,7 +69,7 @@ const joiArticleSchema = Joi.object({
   // Keywords are for SEO optimization and search engines.
   keywords: Joi.string(),
   // The main page state blocks for suggested articles.
-  suggestedArticles: Joi.object(),
+  suggestedArticles: Joi.object().allow(null),
 });
 // FIXME: falls with { audio: null, video: null }
 // .nand('video', 'audio');
