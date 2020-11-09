@@ -45,7 +45,7 @@ export const COLLECTION_POPULATE_OPTIONS = {
     select: '-metadata -fiberyId -fiberyPublicId',
     match: queryUnpublished(user),
     populate: [
-      POPULATE_OPTIONS.locales,
+      POPULATE_OPTIONS.locales(false),
       POPULATE_OPTIONS.tags,
       {
         // This population is to evaluate the order of articles inside of the collection.
