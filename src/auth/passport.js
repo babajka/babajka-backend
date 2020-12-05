@@ -136,13 +136,18 @@ const social = {
   },
 };
 
-const tokenAuth = (req, res, next) => {
+const allowTokenAuth = (req, res, next) => {
   if (req.user) {
     return next();
   }
 
-  return passport.authenticate('jwt', { session: false });
+  return authenticate('jwt', { session: false })(req, res, next)
+    .then(user => {
+      req.user = user;
+    })
+    .then(next)
+    .catch(next);
 };
 
-export { local, social, tokenAuth };
+export { local, social, allowTokenAuth };
 export default passport;
