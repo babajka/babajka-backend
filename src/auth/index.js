@@ -6,7 +6,7 @@ import { getUserResponse } from 'api/user';
 import { requireFields, validatePassword } from 'utils/validation';
 import { sendJson } from 'utils/api';
 
-import passport, { social, local, tokenAuth } from './passport';
+import passport, { social, local, allowTokenAuth } from './passport';
 import { requireAuth, verifyPermission } from './middlewares';
 
 const router = Router();
@@ -38,5 +38,5 @@ router.get('/logout', requireAuth, (req, res, next) => {
   res.sendStatus(HttpStatus.OK);
 });
 
-export { passport, requireAuth, verifyPermission, tokenAuth };
+export { passport, requireAuth, verifyPermission, allowTokenAuth };
 export default router;
