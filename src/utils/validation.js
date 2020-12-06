@@ -148,7 +148,8 @@ export const requireFields = (...fields) => (req, res, next) => {
 export const requireFieldsAny = (...fields) => (req, res, next) => {
   const errors = {};
 
-  if (!Object.keys(req.body).some(field => fields.includes(field))) {
+  const someFieldsFound = fields.some(field => req.body[field]);
+  if (!someFieldsFound) {
     fields.forEach(field => {
       errors[field] = 'errors.fieldListOneOfRequired';
     });
