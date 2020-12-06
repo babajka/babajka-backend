@@ -145,6 +145,18 @@ export const requireFields = (...fields) => (req, res, next) => {
   return next(!isEmpty(errors) && new ValidationError(errors));
 };
 
+export const requireFieldsAny = (...fields) => (req, res, next) => {
+  const errors = {};
+
+  if (!Object.keys(req.body).some(field => fields.includes(field))) {
+    fields.forEach(field => {
+      errors[field] = 'errors.fieldListOneOfRequired';
+    });
+  }
+
+  return next(!isEmpty(errors) && new ValidationError(errors));
+};
+
 export const checkIsFound = (object, code = HttpStatus.NOT_FOUND) => {
   if (!object) {
     throw new HttpError(code);
