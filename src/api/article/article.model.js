@@ -221,7 +221,7 @@ const populateWithAnalytics = user => async articles => {
   return articles;
 };
 
-const populateWithSuggestedState = user => async article => {
+export const populateWithSuggestedState = user => async article => {
   if (!article.suggestedArticles) {
     return article;
   }
