@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { requireAuth, verifyPermission, allowTokenAuth } from 'auth';
-import { requireFields } from 'utils/validation';
+import { requireFieldsAny } from 'utils/validation';
 
 import * as controller from './controller';
 
@@ -15,13 +15,19 @@ router.get('/', controller.getAll);
 // slugOrId parameter below either contains ID of an Article or a slug of any Article Localization.
 router.get('/:slugOrId', controller.getOne);
 
-router.post('/fibery/preview', requireAuth, requireFields('url'), controller.fiberyPreview);
+router.post(
+  '/fibery/preview',
+  requireAuth,
+  requireFieldsAny('url', 'fiberyPublicId'),
+  controller.fiberyPreview
+);
+
 router.post(
   '/fibery/import',
   allowTokenAuth,
   requireAuth,
   verifyPermission('canCreateArticle'),
-  requireFields('url'),
+  requireFieldsAny('url', 'fiberyPublicId'),
   controller.fiberyImport
 );
 

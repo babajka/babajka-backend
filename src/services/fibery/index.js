@@ -45,8 +45,8 @@ const getDoc = (docs, secret) => {
   return content && content.doc;
 };
 
-const getArticleData = async url => {
-  const publicId = getArticlePublicId(url);
+const getArticleData = async ({ url, fiberyPublicId }) => {
+  const publicId = fiberyPublicId || getArticlePublicId(url);
   if (!publicId) {
     // FIXME
     throw new ValidationError({ url: 'invalid' });

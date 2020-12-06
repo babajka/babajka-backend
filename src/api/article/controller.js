@@ -51,9 +51,9 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const fiberyPreview = async ({ body: { url } }, res, next) => {
+export const fiberyPreview = async ({ body: { url, fiberyPublicId } }, res, next) => {
   try {
-    const data = await fibery.getArticleData(url);
+    const data = await fibery.getArticleData({ url, fiberyPublicId });
     const article = await mapFiberyArticle(data);
     if (article.collection) {
       article.collection.articles = [];
@@ -68,9 +68,9 @@ export const fiberyPreview = async ({ body: { url } }, res, next) => {
 // import data from fibery.io
 // update or create: Article, LocalizedArticles, Tags & Collection
 // TODO: handle remove
-export const fiberyImport = async ({ body: { url }, user }, res, next) => {
+export const fiberyImport = async ({ body: { url, fiberyPublicId }, user }, res, next) => {
   try {
-    const rawArticle = await fibery.getArticleData(url);
+    const rawArticle = await fibery.getArticleData({ url, fiberyPublicId });
     const data = await mapFiberyArticle(rawArticle);
 
     data.audio = await fetchAudio(data);
