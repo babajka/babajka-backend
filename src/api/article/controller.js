@@ -6,7 +6,7 @@ import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 
-import Article, { DEFAULT_ARTICLE_QUERY } from './article.model';
+import Article, { DEFAULT_ARTICLE_QUERY, populateWithSuggestedState } from './article.model';
 import LocalizedArticle from './localized/model';
 import { updateLocales } from './localized/utils';
 import { updateCollection } from './collection/utils';
@@ -51,10 +51,10 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const fiberyPreview = async ({ body: { url, fiberyPublicId } }, res, next) => {
+export const fiberyPreview = async ({ body: { url, fiberyPublicId }, user }, res, next) => {
   try {
     const data = await fibery.getArticleData({ url, fiberyPublicId });
-    const article = await mapFiberyArticle(data);
+    const article = await mapFiberyArticle(data).then(populateWithSuggestedState(user));
     if (article.collection) {
       article.collection.articles = [];
       article.collection.articleIndex = 0;
