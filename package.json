@@ -3,7 +3,8 @@
   "version": "2.0.2",
   "description": "Express & Node.js app",
   "engines": {
-    "node": ">=10"
+    "node": "~15.4.0",
+    "npm": "~7.1.2"
   },
   "scripts": {
     "start": "nodemon -w index.js -w . --exec node -r esm esm.js",
