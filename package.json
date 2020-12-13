@@ -3,7 +3,7 @@
   "version": "2.0.2",
   "description": "Express & Node.js app",
   "engines": {
-    "node": "~15.4.0",
+    "node": "~15",
     "npm": "~7.1.2"
   },
   "scripts": {
