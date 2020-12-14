@@ -12,6 +12,8 @@ We use [`airbnb/base`](https://github.com/airbnb/javascript) style guide
 
 ## scripts
 
+- `nvm use` - set correct `node` version
+
 - `npm start` runs dev server with watcher and reloading
 
 - `npm run start-prod` runs prod server locally

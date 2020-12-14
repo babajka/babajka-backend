@@ -80,27 +80,41 @@ describe('Storage API with postprocessing', () => {
       .set('Cookie', sessionCookie)
       .send(validMainPageState)
       .expect(HttpStatus.OK)
-      .expect(({ body: { blocks, data: { articles, tags } } }) => {
-        expect(blocks).to.deep.equal(validMainPageState.blocks);
-        expect(articles).has.length(3);
-        expect(tags).has.length(1);
-      }));
+      .expect(
+        ({
+          body: {
+            blocks,
+            data: { articles, tags },
+          },
+        }) => {
+          expect(blocks).to.deep.equal(validMainPageState.blocks);
+          expect(articles).has.length(3);
+          expect(tags).has.length(1);
+        }
+      ));
 
   it('should retrieve main page state with articles populated', () =>
     request
       .get('/api/storage/main-page')
       .set('Cookie', sessionCookie)
       .expect(HttpStatus.OK)
-      .expect(({ body: { blocks, data: { articles, topics, latestArticles } } }) => {
-        expect(blocks).to.deep.equal(validMainPageState.blocks);
+      .expect(
+        ({
+          body: {
+            blocks,
+            data: { articles, topics, latestArticles },
+          },
+        }) => {
+          expect(blocks).to.deep.equal(validMainPageState.blocks);
 
-        expect(articles).has.length(3);
-        expect(articles.map(({ _id }) => _id)).to.have.members(dbArticleIds);
+          expect(articles).has.length(3);
+          expect(articles.map(({ _id }) => _id)).to.have.members(dbArticleIds);
 
-        expect(topics).have.length(TOPIC_SLUGS.length);
+          expect(topics).have.length(TOPIC_SLUGS.length);
 
-        expect(latestArticles).have.length(3);
-      }));
+          expect(latestArticles).have.length(3);
+        }
+      ));
 
   it('should succeed in pushing sidebar state', () =>
     request
@@ -108,19 +122,33 @@ describe('Storage API with postprocessing', () => {
       .set('Cookie', sessionCookie)
       .send(validSidebarState)
       .expect(HttpStatus.OK)
-      .expect(({ body: { blocks, data: { tags } } }) => {
-        expect(blocks).to.deep.equal(validSidebarState.blocks);
-        expect(tags).has.length(1);
-      }));
+      .expect(
+        ({
+          body: {
+            blocks,
+            data: { tags },
+          },
+        }) => {
+          expect(blocks).to.deep.equal(validSidebarState.blocks);
+          expect(tags).has.length(1);
+        }
+      ));
 
   it('should retrieve sidebar state with tags and topics', () =>
     request
       .get('/api/storage/sidebar')
       .expect(HttpStatus.OK)
-      .expect(({ body: { blocks, data: { tags } } }) => {
-        expect(blocks).to.deep.equal(validSidebarState.blocks);
-        expect(tags).have.length(1);
-      }));
+      .expect(
+        ({
+          body: {
+            blocks,
+            data: { tags },
+          },
+        }) => {
+          expect(blocks).to.deep.equal(validSidebarState.blocks);
+          expect(tags).have.length(1);
+        }
+      ));
 });
 
 describe('Storage Direct API', () => {
