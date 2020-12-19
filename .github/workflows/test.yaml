@@ -4,9 +4,9 @@ on: push
 
 jobs:
   test:
-
     runs-on: ubuntu-20.04
-
+    env:
+      FIBERY_TOKEN: ${{ secrets.FIBERY_TOKEN }}
     steps:
       - uses: actions/checkout@v2
 
