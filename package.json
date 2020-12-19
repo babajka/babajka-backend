@@ -24,7 +24,6 @@
     "test:subset": "f(){ find ./src$1 -name '*tests.js' | cross-env NODE_ENV=testing xargs mocha --exit -r @babel/register ;};f",
     "test:with-coverage": "cross-env NODE_ENV=testing nyc npm run test && npm run coverage",
     "semantic-release": "semantic-release",
-    "travis-deploy-once": "travis-deploy-once",
     "deploy-dev-from-local": "bash bin/deploy/deploy-from-local.sh dev",
     "deploy-prod-from-local": "bash bin/deploy/deploy-from-local.sh prod",
     "postinstall": "git submodule update --init && patch-package",
@@ -120,7 +119,6 @@
     "nyc": "^14.1.1",
     "prettier": "^1.14.3",
     "semantic-release": "^15.13.19",
-    "supertest": "^3.0.0",
-    "travis-deploy-once": "^5.0.11"
+    "supertest": "^3.0.0"
   }
 }
