@@ -1,0 +1,28 @@
+name: test
+
+on: push
+
+jobs:
+  test:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: use node.js (.nvmrc)
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: install
+        run: |
+          npm ci
+          npm run postinstall
+
+      - name: test
+        run: npm test
