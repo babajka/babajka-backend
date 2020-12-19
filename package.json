@@ -27,7 +27,7 @@
     "travis-deploy-once": "travis-deploy-once",
     "deploy-dev-from-local": "bash bin/deploy/deploy-from-local.sh dev",
     "deploy-prod-from-local": "bash bin/deploy/deploy-from-local.sh prod",
-    "postinstall": "patch-package",
+    "postinstall": "git submodule update --init && patch-package",
     "gds": "github-deploy-status -u babajka -p babajka-backend"
   },
   "dependencies": {
