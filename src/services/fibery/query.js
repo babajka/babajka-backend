@@ -116,6 +116,38 @@ export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
     ),
   });
 
+export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Slug'])
+  .concat(
+    [
+      {
+        description: [DOC_SECRET_NAME],
+      },
+      {
+        'Suggested articles': [DOC_SECRET_NAME],
+      },
+    ].map(o => {
+      const [[k, v]] = Object.entries(o);
+      return { [addAppName(k)]: v };
+    })
+  )
+  .concat({
+    'Content~Marketing/Fortune Cookies': {
+      'q/select': FIBERY_DEFAULT.concat(
+        mapAppName(['Author']).concat(
+          [
+            {
+              Text: [DOC_SECRET_NAME],
+            },
+          ].map(o => {
+            const [[k, v]] = Object.entries(o);
+            return { [addAppName(k)]: v };
+          })
+        )
+      ),
+      'q/limit': 'q/no-limit',
+    },
+  });
+
 export const DOCUMENT_VIEW = {
   'q/from': 'fibery/view',
   'q/select': FIBERY_DEFAULT.concat('fibery/meta'),
