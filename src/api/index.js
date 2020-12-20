@@ -11,6 +11,7 @@ import tagRoutes from 'api/tag';
 import topicRoutes from 'api/topic';
 import filesProxy from 'api/files';
 import collectionsRoutes from 'api/article/collection';
+import gameRoutes from 'api/game';
 
 const router = Router();
 
@@ -25,5 +26,6 @@ router.use('/tags', tagRoutes);
 router.use('/topics', topicRoutes);
 router.use('/users', userRoutes);
 router.use('/files', filesProxy);
+router.use('/games', gameRoutes);
 
 export default router;

@@ -24,6 +24,7 @@ module.exports = {
         'utils',
         'files',
         'rss',
+        'games',
       ],
     ],
     'scope-empty': [2, 'never'],
