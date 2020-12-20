@@ -12,10 +12,8 @@ const request = supertest.agent(app.listen());
 app.get('/protected', requireAuth, (req, res) => res.sendStatus(HttpStatus.OK));
 
 describe('Auth API', () => {
-  before(async function() {
-    this.timeout(5000);
+  before(async () => {
     await dropData();
-
     await addAdminUser();
   });
 
