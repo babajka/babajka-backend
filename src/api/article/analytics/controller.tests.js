@@ -1,4 +1,5 @@
 import HttpStatus from 'http-status-codes';
+import sortBy from 'lodash/sortBy';
 
 import { supertest, expect, dropData, loginTestAdmin } from 'utils/testing';
 
@@ -34,6 +35,6 @@ describe('Analytics API', () => {
       .set('Cookie', sessionCookie)
       .expect(HttpStatus.OK)
       .expect(({ body }) => {
-        expect(body).to.deep.equal(sampleAnalyticsData);
+        expect(sortBy(body, ['slug'])).to.deep.equal(sampleAnalyticsData);
       }));
 });
