@@ -24,6 +24,9 @@ jobs:
         with:
           mongodb-version: 4.2
 
+      - name: update submodules
+        run: git submodule update --init
+
       - name: install
         run: |
           npm ci
