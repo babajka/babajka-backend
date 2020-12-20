@@ -5,6 +5,7 @@ MODE=$1
 
 DEPLOYMENTS_PATH="/home/wir-$MODE/deployed"
 
+rm -rf "${DEPLOYMENTS_PATH}/backend/node_modules" ## ??? "node_modules not empty errors otherwise"
 rm -rf "${DEPLOYMENTS_PATH}/backend"
 mv "${DEPLOYMENTS_PATH}/swap-backend/babajka-backend" "${DEPLOYMENTS_PATH}/backend"
 
