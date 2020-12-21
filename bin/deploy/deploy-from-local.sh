@@ -25,9 +25,13 @@ export $(cat .env | xargs)
 bash bin/deploy/before-deploy.sh $MODE
 
 BACKEND_REMOTE_SWAP_PATH="/home/wir-$MODE/deployed/swap-backend/babajka-backend/"
-HOST="wir-$MODE@$MODE.wir.by"
+if [[ $MODE == "dev" ]]; then
+  HOST="wir-dev@dev.wir.by"
+elif [[ $MODE == "prod" ]]; then
+  HOST="wir-prod@wir.by"
+fi
 
-# TODO(@uladbohdan): --exclude everything from .gitignore
+# TODO(uladbohdan): --exclude everything from .gitignore
 ssh $HOST "mkdir -p \"${BACKEND_REMOTE_SWAP_PATH}\""
 rsync -r --delete-after --exclude=.git --exclude=node_modules --exclude=static --exclude=images . \
   $HOST:"${BACKEND_REMOTE_SWAP_PATH}"
