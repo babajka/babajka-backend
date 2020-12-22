@@ -30,7 +30,6 @@ jobs:
       - name: install
         run: |
           npm ci
-          npm run postinstall
 
       - name: test
         run: npm test
