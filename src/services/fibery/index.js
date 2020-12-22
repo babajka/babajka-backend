@@ -171,16 +171,20 @@ const getDiaries = async () => {
   return diaries.map(formatDiary);
 };
 
-const getFortuneGame = async ({ slug }) => {
+const getFortuneGame = async ({ fiberyPublicId }) => {
   const [fortuneGame] = await fibery.entity.query(
     {
       'q/from': addAppName('Fortune Collection'),
       'q/select': FIBERY_DEFAULT.concat(FORTUNE_COLLECTION_FIELDS),
-      'q/where': ['=', [addAppName('Slug')], '$slug'],
+      'q/where': ['=', 'fibery/public-id', '$id'],
       'q/limit': 1,
     },
-    { $slug: slug }
+    { $id: fiberyPublicId }
   );
+
+  if (!fortuneGame) {
+    throw new HttpError(HttpStatus.NOT_FOUND);
+  }
 
   const suggestedSecret = fortuneGame[addAppName('Suggested articles')][DOC_SECRET_NAME];
   const descriptionSecret = fortuneGame[addAppName('description')][DOC_SECRET_NAME];
@@ -219,6 +223,10 @@ const getFortuneGame = async ({ slug }) => {
           mapping: {
             Text: 'text',
             Author: 'author',
+            Personality: 'authorTag',
+          },
+          formatters: {
+            authorTag: TAG_FORMATTER,
           },
         })
       ),

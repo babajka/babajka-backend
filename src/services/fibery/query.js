@@ -116,7 +116,7 @@ export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
     ),
   });
 
-export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Slug'])
+export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug'])
   .concat(
     [
       {
@@ -143,7 +143,12 @@ export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Slug'])
             return { [addAppName(k)]: v };
           })
         )
-      ),
+      ).concat({
+        'Content~Marketing/Personality': FIBERY_DEFAULT.concat(
+          addAppName('name'),
+          mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities)
+        ),
+      }),
       'q/limit': 'q/no-limit',
     },
   });
