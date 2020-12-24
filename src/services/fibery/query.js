@@ -118,33 +118,21 @@ export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
 
 export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug'])
   .concat(
-    [
-      {
-        description: [DOC_SECRET_NAME],
-      },
-      {
-        'Suggested articles': [DOC_SECRET_NAME],
-      },
-    ].map(o => {
-      const [[k, v]] = Object.entries(o);
-      return { [addAppName(k)]: v };
-    })
+    Object.entries({
+      description: [DOC_SECRET_NAME],
+      'Suggested articles': [DOC_SECRET_NAME],
+    }).map(([k, v]) => ({ [addAppName(k)]: v }))
   )
   .concat({
-    'Content~Marketing/Fortune Cookies': {
+    [addAppName('Fortune Cookies')]: {
       'q/select': FIBERY_DEFAULT.concat(
         mapAppName(['Author']).concat(
-          [
-            {
-              Text: [DOC_SECRET_NAME],
-            },
-          ].map(o => {
-            const [[k, v]] = Object.entries(o);
-            return { [addAppName(k)]: v };
-          })
+          Object.entries({
+            Text: [DOC_SECRET_NAME],
+          }).map(([k, v]) => ({ [addAppName(k)]: v }))
         )
       ).concat({
-        'Content~Marketing/Personality': FIBERY_DEFAULT.concat(
+        [addAppName('Personality')]: FIBERY_DEFAULT.concat(
           addAppName('name'),
           mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities)
         ),

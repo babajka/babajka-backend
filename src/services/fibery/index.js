@@ -172,7 +172,7 @@ const getDiaries = async () => {
 };
 
 const getFortuneGame = async ({ fiberyPublicId }) => {
-  const [fortuneGame] = await fibery.entity.query(
+  const [rawFortuneGame] = await fibery.entity.query(
     {
       'q/from': addAppName('Fortune Collection'),
       'q/select': FIBERY_DEFAULT.concat(FORTUNE_COLLECTION_FIELDS),
@@ -182,37 +182,11 @@ const getFortuneGame = async ({ fiberyPublicId }) => {
     { $id: fiberyPublicId }
   );
 
-  if (!fortuneGame) {
+  if (!rawFortuneGame) {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
 
-  const suggestedSecret = fortuneGame[addAppName('Suggested articles')][DOC_SECRET_NAME];
-  const descriptionSecret = fortuneGame[addAppName('description')][DOC_SECRET_NAME];
-  const cookiesSecrets = fortuneGame[addAppName('Fortune Cookies')].map(
-    ({ 'Content~Marketing/Text': text }) => text[DOC_SECRET_NAME]
-  );
-  const secrets = mapSecrets(cookiesSecrets.concat(suggestedSecret).concat(descriptionSecret));
-  const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
-  fortuneGame[addAppName('Fortune Cookies')].forEach((cookie, index) => {
-    fortuneGame[addAppName('Fortune Cookies')][index]['Content~Marketing/Text'] = getDoc(
-      docs,
-      cookie['Content~Marketing/Text'][DOC_SECRET_NAME]
-    );
-  });
-
-  const suggestedDoc = getDoc(docs, suggestedSecret);
-  if (suggestedDoc) {
-    fortuneGame[addAppName('Suggested articles')] = await buildState(
-      processDocumentConstructor(suggestedDoc.content)
-    );
-  } else {
-    fortuneGame[addAppName('Suggested articles')] = null;
-  }
-
-  const descriptionDoc = getDoc(docs, descriptionSecret);
-  fortuneGame[addAppName('description')] = descriptionDoc ? descriptionDoc.content : null;
-
-  const formatFortuneGame = toWirFormat({
+  const fortuneGame = toWirFormat({
     mapping: {
       'Fortune Cookies': 'cookies',
       'Suggested articles': 'suggestedArticles',
@@ -231,9 +205,30 @@ const getFortuneGame = async ({ fiberyPublicId }) => {
         })
       ),
     },
+  })(rawFortuneGame);
+
+  const suggestedSecret = fortuneGame.suggestedArticles[DOC_SECRET_NAME];
+  const descriptionSecret = fortuneGame.description[DOC_SECRET_NAME];
+  const cookiesSecrets = fortuneGame.cookies.map(({ text }) => text[DOC_SECRET_NAME]);
+  const secrets = mapSecrets([...cookiesSecrets, suggestedSecret, descriptionSecret]);
+  const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
+  fortuneGame.cookies.forEach((cookie, index) => {
+    fortuneGame.cookies[index].text = getDoc(docs, cookie.text[DOC_SECRET_NAME]);
   });
 
-  return formatFortuneGame(fortuneGame);
+  const suggestedDoc = getDoc(docs, suggestedSecret);
+  if (suggestedDoc) {
+    fortuneGame.suggestedArticles = await buildState(
+      processDocumentConstructor(suggestedDoc.content)
+    );
+  } else {
+    fortuneGame.suggestedArticles = null;
+  }
+
+  const descriptionDoc = getDoc(docs, descriptionSecret);
+  fortuneGame.description = descriptionDoc ? descriptionDoc.content : null;
+
+  return fortuneGame;
 };
 
 const getDocument = async fiberyPublicID => {
