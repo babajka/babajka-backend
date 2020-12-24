@@ -55,7 +55,7 @@ export const fiberyImport = async ({ body: { fiberyPublicId }, user }, res, next
       authorTag: authorTag ? authorsIds[authorTag.fiberyId] : null,
     }));
 
-    await FortuneGame.updateOne({ fiberyPublicId: fortuneGame.fiberyPublicId }, fortuneGame, {
+    await FortuneGame.updateOne({ fiberyPublicId }, fortuneGame, {
       upsert: true,
       setDefaultsOnInsert: true,
       runValidators: true,
