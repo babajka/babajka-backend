@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { genSalt, hash, compare } from 'bcrypt';
+import { genSalt, hash, compare } from 'bcryptjs';
 import castArray from 'lodash/castArray';
 import pick from 'lodash/pick';
 import jwt from 'jsonwebtoken';
