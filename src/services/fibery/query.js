@@ -95,17 +95,14 @@ export const CONTENT = mapAppNameLocales(['Text'])
     return acc;
   }, []);
 
+const nestedQueries = obj => Object.entries(obj).map(([k, v]) => ({ [addAppName(k)]: v }));
+
 export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
   .concat(
-    [
-      { Month: ENUM },
-      { Locale: ENUM },
-      {
-        Text: [DOC_SECRET_NAME],
-      },
-    ].map(o => {
-      const [[k, v]] = Object.entries(o);
-      return { [addAppName(k)]: v };
+    nestedQueries({
+      Month: ENUM,
+      Locale: ENUM,
+      Text: [DOC_SECRET_NAME],
     })
   )
   .concat({
@@ -116,30 +113,24 @@ export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
     ),
   });
 
-export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug'])
-  .concat(
-    Object.entries({
-      description: [DOC_SECRET_NAME],
-      'Suggested articles': [DOC_SECRET_NAME],
-    }).map(([k, v]) => ({ [addAppName(k)]: v }))
-  )
-  .concat({
-    [addAppName('Fortune Cookies')]: {
-      'q/select': FIBERY_DEFAULT.concat(
-        mapAppName(['Author']).concat(
-          Object.entries({
-            Text: [DOC_SECRET_NAME],
-          }).map(([k, v]) => ({ [addAppName(k)]: v }))
-        )
-      ).concat({
-        [addAppName('Personality')]: FIBERY_DEFAULT.concat(
-          addAppName('name'),
-          mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities)
-        ),
-      }),
+export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug']).concat(
+  nestedQueries({
+    description: [DOC_SECRET_NAME],
+    'Suggested articles': [DOC_SECRET_NAME],
+    'Fortune Cookies': {
+      'q/select': FIBERY_DEFAULT.concat(mapAppName(['Author'])).concat(
+        nestedQueries({
+          Text: [DOC_SECRET_NAME],
+          Personality: FIBERY_DEFAULT.concat(
+            addAppName('name'),
+            mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities)
+          ),
+        })
+      ),
       'q/limit': 'q/no-limit',
     },
-  });
+  })
+);
 
 export const DOCUMENT_VIEW = {
   'q/from': 'fibery/view',
