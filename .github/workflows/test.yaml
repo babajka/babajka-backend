@@ -30,6 +30,7 @@ jobs:
       - name: install
         run: |
           npm ci
+          npm run patch-package
 
       - name: test
         run: npm test
