@@ -1,15 +1,17 @@
 import sample from 'lodash/sample';
 
 import { getMapTag } from 'api/article/utils';
+import { populateWithSuggestedState } from 'api/article/article.model';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 import { updateTags } from 'api/tag/utils';
 import fibery from 'services/fibery';
 import { sendJson } from 'utils/api';
 import { checkIsFound } from 'utils/validation';
-
-import { populateWithSuggestedState } from 'api/article/article.model';
+import { Counter } from 'metrics/counter';
 
 import FortuneGame, { formatFortuneCookie, formatFortuneGame, POPULATE_AUTHOR_TAG } from './model';
+
+const gameCounterKey = slug => `game-fortune-${slug}`;
 
 export const getOne = ({ params: { slug }, user }, res, next) =>
   FortuneGame.findOne({ slug })
@@ -26,6 +28,10 @@ export const getCookie = ({ params: { slug } }, res, next) =>
     .then(checkIsFound)
     .then(fortuneGame => sample(fortuneGame.cookies))
     .then(formatFortuneCookie)
+    .then(async cookie => {
+      await Counter.inc(gameCounterKey(slug));
+      return cookie;
+    })
     .then(sendJson(res))
     .catch(next);
 
@@ -60,6 +66,8 @@ export const fiberyImport = async ({ body: { fiberyPublicId }, user }, res, next
       setDefaultsOnInsert: true,
       runValidators: true,
     }).exec();
+
+    await Counter.ensureExists(gameCounterKey(fortuneGame.slug));
 
     sendJson(res)({ status: 'ok' });
   } catch (err) {
