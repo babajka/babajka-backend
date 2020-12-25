@@ -29,4 +29,6 @@ CounterSchema.statics.inc = function(key) {
 
 const Counter = mongoose.model('Counter', CounterSchema);
 
+export const formatCounter = ({ key, count }) => ({ key, count });
+
 export default Counter;
