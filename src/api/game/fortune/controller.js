@@ -7,7 +7,7 @@ import { updateTags } from 'api/tag/utils';
 import fibery from 'services/fibery';
 import { sendJson } from 'utils/api';
 import { checkIsFound } from 'utils/validation';
-import { Counter } from 'metrics/counter';
+import { Counter } from 'api/metrics/counter';
 
 import FortuneGame, { formatFortuneCookie, formatFortuneGame, POPULATE_AUTHOR_TAG } from './model';
 
