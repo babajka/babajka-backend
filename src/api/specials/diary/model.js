@@ -47,12 +47,28 @@ export const validateDiary = data => defaultValidator(data, joiDiarySchema);
 export const buildColloquialDateHash = (month, day) =>
   parseInt(month, 10) * 100 + parseInt(day, 10);
 
+const SLUG_PREFIX_LENGTH = 3;
+
+export const buildDiarySlug = ({ fiberyId, fiberyPublicId }) =>
+  `${fiberyId.substring(0, SLUG_PREFIX_LENGTH)}${fiberyPublicId}`;
+
+export const fiberyPublicIdFromDiarySlug = slug => slug.substring(SLUG_PREFIX_LENGTH);
+
 export const serializeDiary = object => ({
   ...pick(object, ['locale', 'text', 'author', 'year', 'month', 'day']),
-  slug: object.fiberyId,
+  slug: buildDiarySlug(object),
 });
 
 export const serializeDiaries = list => list.map(serializeDiary);
+
+export const POPULATE_AUTHOR = {
+  path: 'author',
+  select: '-_id -__v -metadata -fiberyId -fiberyPublicId',
+  populate: {
+    path: 'topic',
+    select: '-_id slug',
+  },
+};
 
 const Diary = mongoose.model('Diary', DiarySchema);
 

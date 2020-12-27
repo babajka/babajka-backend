@@ -18,14 +18,17 @@ import Diary, {
   serializeDiary,
   serializeDiaries,
   validateDiary,
+  buildDiarySlug,
+  fiberyPublicIdFromDiarySlug,
+  POPULATE_AUTHOR,
 } from './model';
 
 const getQuery = d => {
   if (!d) {
     return null;
   }
-  const { day, month, fiberyId: slug } = d;
-  return { day, month, slug };
+  const { day, month } = d;
+  return { day, month, slug: buildDiarySlug(d) };
 };
 
 const getMonthNum = ({ rank }) => rank / ENUM_BASE + 1;
@@ -34,14 +37,14 @@ const getPrevNextDiaries = async today => {
   let [prevD, prevPrevD] = await Diary.find({ colloquialDateHash: { $lt: today } })
     .sort({ colloquialDateHash: 'desc' })
     .limit(2)
-    .populate('author');
+    .populate(POPULATE_AUTHOR);
 
   if (!prevD) {
     // The very beginning of the year might be requested.
     [prevD, prevPrevD] = await Diary.find({})
       .sort({ colloquialDateHash: 'desc' })
       .limit(2)
-      .populate('author');
+      .populate(POPULATE_AUTHOR);
 
     if (!prevD) {
       // We have no diaries at all.
@@ -65,7 +68,17 @@ const getPrevNextDiaries = async today => {
 
 export const getBySlug = async ({ params: { slug } }, res, next) => {
   try {
-    const diary = await Diary.findOne({ fiberyId: slug, active: true }).populate('author');
+    const diary = await Diary.findOne({
+      $and: [
+        {
+          $or: [
+            { fiberyPublicId: fiberyPublicIdFromDiarySlug(slug) },
+            { fiberyId: slug }, // For backward-compatibility.
+          ],
+        },
+        { active: true },
+      ],
+    }).populate(POPULATE_AUTHOR);
     checkIsFound(diary);
     const { prevD, nextD } = await getPrevNextDiaries(diary.colloquialDateHash);
 
@@ -83,7 +96,7 @@ export const getDay = async ({ params: { month, day } }, res, next) => {
   try {
     const today = buildColloquialDateHash(month, day);
     const todayDiaries = await Diary.find({ colloquialDateHash: today, active: true }).populate(
-      'author'
+      POPULATE_AUTHOR
     );
     const { prevD, prevPrevD, nextD } = await getPrevNextDiaries(today);
     // TODO: add sentry call with warning (no today diary)
