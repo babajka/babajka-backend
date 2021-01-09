@@ -117,6 +117,9 @@ describe('Diary API', () => {
     it('should return 404 by unknown slug', () =>
       request.get('/api/specials/diary/getBySlug/diary-bad-slug/').expect(HttpStatus.NOT_FOUND));
 
+    it('should return 404 by slug with broken secret part', () =>
+      request.get('/api/specials/diary/getBySlug/xyz2/').expect(HttpStatus.NOT_FOUND));
+
     it('should return the first diary of the year', () =>
       request
         .get('/api/specials/diary/get/01/15')

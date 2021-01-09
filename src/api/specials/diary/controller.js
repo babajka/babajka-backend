@@ -20,6 +20,7 @@ import Diary, {
   validateDiary,
   buildDiarySlug,
   fiberyPublicIdFromDiarySlug,
+  checkDiarySlugSecretPartMatching,
   POPULATE_AUTHOR,
 } from './model';
 
@@ -79,7 +80,13 @@ export const getBySlug = async ({ params: { slug } }, res, next) => {
         { active: true },
       ],
     }).populate(POPULATE_AUTHOR);
+
     checkIsFound(diary);
+
+    if (!checkDiarySlugSecretPartMatching({ fiberyId: diary.fiberyId, slug })) {
+      throw new HttpError(HttpStatus.NOT_FOUND);
+    }
+
     const { prevD, nextD } = await getPrevNextDiaries(diary.colloquialDateHash);
 
     return sendJson(res)({
