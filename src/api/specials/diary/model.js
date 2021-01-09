@@ -54,6 +54,9 @@ export const buildDiarySlug = ({ fiberyId, fiberyPublicId }) =>
 
 export const fiberyPublicIdFromDiarySlug = slug => slug.substring(SLUG_PREFIX_LENGTH);
 
+export const checkDiarySlugSecretPartMatching = ({ fiberyId, slug }) =>
+  fiberyId.substring(0, SLUG_PREFIX_LENGTH) === slug.substring(0, SLUG_PREFIX_LENGTH);
+
 export const serializeDiary = object => ({
   ...pick(object, ['locale', 'text', 'author', 'year', 'month', 'day']),
   slug: buildDiarySlug(object),
