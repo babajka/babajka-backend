@@ -14,6 +14,7 @@ module.exports = {
         'db',
         'fibery',
         'mail',
+        'media',
         'postman',
         'specials',
         'storage',

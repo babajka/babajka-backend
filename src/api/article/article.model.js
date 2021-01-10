@@ -52,8 +52,8 @@ const joiArticleSchema = Joi.object({
     url: Joi.string().uri(),
   }).allow(null),
   audio: Joi.object({
-    platform: Joi.string().valid(['soundcloud']),
-    id: Joi.string(),
+    platform: Joi.string().valid(['soundcloud', 'yandex']),
+    id: Joi.string().regex(/^\d+$/),
     url: Joi.string().uri(),
     source: Joi.string(),
     mimeType: Joi.string(),
