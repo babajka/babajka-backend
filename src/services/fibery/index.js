@@ -122,7 +122,7 @@ const getArticleData = async ({ url, fiberyPublicId }) => {
       }),
       video: toWirFormat({ mapping: { 'Youtube Link': 'url' } }),
       audio: toWirFormat({
-        mapping: { 'SoundCloud Link': 'url' },
+        mapping: { 'Yandex Music Track ID': 'id' },
         formatters: {
           files: map(toWirFormat()),
         },
