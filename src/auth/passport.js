@@ -111,7 +111,7 @@ passport.use(
 const authenticate = (strategy, options) => (req, res, next) =>
   new Promise((resolve, reject) =>
     passport.authenticate(strategy, options, (err, user) => {
-      if (err) {
+      if (err || !user) {
         reject(err);
       }
 
@@ -136,18 +136,5 @@ const social = {
   },
 };
 
-const allowTokenAuth = (req, res, next) => {
-  if (req.user) {
-    return next();
-  }
-
-  return authenticate('jwt', { session: false })(req, res, next)
-    .then(user => {
-      req.user = user;
-    })
-    .then(next)
-    .catch(next);
-};
-
-export { local, social, allowTokenAuth };
+export { local, social, authenticate };
 export default passport;

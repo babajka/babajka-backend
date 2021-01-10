@@ -1,12 +1,24 @@
 import HttpStatus from 'http-status-codes';
+
 import { checkPermissions } from 'api/user/model';
 
+import { authenticate } from './passport';
+
 export const requireAuth = (req, res, next) => {
-  if (!req.user) {
-    return res.sendStatus(HttpStatus.FORBIDDEN);
+  if (req.user) {
+    // User was already restored from a session.
+    return next();
   }
 
-  return next();
+  // Attempt to alternatively login with jwt token.
+  return authenticate('jwt', { session: false })(req, res, next)
+    .then(user => {
+      req.user = user;
+    })
+    .then(next)
+    .catch(() => {
+      res.sendStatus(HttpStatus.FORBIDDEN);
+    });
 };
 
 export const verifyPermission = permission => (req, res, next) => {
