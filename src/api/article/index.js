@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { requireAuth, verifyPermission, allowTokenAuth } from 'auth';
+import { requireAuth, verifyPermission } from 'auth';
 import { requireFieldsAny } from 'utils/validation';
 
 import * as controller from './controller';
@@ -24,7 +24,6 @@ router.post(
 
 router.post(
   '/fibery/import',
-  allowTokenAuth,
   requireAuth,
   verifyPermission('canCreateArticle'),
   requireFieldsAny('url', 'fiberyPublicId'),
