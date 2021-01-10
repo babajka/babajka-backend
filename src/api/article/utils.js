@@ -8,7 +8,6 @@ import fromPairs from 'lodash/fromPairs';
 import omit from 'lodash/omit';
 
 import { getFileUrl } from 'services/fibery/getters';
-import { parseSoundcloudUrl } from 'services/soundcloud';
 import { getFilesHeaders } from 'api/files/utils';
 import parseYoutubeUrl from 'lib/utils/parseYoutubeUrl';
 
@@ -25,7 +24,6 @@ const IMAGE_TYPE_REGEX = /(horizontal|page|vertical|podcast)/;
 const BRAND_LOGO_REGEX = /(black|white)/;
 const DEFAULT_COVERS = { vertical: null, horizontal: null };
 const TEMP_VIDEO_URL = 'https://www.youtube.com/watch?v=2nV-ryyyZWs';
-const TEMP_AUDIO_URL = 'https://soundcloud.com/dillonfrancis/fix-me';
 const AUDIO_TYPE = 'audio/mpeg';
 
 // TODO: somehow with es6 import request=undefined
@@ -134,15 +132,10 @@ const mapVideo = ({ url }) => {
   return { platform: 'youtube', id, url };
 };
 
-const mapAudio = async ({ url, files }) => {
-  if (!url) {
-    // eslint-disable-next-line no-param-reassign
-    url = TEMP_AUDIO_URL;
-  }
-  const id = await parseSoundcloudUrl(url);
+const mapAudio = async ({ id, files }) => {
   const [mp3] = files.filter(({ contentType }) => contentType === AUDIO_TYPE);
   const source = mp3 && mp3.secret;
-  return { platform: 'soundcloud', id, url, source };
+  return { platform: 'yandex', id, source };
 };
 
 // filter out locales without `slug`
