@@ -98,7 +98,10 @@ const generatePodcastsFeed = async () => {
     const { themes = [], authors = [] } = mapTagsByTopic(article.tags);
     const [author] = mapToString(authors);
 
-    const image = podcast || (collection && collection.podcastCover) || COVER;
+    const image =
+      (podcast && `${HOST}${podcast}`) ||
+      (collection && collection.podcastCover && `${HOST}${collection.podcastCover}`) ||
+      COVER;
     if (collection) {
       title = `${title} (${collection.name.be}, #${collection.articleIndex + 1})`;
     }
@@ -116,7 +119,7 @@ const generatePodcastsFeed = async () => {
         { 'itunes:subtitle': subtitle },
         {
           'itunes:image': {
-            _attr: { href: `${HOST}${image}` },
+            _attr: { href: image },
           },
         },
         { 'itunes:duration': duration },
