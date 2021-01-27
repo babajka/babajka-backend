@@ -17,6 +17,7 @@ const TRACKS_IDS = {
   'slezskaya-mova-lyubo-padporynava': 647181825,
   'lemkaskaya-mova-lyubo-padporynava': 612743817,
   'luzhytskya-movy-lyubo-padporynava': 670133363,
+  'dzie-zyvuc-dusy-bielarusau': 973709941,
 };
 
 export const parseSoundcloudUrl = async url => {
