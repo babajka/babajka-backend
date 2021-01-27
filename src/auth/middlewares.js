@@ -10,8 +10,10 @@ export const requireAuth = (req, res, next) => {
     return next();
   }
 
+  const jwtAuth = authenticate('jwt', { session: false });
+
   // Attempt to alternatively login with jwt token.
-  return authenticate('jwt', { session: false })(req, res, next)
+  return jwtAuth(req, res, next)
     .then(user => {
       req.user = user;
     })
