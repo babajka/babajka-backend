@@ -124,6 +124,8 @@ const local = {
   register: authenticate('local-register', { failureMessage: true }),
 };
 
+const jwtAuth = authenticate('jwt', { session: false });
+
 const social = {
   google: {
     authenticate: passport.authenticate('google', {
@@ -136,5 +138,5 @@ const social = {
   },
 };
 
-export { local, social, authenticate };
+export { local, social, jwtAuth };
 export default passport;
