@@ -2,6 +2,7 @@ import Fibery from 'fibery-unofficial';
 import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
 import keyBy from 'lodash/keyBy';
+import flatten from 'lodash/flatten';
 
 import config from 'config';
 import { ValidationError } from 'utils/joi';
@@ -27,9 +28,10 @@ import {
   DOCUMENT_VIEW,
   SUGGESTED_ARTICLES,
   FORTUNE_COLLECTION_FIELDS,
+  TINDER_GAME_FIELDS,
 } from './query';
 import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales, mapSecrets } from './utils';
-// import { getState } from './getters';
+import { getFileUrl } from './getters';
 import {
   toWirFormat,
   formatEnum,
@@ -231,6 +233,88 @@ const getFortuneGame = async ({ fiberyPublicId }) => {
   return fortuneGame;
 };
 
+const getTinderGame = async ({ fiberyPublicId }) => {
+  const [rawTinderGame] = await fibery.entity.query(
+    {
+      'q/from': addAppName('Tinder Game'),
+      'q/select': FIBERY_DEFAULT.concat(TINDER_GAME_FIELDS),
+      'q/where': ['=', 'fibery/public-id', '$id'],
+      'q/limit': 1,
+    },
+    { $id: fiberyPublicId }
+  );
+
+  if (!rawTinderGame) {
+    throw new HttpError(HttpStatus.NOT_FOUND);
+  }
+
+  const tinderGame = toWirFormat({
+    mapping: {
+      People: 'people',
+      'Suggested Articles': 'suggestedArticles',
+    },
+    formatters: {
+      people: map(
+        toWirFormat({
+          mapping: {
+            Person: 'name',
+            Personality: 'personTag',
+            description: 'description',
+            'Accept Message': 'acceptMessage',
+          },
+          formatters: {
+            personTag: TAG_FORMATTER,
+            files: map(toWirFormat()),
+          },
+        })
+      ),
+    },
+    ignore: ['description'],
+  })(rawTinderGame);
+
+  const suggestedSecret = tinderGame.suggestedArticles[DOC_SECRET_NAME];
+  const peopleSecrets = tinderGame.people.map(({ description, acceptMessage }) => [
+    description[DOC_SECRET_NAME],
+    acceptMessage[DOC_SECRET_NAME],
+  ]);
+  const secrets = mapSecrets([...flatten(peopleSecrets), suggestedSecret]);
+  const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
+  tinderGame.people.forEach((person, index) => {
+    tinderGame.people[index].description = getDoc(docs, person.description[DOC_SECRET_NAME]);
+    tinderGame.people[index].acceptMessage = getDoc(docs, person.acceptMessage[DOC_SECRET_NAME]);
+  });
+
+  const suggestedDoc = getDoc(docs, suggestedSecret);
+  if (suggestedDoc) {
+    tinderGame.suggestedArticles = await buildState(
+      processDocumentConstructor(suggestedDoc.content)
+    );
+  } else {
+    tinderGame.suggestedArticles = null;
+  }
+
+  tinderGame.people.forEach(({ fiberyPublicId: personId, files }, index) => {
+    if (files.length !== 1) {
+      throw new ValidationError({
+        people: {
+          files: `each person must contain exactly one file attached, fiberyPublicId:${personId} does not`,
+        },
+      });
+    }
+    if (!files[0].name.match(/\.(jpg|jpeg|png)/)) {
+      throw new ValidationError({
+        people: {
+          files: `file '${files[0].name}' is attached to person fiberyPublicId:${personId} does not match regex: bad image extension`,
+        },
+      });
+    }
+    tinderGame.people[index].photoUrl = getFileUrl(files[0].secret);
+    tinderGame.people[index].files = undefined;
+  });
+
+  return tinderGame;
+};
+
 const getDocument = async fiberyPublicID => {
   const [document] = await fibery.entity.query(DOCUMENT_VIEW, { $id: fiberyPublicID });
   if (!document) {
@@ -249,4 +333,11 @@ const getMainPageState = () => getDocument(MAIN_PAGE_STATE_PUBLIC_ID);
 
 const getSidebarState = () => getDocument(SIDEBAR_STATE_PUBLIC_ID);
 
-export default { getArticleData, getDiaries, getFortuneGame, getMainPageState, getSidebarState };
+export default {
+  getArticleData,
+  getDiaries,
+  getFortuneGame,
+  getTinderGame,
+  getMainPageState,
+  getSidebarState,
+};
