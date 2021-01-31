@@ -309,7 +309,7 @@ const getTinderGame = async ({ fiberyPublicId }) => {
       });
     }
     tinderGame.people[index].photoUrl = getFileUrl(files[0].secret);
-    tinderGame.people[index].files = undefined;
+    delete tinderGame.people[index].files;
   });
 
   return tinderGame;
