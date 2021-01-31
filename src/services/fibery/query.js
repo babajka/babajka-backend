@@ -132,6 +132,28 @@ export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug']).concat(
   })
 );
 
+export const TINDER_GAME_FIELDS = mapAppName(['Title', 'Slug']).concat(
+  nestedQueries({
+    description: [DOC_SECRET_NAME],
+    'Suggested Articles': [DOC_SECRET_NAME],
+    People: {
+      'q/select': FIBERY_DEFAULT.concat([FILES])
+        .concat(mapAppName(['Person']))
+        .concat(
+          nestedQueries({
+            description: [DOC_SECRET_NAME],
+            'Accept Message': [DOC_SECRET_NAME],
+            Personality: FIBERY_DEFAULT.concat(
+              addAppName('name'),
+              mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities)
+            ),
+          })
+        ),
+      'q/limit': 'q/no-limit',
+    },
+  })
+);
+
 export const DOCUMENT_VIEW = {
   'q/from': 'fibery/view',
   'q/select': FIBERY_DEFAULT.concat('fibery/meta'),
