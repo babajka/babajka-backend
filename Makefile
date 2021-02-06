@@ -23,7 +23,7 @@ docker-build:
 	docker build -t babajka/backend .
 
 docker-publish:
-	docker build -t babajka/backend .
+	make docker-build
 	docker push babajka/backend
 
 docker-run-locally:
