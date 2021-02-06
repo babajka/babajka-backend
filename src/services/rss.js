@@ -98,7 +98,7 @@ const generatePodcastsFeed = async () => {
     const { themes = [], authors = [] } = mapTagsByTopic(article.tags);
     const [author] = mapToString(authors);
 
-    const podcastCover = podcast || collection?.podcastCover;
+    const podcastCover = podcast || (collection && collection.podcastCover);
     const image = podcastCover ? `${HOST}${podcastCover}` : COVER;
 
     if (collection) {
