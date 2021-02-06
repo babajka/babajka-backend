@@ -1,6 +1,8 @@
-FROM node:12
+FROM node:15
 
 WORKDIR /babajka
+
+RUN apt-get update && apt-get install -y graphicsmagick
 
 COPY package.json package-lock.json ./
 COPY patches/ ./patches/
