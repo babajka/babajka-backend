@@ -138,7 +138,7 @@ export const TINDER_GAME_FIELDS = mapAppName(['Title', 'Slug']).concat(
     'Suggested Articles': [DOC_SECRET_NAME],
     People: {
       'q/select': FIBERY_DEFAULT.concat([FILES])
-        .concat(mapAppName(['Person']))
+        .concat(mapAppName(['Tinder Nickname']))
         .concat(
           nestedQueries({
             description: [DOC_SECRET_NAME],
