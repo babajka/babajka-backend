@@ -18,4 +18,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["npm","run","start-prod","--","--secretPath=/babajka/secrets/secret.json","--imagesDir=/babajka/images-cache","--staticDir=/babajka/static"]
+CMD ["npm","run","start-prod","--","--secret-path=/babajka/secrets/secret.json","--images-dir=/babajka/images-cache","--static-dir=/babajka/static"]
