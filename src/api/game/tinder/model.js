@@ -10,7 +10,7 @@ const joiTinderPersonSchema = Joi.object({
     .meta({ unique: true })
     .required(),
 
-  name: Joi.string().allow(null),
+  nickname: Joi.string().allow(null),
   personTag: Joi.objectId()
     .meta({ ref: 'Tag' })
     .allow(null),
@@ -33,8 +33,14 @@ export const POPULATE_AUTHOR_TAG = {
   },
 };
 
-export const formatTinderPerson = ({ name, personTag, photoUrl, description, acceptMessage }) => ({
-  name,
+export const formatTinderPerson = ({
+  nickname,
+  personTag,
+  photoUrl,
+  description,
+  acceptMessage,
+}) => ({
+  nickname,
   personTag,
   photoUrl,
   description,

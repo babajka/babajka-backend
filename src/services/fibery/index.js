@@ -257,7 +257,7 @@ const getTinderGame = async ({ fiberyPublicId }) => {
       people: map(
         toWirFormat({
           mapping: {
-            Person: 'name',
+            'Tinder Nickname': 'nickname',
             Personality: 'personTag',
             description: 'description',
             'Accept Message': 'acceptMessage',
