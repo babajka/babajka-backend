@@ -34,12 +34,14 @@ export const POPULATE_AUTHOR_TAG = {
 };
 
 export const formatTinderPerson = ({
+  fiberyPublicId,
   nickname,
   personTag,
   photoUrl,
   description,
   acceptMessage,
 }) => ({
+  personStatsId: fiberyPublicId,
   nickname,
   personTag,
   photoUrl,
