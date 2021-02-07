@@ -4,8 +4,9 @@ WORKDIR /babajka
 
 RUN apt-get update && apt-get install -y graphicsmagick
 
-COPY package.json package-lock.json ./
 COPY patches/ ./patches/
+
+COPY package.json package-lock.json ./
 
 RUN npm ci --only=production --unsafe-perm
 
