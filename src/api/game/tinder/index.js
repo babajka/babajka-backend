@@ -9,6 +9,8 @@ const router = Router();
 
 router.get('/:slug', controller.getOne);
 
+router.post('/stats', requireFields('action', 'personId', 'slug'), controller.stats);
+
 router.post(
   '/fibery/import',
   requireAuth,
