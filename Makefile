@@ -27,4 +27,5 @@ docker-publish:
 	docker push babajka/backend
 
 docker-run-locally:
-	docker run -dp 8080:8080 -v /Users/uladpersonal/babajka-secret:/babajka/secrets babajka/backend
+	# Put secret.json file into $HOME/babajka-secret/ directory to run Backend locally.
+	docker run -dp 8080:8080 -v ${HOME}/babajka-secret:/babajka/secrets babajka/backend

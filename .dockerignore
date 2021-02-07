@@ -1,6 +1,7 @@
-node_modules
-npm-debug.log
+bin
 images
+node_modules
+postman
 static
 *.log
-postman
+pm2-config.json
