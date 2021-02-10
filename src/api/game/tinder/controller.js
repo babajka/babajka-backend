@@ -7,13 +7,13 @@ import fibery from 'services/fibery';
 import { sendJson } from 'utils/api';
 import { checkIsFound, ValidationError } from 'utils/validation';
 
-import TinderGame, { formatTinderGame, POPULATE_AUTHOR_TAG } from './model';
+import TinderGame, { formatTinderGame, POPULATE_PERSON_TAG } from './model';
 
 const STATS_ACTIONS = ['like', 'dislike'];
 
 export const getOne = ({ params: { slug }, user }, res, next) =>
   TinderGame.findOne({ slug })
-    .populate(POPULATE_AUTHOR_TAG)
+    .populate(POPULATE_PERSON_TAG)
     .then(checkIsFound)
     .then(formatTinderGame)
     .then(populateWithSuggestedState(user))

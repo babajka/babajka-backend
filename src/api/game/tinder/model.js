@@ -21,15 +21,12 @@ const joiTinderPersonSchema = Joi.object({
   acceptMessage: Joi.object().required(),
 });
 
-export const POPULATE_AUTHOR_TAG = {
-  path: 'people',
+export const POPULATE_PERSON_TAG = {
+  path: 'people.personTag',
+  select: '-_id -__v -metadata -fiberyId',
   populate: {
-    path: 'personTag',
-    select: '-_id -__v -metadata -fiberyId -fiberyPublicId',
-    populate: {
-      path: 'topic',
-      select: '-_id slug',
-    },
+    path: 'topic',
+    select: '-_id slug',
   },
 };
 
