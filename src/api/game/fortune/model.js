@@ -19,14 +19,11 @@ const joiFortuneCookieSchema = Joi.object({
 });
 
 export const POPULATE_AUTHOR_TAG = {
-  path: 'cookies',
+  path: 'cookies.authorTag',
+  select: '-_id -__v -metadata -fiberyId -fiberyPublicId',
   populate: {
-    path: 'authorTag',
-    select: '-_id -__v -metadata -fiberyId -fiberyPublicId',
-    populate: {
-      path: 'topic',
-      select: '-_id slug',
-    },
+    path: 'topic',
+    select: '-_id slug',
   },
 };
 
