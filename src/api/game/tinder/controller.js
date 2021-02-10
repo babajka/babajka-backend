@@ -81,12 +81,12 @@ export const fiberyImport = async ({ body: { fiberyPublicId }, user }, res, next
 
     await Promise.all(
       tinderGame.people.reduce(
-        (acc, { fiberyPublicId: personId }) => [
-          ...acc,
-          ...STATS_ACTIONS.map(action =>
-            Counter.ensureExists(generateStatsKey({ action, personId, slug: tinderGame.slug }))
+        (acc, { fiberyPublicId: personId }) =>
+          acc.concat(
+            STATS_ACTIONS.map(action =>
+              Counter.ensureExists(generateStatsKey({ action, personId, slug: tinderGame.slug }))
+            )
           ),
-        ],
         []
       )
     );
