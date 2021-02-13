@@ -11,6 +11,8 @@ router.get('/:slug', controller.getOne);
 
 router.post('/stats', requireFields('action', 'personId', 'slug'), controller.stats);
 
+router.get('/stats/:slug', requireAuth, verifyPermission('canManageArticles'), controller.getStats);
+
 router.post(
   '/fibery/import',
   requireAuth,

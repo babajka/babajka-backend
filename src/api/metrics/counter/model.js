@@ -27,6 +27,10 @@ CounterSchema.statics.inc = function(key) {
   return this.update({ key }, { $inc: { count: 1 } });
 };
 
+CounterSchema.statics.findKeysRegex = function(regex) {
+  return this.find({ key: { $regex: regex } });
+};
+
 const Counter = mongoose.model('Counter', CounterSchema);
 
 export const formatCounter = ({ key, count }) => ({ key, count });

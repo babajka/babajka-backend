@@ -1,3 +1,5 @@
+import set from 'lodash/set';
+
 import { getMapTag } from 'api/article/utils';
 import { populateWithSuggestedState } from 'api/article/article.model';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
@@ -42,6 +44,40 @@ export const stats = async ({ body: { action, personId, slug } }, res, next) => 
   } catch (err) {
     next(err);
   }
+};
+
+export const getStats = ({ params: { slug } }, res, next) => {
+  const regex = `^game-tinder-${slug}-(${STATS_ACTIONS.join('|')})---([0-9]+)$`;
+  return Counter.findKeysRegex(regex)
+    .then(checkIsFound)
+    .then(counters =>
+      counters.reduce((acc, { key, count }) => {
+        const [_, action, personId] = key.match(regex);
+        set(acc, [personId, action], count);
+        return acc;
+      }, {})
+    )
+    .then(counters =>
+      TinderGame.findOne({ slug })
+        .populate(POPULATE_PERSON_TAG)
+        .then(checkIsFound)
+        .then(({ people }) =>
+          people.reduce((acc, { fiberyPublicId, nickname }) => {
+            acc[fiberyPublicId] = nickname;
+            return acc;
+          }, {})
+        )
+        .then(names => {
+          const namedStats = {};
+          Object.entries(counters).forEach(([personId, personStats]) => {
+            namedStats[names[personId] || `name not found for ${personId}`] = personStats;
+          });
+          return namedStats;
+        })
+        .catch(next)
+    )
+    .then(sendJson(res))
+    .catch(next);
 };
 
 export const fiberyImport = async ({ body: { fiberyPublicId }, user }, res, next) => {
