@@ -10,11 +10,15 @@ import { imagesDir } from 'utils/args';
 import { getFilesHeaders } from './utils';
 
 const filesProxy = async (
-  { params: { secret }, query: { w = '', h = '', f = 'png' } },
+  { params: { secret }, query: { w = '', h = '', f = 'png', mode = '' } },
   res,
   next
 ) => {
-  const filepath = `${imagesDir}/${secret}_${w}x${h}.${f}`;
+  const filepath =
+    mode === 'raw'
+      ? // On mode 'raw' we do not attempt to resize an image and are using an exact copy of the one uploaded to Fibery.
+        `${imagesDir}/${secret}_raw.${f}`
+      : `${imagesDir}/${secret}_${w}x${h}.${f}`;
   res.type(`image/${f}`);
   const isExist = await isFileExist(filepath);
   if (isExist) {
@@ -35,6 +39,10 @@ const filesProxy = async (
   const imageReq = request.get(options).on('response', imageRes => {
     if (imageRes.statusCode !== 200) {
       console.error(`[filesProxy]: ${secret} ${imageRes.statusCode} ${imageRes.statusMessage}`);
+      return;
+    }
+    if (mode === 'raw') {
+      imageReq.pipe(fs.createWriteStream(filepath));
       return;
     }
     gm(imageReq)
