@@ -55,6 +55,8 @@ const joiTinderGameSchema = Joi.object({
     .required(),
 
   title: Joi.string().required(),
+  subtitle: Joi.string().required(),
+
   slug: Joi.string()
     .meta({ unique: true })
     .required(),
@@ -68,8 +70,9 @@ const TinderGameSchema = joiToMongoose(joiTinderGameSchema);
 
 const TinderGame = mongoose.model('TinderGame', TinderGameSchema);
 
-export const formatTinderGame = ({ title, slug, people, suggestedArticles }) => ({
+export const formatTinderGame = ({ title, subtitle, slug, people, suggestedArticles }) => ({
   title,
+  subtitle,
   slug,
   people: people.map(formatTinderPerson),
   suggestedArticles,
