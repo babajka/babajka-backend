@@ -132,7 +132,7 @@ export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug']).concat(
   })
 );
 
-export const TINDER_GAME_FIELDS = mapAppName(['Title', 'Slug']).concat(
+export const TINDER_GAME_FIELDS = mapAppName(['Title', 'Subtitle', 'Slug']).concat(
   nestedQueries({
     description: [DOC_SECRET_NAME],
     'Suggested Articles': [DOC_SECRET_NAME],
