@@ -97,6 +97,12 @@ export const CONTENT = mapAppNameLocales(['Text'])
 
 const nestedQueries = obj => Object.entries(obj).map(([k, v]) => ({ [addAppName(k)]: v }));
 
+const PERSONALITY_FIELDS = FIBERY_DEFAULT.concat(
+  addAppName('name'),
+  mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities),
+  TAGS_IMAGES.Personalities
+);
+
 export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
   .concat(
     nestedQueries({
@@ -106,11 +112,7 @@ export const DIARY_FIELDS = mapAppName(['Day', 'Year'])
     })
   )
   .concat({
-    'user/Personality': FIBERY_DEFAULT.concat(
-      addAppName('name'),
-      mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities),
-      TAGS_IMAGES.Personalities
-    ),
+    'user/Personality': PERSONALITY_FIELDS,
   });
 
 export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug']).concat(
@@ -121,10 +123,7 @@ export const FORTUNE_COLLECTION_FIELDS = mapAppName(['Title', 'Slug']).concat(
       'q/select': FIBERY_DEFAULT.concat(mapAppName(['Author'])).concat(
         nestedQueries({
           Text: [DOC_SECRET_NAME],
-          Personality: FIBERY_DEFAULT.concat(
-            addAppName('name'),
-            mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities)
-          ),
+          Personality: PERSONALITY_FIELDS,
         })
       ),
       'q/limit': 'q/no-limit',
@@ -143,10 +142,7 @@ export const TINDER_GAME_FIELDS = mapAppName(['Title', 'Subtitle', 'Slug']).conc
           nestedQueries({
             description: [DOC_SECRET_NAME],
             'Accept Message': [DOC_SECRET_NAME],
-            Personality: FIBERY_DEFAULT.concat(
-              addAppName('name'),
-              mapAppNameLocales(TAGS_LOCALIZED_FIELDS.Personalities)
-            ),
+            Personality: PERSONALITY_FIELDS,
           })
         ),
       'q/limit': 'q/no-limit',
