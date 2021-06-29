@@ -12,21 +12,19 @@ import { updateLocales } from './localized/utils';
 import { updateCollection } from './collection/utils';
 import { mapFiberyArticle, getArticle, fetchAudio } from './utils';
 
-export const getAll = ({ query: { skip, take }, user }, res, next) =>
+export const getAll = ({ range: { skip, limit }, user }, res, next) =>
   Article.customQuery({
     query: DEFAULT_ARTICLE_QUERY(user),
     user,
     sort: { publishAt: 'desc' },
-    skip: parseInt(skip) || 0, // eslint-disable-line radix
-    // A limit() value of 0 is equivalent to setting no limit.
-    limit: parseInt(take) || 0, // eslint-disable-line radix
+    skip,
+    limit,
     populateContent: false,
   })
-    .then(async data => ({
-      data,
-      total: await Article.find(DEFAULT_ARTICLE_QUERY(user)).countDocuments(),
-    }))
-    .then(sendJson(res))
+    .then(async data => {
+      const length = await Article.find(DEFAULT_ARTICLE_QUERY(user)).countDocuments();
+      return sendJson(res, { range: { length } })(data);
+    })
     .catch(next);
 
 const retrieveArticleId = (slugOrId, options) =>

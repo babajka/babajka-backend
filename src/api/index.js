@@ -11,9 +11,11 @@ import tagRoutes from 'api/tag';
 import topicRoutes from 'api/topic';
 import filesProxy from 'api/files';
 import collectionsRoutes from 'api/article/collection';
+import { parseRange } from 'api/middlewares';
 
 const router = Router();
 
+router.use(parseRange);
 router.use('/articles', articleRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/collections', collectionsRoutes);

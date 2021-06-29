@@ -109,6 +109,7 @@ const formatArticle = (article, { keepSuggestions = false } = {}) =>
           !keepSuggestions && 'suggestedArticles',
         ]),
         locales: keyBy(article.locales, 'locale'),
+        id: article._id,
       }
     : null;
 

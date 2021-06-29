@@ -48,7 +48,8 @@ app.use((err, req, res, next) => {
       console.error(err.stack);
     }
   }
-  sendJson(res, err.status || HttpStatus.INTERNAL_SERVER_ERROR)({ error: err.message });
+  const status = err.status || HttpStatus.INTERNAL_SERVER_ERROR;
+  sendJson(res, { status })({ error: err.message });
 });
 
 export default app;
