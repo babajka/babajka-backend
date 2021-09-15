@@ -12,6 +12,7 @@ import LocalizedArticle from './localized/model';
 const router = Router();
 
 router.get('/', controller.getAll);
+router.get('/export', controller.exportToTxt);
 // slugOrId parameter below either contains ID of an Article or a slug of any Article Localization.
 router.get('/:slugOrId', controller.getOne);
 

@@ -6,6 +6,9 @@ import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 
+import _ from 'lodash';
+import { writeFile } from 'fs/promises';
+
 import Article, { DEFAULT_ARTICLE_QUERY, populateWithSuggestedState } from './article.model';
 import LocalizedArticle from './localized/model';
 import { updateLocales } from './localized/utils';
@@ -34,6 +37,26 @@ const retrieveArticleId = (slugOrId, options) =>
     .then(result => (result && result.articleId) || (isValidId(slugOrId) && slugOrId))
     .then(checkIsFound);
 
+const convertContent = (content, { useBreak = false } = {}, init = '') => {
+  if (!Array.isArray(content)) {
+    return init;
+  }
+  return content.reduce((acc, { type, ...params }) => {
+    // eslint-disable-next-line no-use-before-define
+    const convert = CONVERTERS[type];
+    if (!convert) {
+      return acc;
+    }
+    return `${acc}${convert(params, { useBreak })}`;
+  }, init);
+};
+
+const CONVERTERS = {
+  paragraph: ({ content }, { useBreak }) =>
+    `${convertContent(content, { useBreak })}${useBreak ? '\n' : ''}`,
+  text: ({ text }) => text,
+};
+
 const getArticleById = (_id, user) =>
   Article.customQuery({
     query: { _id, active: true },
@@ -49,6 +72,38 @@ export const getOne = ({ params: { slugOrId }, user }, res, next) =>
     // FIXME: publishAt check
     // .then(article => checkIsPublished(article, user))
     .then(sendJson(res))
+    .catch(next);
+
+export const exportToTxt = ({ query: { skip, take }, user }, res, next) =>
+  Article.customQuery({
+    query: DEFAULT_ARTICLE_QUERY(user),
+    user,
+    sort: { publishAt: 'desc' },
+    skip: parseInt(skip) || 0, // eslint-disable-line radix
+    // A limit() value of 0 is equivalent to setting no limit.
+    limit: parseInt(take) || 0, // eslint-disable-line radix
+    populateContent: true,
+  })
+    .then(async data => {
+      const tt = data.reduce((acc, article) => {
+        const k1 = _.get(article, 'locales.be');
+        if (!k1) {
+          return '';
+        }
+        const k = _.get(k1, 'text.content');
+        const content = k ? convertContent(k, { useBreak: true }) : '';
+        return `${acc}\n\n${k1.title}\n\n${k1.subtitle}\n\n${content}`;
+      }, '');
+      console.log('tt', tt);
+      // const promise = writeFile('message.txt', tt);
+      // await promise;
+      return tt;
+    })
+    .then(data => {
+      res.set({ 'Content-Disposition': `attachment; filename="test.txt"` });
+      res.send(data);
+      return res;
+    })
     .catch(next);
 
 export const fiberyPreview = async ({ body: { url, fiberyPublicId }, user }, res, next) => {
