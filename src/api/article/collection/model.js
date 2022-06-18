@@ -3,7 +3,7 @@ import omit from 'lodash/omit';
 
 import {
   serializeArticle,
-  DEFAULT_ARTICLE_QUERY,
+  getDefaultArticleQuery,
   POPULATE_OPTIONS,
 } from 'api/article/article.model';
 
@@ -47,7 +47,7 @@ export const COLLECTION_POPULATE_OPTIONS = {
   articles: user => ({
     path: 'articles',
     select: '-metadata -fiberyId -fiberyPublicId',
-    match: DEFAULT_ARTICLE_QUERY(user),
+    match: getDefaultArticleQuery(user),
     populate: [
       POPULATE_OPTIONS.locales(false),
       POPULATE_OPTIONS.tags,
@@ -57,7 +57,7 @@ export const COLLECTION_POPULATE_OPTIONS = {
         select: '-_id slug description name cover podcastCover articles',
         populate: {
           path: 'articles',
-          match: DEFAULT_ARTICLE_QUERY(user),
+          match: getDefaultArticleQuery(user),
           select: ['_id', 'publishAt'],
         },
       },

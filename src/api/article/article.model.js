@@ -159,7 +159,7 @@ export const queryUnpublished = user => {
   return {};
 };
 
-export const DEFAULT_ARTICLE_QUERY = user => ({
+export const getDefaultArticleQuery = user => ({
   $and: [
     {
       active: true,
@@ -175,7 +175,7 @@ export const POPULATE_OPTIONS = {
     select: '-_id name slug description cover articles podcastCover',
     populate: {
       path: 'articles',
-      match: DEFAULT_ARTICLE_QUERY(user),
+      match: getDefaultArticleQuery(user),
       select: ['_id', 'publishAt'],
       populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
     },

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import RSS from 'rss';
 
-import Article, { DEFAULT_ARTICLE_QUERY } from 'api/article/article.model';
+import Article, { getDefaultArticleQuery } from 'api/article/article.model';
 import { getSomeLocale } from 'api/article/utils';
 import { Tag } from 'api/tag';
 import { mapTagsByTopic, mapToString } from 'api/tag/utils';
@@ -38,7 +38,7 @@ const getRssOptions = options => ({
 const generatePodcastsFeed = async () => {
   const audioArticles = await Article.customQuery({
     query: {
-      ...DEFAULT_ARTICLE_QUERY(),
+      ...getDefaultArticleQuery(),
       type: 'audio',
       audio: { $exists: true },
     },
@@ -132,7 +132,7 @@ const generatePodcastsFeed = async () => {
 const generateArticlesFeed = async () => {
   const categories = mapToString(await Tag.find({ topicSlug: 'themes' }), 'en');
   const articles = await Article.customQuery({
-    query: DEFAULT_ARTICLE_QUERY(),
+    query: getDefaultArticleQuery(),
     sort: { publishAt: 'desc' },
   });
 
