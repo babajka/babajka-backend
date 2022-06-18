@@ -1,4 +1,4 @@
-# babajka-backend
+# Node.js Backend App for Wir.by
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Coverage Status](https://coveralls.io/repos/github/babajka/babajka-backend/badge.svg?branch=master)](https://coveralls.io/github/babajka/babajka-backend?branch=master)
@@ -49,15 +49,6 @@ usage:
 `npm run test:subset -- /api/storage` - to only run storage tests
 
 `npm run test:subset -- /utils` - to only run utils tests
-
-etc.
-
-## rules [OUTDATED]
-
-- we have autoversioning set up, in order to trigger new release one should follow the conventions:
-  - `fix(<scope>): <subject>` - increases **patch** version: 1.0.0 -> 1.0.1
-  - `feat(<scope>): <subject>` - increases **minor** version: 1.0.0 -> 1.1.0
-  - `major(<scope>): <subject>` - increases **major** version: 1.0.0 -> 2.0.0
 
 ## submodules
 

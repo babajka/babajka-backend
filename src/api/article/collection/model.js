@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
 import omit from 'lodash/omit';
 
-import { serializeArticle, queryUnpublished, POPULATE_OPTIONS } from 'api/article/article.model';
+import {
+  serializeArticle,
+  DEFAULT_ARTICLE_QUERY,
+  POPULATE_OPTIONS,
+} from 'api/article/article.model';
 
 import Joi, { joiToMongoose } from 'utils/joi';
 
@@ -43,7 +47,7 @@ export const COLLECTION_POPULATE_OPTIONS = {
   articles: user => ({
     path: 'articles',
     select: '-metadata -fiberyId -fiberyPublicId',
-    match: queryUnpublished(user),
+    match: DEFAULT_ARTICLE_QUERY(user),
     populate: [
       POPULATE_OPTIONS.locales(false),
       POPULATE_OPTIONS.tags,
@@ -53,7 +57,7 @@ export const COLLECTION_POPULATE_OPTIONS = {
         select: '-_id slug description name cover podcastCover articles',
         populate: {
           path: 'articles',
-          match: queryUnpublished(user),
+          match: DEFAULT_ARTICLE_QUERY(user),
           select: ['_id', 'publishAt'],
         },
       },
