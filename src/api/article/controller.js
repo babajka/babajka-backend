@@ -6,7 +6,7 @@ import { sendJson } from 'utils/api';
 import { getId } from 'utils/getters';
 import { getInitObjectMetadata } from 'api/helpers/metadata';
 
-import Article, { DEFAULT_ARTICLE_QUERY, populateWithSuggestedState } from './article.model';
+import Article, { getDefaultArticleQuery, populateWithSuggestedState } from './article.model';
 import LocalizedArticle from './localized/model';
 import { updateLocales } from './localized/utils';
 import { updateCollection } from './collection/utils';
@@ -14,7 +14,7 @@ import { mapFiberyArticle, getArticle, fetchAudio } from './utils';
 
 export const getAll = ({ query: { skip, take }, user }, res, next) =>
   Article.customQuery({
-    query: DEFAULT_ARTICLE_QUERY(user),
+    query: getDefaultArticleQuery(user),
     user,
     sort: { publishAt: 'desc' },
     skip: parseInt(skip) || 0, // eslint-disable-line radix
@@ -24,7 +24,7 @@ export const getAll = ({ query: { skip, take }, user }, res, next) =>
   })
     .then(async data => ({
       data,
-      total: await Article.find(DEFAULT_ARTICLE_QUERY(user)).countDocuments(),
+      total: await Article.find(getDefaultArticleQuery(user)).countDocuments(),
     }))
     .then(sendJson(res))
     .catch(next);

@@ -159,13 +159,23 @@ export const queryUnpublished = user => {
   return {};
 };
 
+export const getDefaultArticleQuery = user => ({
+  $and: [
+    {
+      active: true,
+      locales: { $exists: true },
+    },
+    queryUnpublished(user),
+  ],
+});
+
 export const POPULATE_OPTIONS = {
   collection: user => ({
     path: 'collectionId',
     select: '-_id name slug description cover articles podcastCover',
     populate: {
       path: 'articles',
-      match: queryUnpublished(user),
+      match: getDefaultArticleQuery(user),
       select: ['_id', 'publishAt'],
       populate: { path: 'locales', select: ['title', 'subtitle', 'slug', 'locale'] },
     },
@@ -191,16 +201,6 @@ export const POPULATE_OPTIONS = {
     },
   },
 };
-
-export const DEFAULT_ARTICLE_QUERY = user => ({
-  $and: [
-    {
-      active: true,
-      locales: { $exists: true },
-    },
-    queryUnpublished(user),
-  ],
-});
 
 const populateWithAnalytics = user => async articles => {
   if (!checkPermissions(user, 'canManageArticles')) {
