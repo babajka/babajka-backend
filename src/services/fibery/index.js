@@ -3,6 +3,7 @@ import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
 import keyBy from 'lodash/keyBy';
 import flatten from 'lodash/flatten';
+import fetch from 'node-fetch';
 
 import config from 'config';
 import { ValidationError } from 'utils/joi';
@@ -25,7 +26,6 @@ import {
   RELATED_ENTITIES,
   CONTENT,
   DIARY_FIELDS,
-  DOCUMENT_VIEW,
   SUGGESTED_ARTICLES,
   FORTUNE_COLLECTION_FIELDS,
   TINDER_GAME_FIELDS,
@@ -316,7 +316,24 @@ const getTinderGame = async ({ fiberyPublicId }) => {
 };
 
 const getDocument = async fiberyPublicID => {
-  const [document] = await fibery.entity.query(DOCUMENT_VIEW, { $id: fiberyPublicID });
+  const response = await fetch('https://wir.fibery.io/api/views/json-rpc', {
+    method: 'post',
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'query-views',
+      params: {
+        filter: {
+          publicIds: [fiberyPublicID],
+        },
+      },
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.services.fibery.token}`,
+    },
+  });
+  const parsedResponse = await response.json();
+  const document = parsedResponse.result[0];
   if (!document) {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
