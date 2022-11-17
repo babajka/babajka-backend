@@ -316,6 +316,8 @@ const getTinderGame = async ({ fiberyPublicId }) => {
 };
 
 const getDocument = async fiberyPublicID => {
+  // The way fibery document is get here is as described by the guys from Fibery support; it is not yet documented.
+  // Fibery-unofficial JS library is currently not covering the request we are aiming for.
   const body = {
     jsonrpc: '2.0',
     method: 'query-views',
