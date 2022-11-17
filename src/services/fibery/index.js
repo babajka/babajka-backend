@@ -330,13 +330,9 @@ const getDocument = async fiberyPublicID => {
   const headers = {
     Authorization: `Bearer ${config.services.fibery.token}`,
   };
-  const response = await makeExternalRequest(
-    'https://wir.fibery.io/api/views/json-rpc',
-    'post',
-    body,
-    headers
-  );
-  const document = response.result[0];
+  const {
+    result: [document],
+  } = await makeExternalRequest('https://wir.fibery.io/api/views/json-rpc', 'post', body, headers);
   if (!document) {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
