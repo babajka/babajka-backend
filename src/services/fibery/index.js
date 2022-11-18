@@ -7,6 +7,7 @@ import flatten from 'lodash/flatten';
 import config from 'config';
 import { ValidationError } from 'utils/joi';
 import { map } from 'utils/func';
+import { makeExternalRequest } from 'utils/request';
 
 import { buildState } from 'api/storage/stateConstructors';
 import {
@@ -25,7 +26,6 @@ import {
   RELATED_ENTITIES,
   CONTENT,
   DIARY_FIELDS,
-  DOCUMENT_VIEW,
   SUGGESTED_ARTICLES,
   FORTUNE_COLLECTION_FIELDS,
   TINDER_GAME_FIELDS,
@@ -316,7 +316,23 @@ const getTinderGame = async ({ fiberyPublicId }) => {
 };
 
 const getDocument = async fiberyPublicID => {
-  const [document] = await fibery.entity.query(DOCUMENT_VIEW, { $id: fiberyPublicID });
+  // The way fibery document is get here is as described by the guys from Fibery support; it is not yet documented.
+  // Fibery-unofficial JS library is currently not covering the request we are aiming for.
+  const body = {
+    jsonrpc: '2.0',
+    method: 'query-views',
+    params: {
+      filter: {
+        publicIds: [fiberyPublicID],
+      },
+    },
+  };
+  const headers = {
+    Authorization: `Bearer ${config.services.fibery.token}`,
+  };
+  const {
+    result: [document],
+  } = await makeExternalRequest('https://wir.fibery.io/api/views/json-rpc', 'post', body, headers);
   if (!document) {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
