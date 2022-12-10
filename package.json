@@ -39,7 +39,7 @@
     "cors": "^2.8.3",
     "ejs": "^2.6.1",
     "esm": "^3.0.84",
-    "express": "^4.15.3",
+    "express": "^4.17.3",
     "express-session": "^1.15.4",
     "fibery-unofficial": "^0.2.1",
     "gm": "^1.23.1",
