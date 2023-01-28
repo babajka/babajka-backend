@@ -11,7 +11,7 @@ const RSS_ARTICLES_FILENAME = `${rssDir}/articles.rss.xml`;
 const RSS_PODCASTS_FILENAME = `${rssDir}/podcasts.rss.xml`;
 
 const HOST = 'https://wir.by';
-const EMAIL = 'hello@wir.by';
+const EMAIL = 'wir.help@gmail.com';
 const ITUNES_CATEGORY = 'Education';
 const ITUNES_SUBCATEGORY = 'Courses';
 const ITUNES_AUTHOR = 'Wir.by';
@@ -29,7 +29,7 @@ const getRssOptions = options => ({
   image_url: COVER,
   copyright: `© Wir.by, ${new Date().getFullYear()}`,
   managingEditor: `${EMAIL} (${ITUNES_OWNER})`,
-  webMaster: 'ivan@wir.by (Ivan Pazhitnykh)',
+  webMaster: 'wir.development@gmail.com (Wir Dev Team)',
   language: 'be',
   categories: [ITUNES_CATEGORY, ITUNES_SUBCATEGORY],
   ...options,
