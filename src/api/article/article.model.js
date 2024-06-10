@@ -54,6 +54,11 @@ const joiArticleSchema = Joi.object({
   audio: Joi.object({
     platform: Joi.string().valid(['soundcloud', 'yandex']),
     id: Joi.string().regex(/^\d+$/),
+    episodeIds: Joi.object({
+      applepodcasts: Joi.string(),
+      spotifypodcasts: Joi.string(),
+      yandexmusic: Joi.string(),
+    }),
     url: Joi.string().uri(),
     source: Joi.string(),
     mimeType: Joi.string(),
