@@ -129,6 +129,7 @@ const getArticleData = async ({ url, fiberyPublicId }) => {
           'Apple Podcasts Track ID': 'episodeIds.applepodcasts',
           'Spotify Track ID': 'episodeIds.spotifypodcasts',
           'Yandex Music Track ID': 'episodeIds.yandexmusic',
+          'YouTube Podcasts Track ID': 'episodeIds.youtubepodcasts',
         },
         formatters: {
           id: convertToString,

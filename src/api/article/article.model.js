@@ -58,6 +58,7 @@ const joiArticleSchema = Joi.object({
       applepodcasts: Joi.string(),
       spotifypodcasts: Joi.string(),
       yandexmusic: Joi.string(),
+      youtubepodcasts: Joi.string(),
     }),
     url: Joi.string().uri(),
     source: Joi.string(),

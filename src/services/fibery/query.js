@@ -76,6 +76,7 @@ const RELATED_ENT_FIELDS = {
     'Apple Podcasts Track ID',
     'Spotify Track ID',
     'Yandex Music Track ID',
+    'YouTube Podcasts Track ID',
   ]).concat(FILES),
   Cover: COLOR_THEME.concat(FILES),
 };
