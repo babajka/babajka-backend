@@ -198,7 +198,7 @@ export const fetchAudio = async ({ audio, locales }) => {
   }
 
   const { slug } = getSomeLocale({ locales });
-  const filename = `${slug}.mp3`;
+  const filename = `${slug}_${source}.mp3`;
   const path = `${audioDir}/${filename}`;
   const meta = {};
   let error = false;
