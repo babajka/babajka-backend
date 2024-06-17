@@ -8,15 +8,12 @@ import isEqual from 'lodash/isEqual';
 import config from 'config';
 import { ValidationError } from 'utils/joi';
 import { map } from 'utils/func';
-import { makeExternalRequest } from 'utils/request';
 
 import { buildState } from 'api/storage/stateConstructors';
 import {
   /* STATE_READY, */
   DOC_SECRET_NAME,
   DOC_FORMAT,
-  MAIN_PAGE_STATE_PUBLIC_ID,
-  SIDEBAR_STATE_PUBLIC_ID,
 } from './constants';
 import {
   FIBERY_DEFAULT,
@@ -30,6 +27,7 @@ import {
   SUGGESTED_ARTICLES,
   FORTUNE_COLLECTION_FIELDS,
   TINDER_GAME_FIELDS,
+  STATE_CONSTRUCTOR_FIELDS,
 } from './query';
 import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales, mapSecrets } from './utils';
 import { getFileUrl } from './getters';
@@ -329,45 +327,34 @@ const getTinderGame = async ({ fiberyPublicId }) => {
   return tinderGame;
 };
 
-const getDocument = async fiberyPublicID => {
-  // The way fibery document is get here is as described by the guys from Fibery support; it is not yet documented.
-  // Fibery-unofficial JS library is currently not covering the request we are aiming for.
-  const body = {
-    jsonrpc: '2.0',
-    method: 'query-views',
-    params: {
-      filter: {
-        publicIds: [fiberyPublicID],
-      },
+const getStateConstructorDocument = async constructorId => {
+  const [stateConstructor] = await fibery.entity.query(
+    {
+      'q/from': addAppName('State Constructor'),
+      'q/select': FIBERY_DEFAULT.concat(STATE_CONSTRUCTOR_FIELDS),
+      'q/where': ['=', addAppName('Constructor ID'), '$id'],
+      'q/limit': 1,
     },
-  };
-  const headers = {
-    Authorization: `Bearer ${config.services.fibery.token}`,
-  };
-  const {
-    result: [document],
-  } = await makeExternalRequest('https://wir.fibery.io/api/views/json-rpc', 'post', body, headers);
-  if (!document) {
-    throw new HttpError(HttpStatus.NOT_FOUND);
-  }
-  const secret = document['fibery/meta'].documentSecret;
-  const rawContent = JSON.parse(await fibery.document.get(secret, DOC_FORMAT));
-  if (!rawContent) {
+    { $id: constructorId }
+  );
+
+  if (!stateConstructor) {
     throw new HttpError(HttpStatus.NOT_FOUND);
   }
 
-  return processDocumentConstructor(rawContent.content.doc.content);
+  const stateDocumentSecret = stateConstructor[addAppName('State')][DOC_SECRET_NAME];
+  const rawStateDocument = JSON.parse(await fibery.document.get(stateDocumentSecret, DOC_FORMAT));
+  if (!rawStateDocument) {
+    throw new HttpError(HttpStatus.NOT_FOUND);
+  }
+
+  return processDocumentConstructor(rawStateDocument.content.doc.content);
 };
-
-const getMainPageState = () => getDocument(MAIN_PAGE_STATE_PUBLIC_ID);
-
-const getSidebarState = () => getDocument(SIDEBAR_STATE_PUBLIC_ID);
 
 export default {
   getArticleData,
   getDiaries,
   getFortuneGame,
   getTinderGame,
-  getMainPageState,
-  getSidebarState,
+  getStateConstructorDocument,
 };
