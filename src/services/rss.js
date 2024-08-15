@@ -96,7 +96,7 @@ const generatePodcastsFeed = async () => {
     }
     const url = `${HOST}/article/${slug}/`;
     const { themes = [], authors = [] } = mapTagsByTopic(article.tags);
-    const [author] = mapToString(authors);
+    const allAuthors = mapToString(authors).join(', ');
 
     const podcastCover = podcast || (collection && collection.podcastCover);
     const image = podcastCover ? `${HOST}${podcastCover}` : COVER;
@@ -110,11 +110,11 @@ const generatePodcastsFeed = async () => {
       description: subtitle,
       url,
       categories: mapToString(themes, 'en'),
-      author,
+      allAuthors,
       date: article.publishAt,
       enclosure: { url: `${HOST}${source}`, type, size },
       custom_elements: [
-        { 'itunes:author': author || ITUNES_AUTHOR },
+        { 'itunes:author': allAuthors || ITUNES_AUTHOR },
         { 'itunes:subtitle': subtitle },
         {
           'itunes:image': {
@@ -150,14 +150,14 @@ const generateArticlesFeed = async () => {
     const url = `${HOST}/article/${slug}/`;
 
     const { themes = [], authors = [] } = mapTagsByTopic(article.tags);
-    const [author] = mapToString(authors);
+    const allAuthors = mapToString(authors).join(', ');
 
     feed.item({
       title,
       description: subtitle,
       url,
       categories: mapToString(themes, 'en'),
-      author,
+      allAuthors,
       date: article.publishAt,
       enclosure: { type: 'image/png', url: `${HOST}${page || horizontal}` },
     });
