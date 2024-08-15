@@ -73,7 +73,12 @@ const RELATED_ENT_FIELDS = {
       'user/Cover': IMAGE,
     }),
   Video: addAppName('Youtube Link'),
-  Podcast: [addAppName('Yandex Music Track ID'), FILES],
+  Podcast: mapAppName([
+    'Apple Podcasts Track ID',
+    'Spotify Track ID',
+    'Yandex Music Track ID',
+    'YouTube Podcasts Track ID',
+  ]).concat(FILES),
   Cover: COLOR_THEME.concat(FILES),
 };
 

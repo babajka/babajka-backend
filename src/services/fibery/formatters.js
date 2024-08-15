@@ -39,6 +39,8 @@ export const toWirFormat = ({
 
 export const formatEnum = o => o['enum/name'];
 
+export const convertToString = o => `${o}`;
+
 export const IMAGE_FORMATTER = toWirFormat({
   formatters: {
     theme: formatEnum,
