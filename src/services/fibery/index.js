@@ -3,6 +3,7 @@ import HttpError from 'node-http-error';
 import HttpStatus from 'http-status-codes';
 import keyBy from 'lodash/keyBy';
 import flatten from 'lodash/flatten';
+import isEqual from 'lodash/isEqual';
 
 import config from 'config';
 import { ValidationError } from 'utils/joi';
@@ -81,6 +82,12 @@ const getArticleData = async ({ url, fiberyPublicId }) => {
   // if (getState(article) !== STATE_READY) {
   //   throw new ValidationError({ state: 'invalid' });
   // }
+
+  // At some point, Fibery started to return { 'user/Cover': null } instead of just 'null'
+  // for articles with no collection. This is a hack until we understand how to fix that.
+  if (isEqual(article['user/Collection'], { 'user/Cover': null })) {
+    delete article['user/Collection'];
+  }
 
   const suggestedSecret = article[SUGGESTED_ARTICLES][DOC_SECRET_NAME];
   const localeBySecret = mapAppNameLocales(['Text']).reduce((acc, key) => {
