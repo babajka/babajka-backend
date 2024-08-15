@@ -36,6 +36,7 @@ import { getFileUrl } from './getters';
 import {
   toWirFormat,
   formatEnum,
+  convertToString,
   IMAGE_FORMATTER,
   TAGS_FORMATTER,
   TAG_FORMATTER,
@@ -131,8 +132,14 @@ const getArticleData = async ({ url, fiberyPublicId }) => {
       }),
       video: toWirFormat({ mapping: { 'Youtube Link': 'url' } }),
       audio: toWirFormat({
-        mapping: { 'Yandex Music Track ID': 'id' },
+        mapping: {
+          'Apple Podcasts Track ID': 'episodeIds.applepodcasts',
+          'Spotify Track ID': 'episodeIds.spotifypodcasts',
+          'Yandex Music Track ID': 'episodeIds.yandexmusic',
+          'YouTube Podcasts Track ID': 'episodeIds.youtubepodcasts',
+        },
         formatters: {
+          id: convertToString,
           files: map(toWirFormat()),
         },
       }),

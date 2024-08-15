@@ -132,10 +132,10 @@ const mapVideo = ({ url }) => {
   return { platform: 'youtube', id, url };
 };
 
-const mapAudio = async ({ id, files }) => {
+const mapAudio = async ({ episodeIds, files }) => {
   const [mp3] = files.filter(({ contentType }) => contentType === AUDIO_TYPE);
   const source = mp3 && mp3.secret;
-  return { platform: 'yandex', id, source };
+  return { platform: 'yandex', episodeIds, source };
 };
 
 // filter out locales without `slug`
@@ -198,7 +198,7 @@ export const fetchAudio = async ({ audio, locales }) => {
   }
 
   const { slug } = getSomeLocale({ locales });
-  const filename = `${slug}.mp3`;
+  const filename = `${slug}_${source}.mp3`;
   const path = `${audioDir}/${filename}`;
   const meta = {};
   let error = false;
