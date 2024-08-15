@@ -117,7 +117,7 @@ export const setSidebar = ({ body, user }, res, next) =>
 
 export const fiberyMainPage = async ({ user }, res, next) => {
   try {
-    const fiberyData = await fibery.getMainPageState();
+    const fiberyData = await fibery.getStateConstructorDocument('main-page');
     const mainPageState = await buildState(fiberyData);
     const { document } = await StorageEntity.setValue(MAIN_PAGE_KEY, mainPageState, user._id);
     return sendJson(res)(document);
@@ -128,7 +128,7 @@ export const fiberyMainPage = async ({ user }, res, next) => {
 
 export const fiberySidebar = async ({ user }, res, next) => {
   try {
-    const fiberyData = await fibery.getSidebarState();
+    const fiberyData = await fibery.getStateConstructorDocument('sidebar');
     const sidebarState = await buildState(fiberyData);
     const { document } = await StorageEntity.setValue(SIDEBAR_KEY, sidebarState, user._id);
     return sendJson(res)(document);

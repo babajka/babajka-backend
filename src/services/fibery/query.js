@@ -154,3 +154,9 @@ export const TINDER_GAME_FIELDS = mapAppName(['Title', 'Subtitle', 'Slug']).conc
     },
   })
 );
+
+export const STATE_CONSTRUCTOR_FIELDS = mapAppName(['Constructor ID']).concat(
+  nestedQueries({
+    State: [DOC_SECRET_NAME],
+  })
+);
