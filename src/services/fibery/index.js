@@ -28,6 +28,7 @@ import {
   FORTUNE_COLLECTION_FIELDS,
   TINDER_GAME_FIELDS,
   STATE_CONSTRUCTOR_FIELDS,
+  XY_GAME_FIELDS,
 } from './query';
 import { getArticlePublicId, addAppName, mapAppName, mapAppNameLocales, mapSecrets } from './utils';
 import { getFileUrl } from './getters';
@@ -327,6 +328,71 @@ const getTinderGame = async ({ fiberyPublicId }) => {
   return tinderGame;
 };
 
+const getXYGame = async ({ fiberyPublicId }) => {
+  const [rawXYGame] = await fibery.entity.query(
+    {
+      'q/from': addAppName('XY Game'),
+      'q/select': FIBERY_DEFAULT.concat(XY_GAME_FIELDS),
+      'q/where': ['=', 'fibery/public-id', '$id'],
+      'q/limit': 1,
+    },
+    { $id: fiberyPublicId }
+  );
+
+  if (!rawXYGame) {
+    throw new HttpError(HttpStatus.NOT_FOUND);
+  }
+
+  const xyGame = toWirFormat({
+    mapping: {
+      // Fields with localization suffixes are handled automatically.
+      'Input Type': 'inputType',
+      Color: 'color',
+      'XY Game Outcomes': 'outcomes',
+      'Suggested Articles': 'suggestedArticles',
+    },
+    formatters: {
+      inputType: formatEnum,
+      files: map(toWirFormat()),
+      outcomes: map(
+        toWirFormat({
+          mapping: {
+            Input: 'input',
+            'Text-be': 'text.be',
+          },
+        })
+      ),
+    },
+  })(rawXYGame);
+
+  const suggestedSecret = xyGame.suggestedArticles[DOC_SECRET_NAME];
+  const outcomeSecrets = xyGame.outcomes.map(({ text: { be } }) => be[DOC_SECRET_NAME]);
+  const secrets = mapSecrets([...outcomeSecrets, suggestedSecret]);
+  const docs = keyBy(await fibery.document.getBatch(secrets, DOC_FORMAT), 'secret');
+  xyGame.outcomes.forEach((outcome, index) => {
+    xyGame.outcomes[index].text.be = getDoc(docs, outcome.text.be[DOC_SECRET_NAME]);
+  });
+
+  const suggestedDoc = getDoc(docs, suggestedSecret);
+  if (suggestedDoc) {
+    xyGame.suggestedArticles = await buildState(processDocumentConstructor(suggestedDoc.content));
+  } else {
+    xyGame.suggestedArticles = null;
+  }
+
+  const IMAGES_REGEX = /(left|right|bottom).*\.(jpg|jpeg|png)$/;
+  xyGame.images = xyGame.files.reduce((acc, { secret, name }) => {
+    const [_, type] = IMAGES_REGEX.exec(name) || [];
+    if (type) {
+      acc[type] = getFileUrl(secret);
+    }
+    return acc;
+  }, {});
+  delete xyGame.files;
+
+  return xyGame;
+};
+
 const getStateConstructorDocument = async constructorId => {
   const [stateConstructor] = await fibery.entity.query(
     {
@@ -356,5 +422,6 @@ export default {
   getDiaries,
   getFortuneGame,
   getTinderGame,
+  getXYGame,
   getStateConstructorDocument,
 };
