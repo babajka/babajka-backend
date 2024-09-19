@@ -4,6 +4,7 @@ import HttpStatus from 'http-status-codes';
 import keyBy from 'lodash/keyBy';
 import flatten from 'lodash/flatten';
 import isEqual from 'lodash/isEqual';
+import trimStart from 'lodash/trimStart';
 
 import config from 'config';
 import { ValidationError } from 'utils/joi';
@@ -359,6 +360,11 @@ const getXYGame = async ({ fiberyPublicId }) => {
           mapping: {
             Input: 'input',
             'Text-be': 'text.be',
+          },
+          formatters: {
+            // For numeric inputs we allow leading zeros in Fibery for better string sorting.
+            // TODO: Make this conditional on inputType, if more input types are supported.
+            input: str => trimStart(str.trim(), '0'),
           },
         })
       ),
