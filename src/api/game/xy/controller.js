@@ -23,6 +23,7 @@ export const getOutcome = ({ params: { slug }, query: { input } }, res, next) =>
     .then(xyGame =>
       sample(xyGame.outcomes.filter(({ input: outcomeInput }) => `${outcomeInput}` === `${input}`))
     )
+    .then(checkIsFound)
     .then(formatXYGameOutcome)
     .then(sendJson(res))
     .catch(next);

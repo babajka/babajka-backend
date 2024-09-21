@@ -46,7 +46,11 @@ const joiXYGameSchema = Joi.object({
   }).required(),
 
   images: Joi.object().required(),
-  color: Joi.color(),
+  colors: Joi.object({
+    backgroundOuter: Joi.color().required(),
+    backgroundInner: Joi.color().required(),
+    text: Joi.color().required(),
+  }).required(),
 
   outcomes: Joi.array().items(joiXYGameOutcomeSchema),
 
@@ -65,7 +69,7 @@ export const formatXYGame = ({
   question,
   response,
   images,
-  color,
+  colors,
   suggestedArticles,
 }) => ({
   title,
@@ -75,7 +79,7 @@ export const formatXYGame = ({
   question,
   response,
   images,
-  color,
+  colors,
   suggestedArticles,
 });
 

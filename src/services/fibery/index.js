@@ -348,7 +348,9 @@ const getXYGame = async ({ fiberyPublicId }) => {
     mapping: {
       // Fields with localization suffixes are handled automatically.
       'Input Type': 'inputType',
-      Color: 'color',
+      'Color Background Outer': 'colors.backgroundOuter',
+      'Color Background Inner': 'colors.backgroundInner',
+      'Color Text': 'colors.text',
       'XY Game Outcomes': 'outcomes',
       'Suggested Articles': 'suggestedArticles',
     },
