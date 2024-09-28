@@ -155,6 +155,32 @@ export const TINDER_GAME_FIELDS = mapAppName(['Title', 'Subtitle', 'Slug']).conc
   })
 );
 
+export const XY_GAME_FIELDS = mapAppName([
+  'Title-be',
+  'Subtitle-be',
+  'Slug-be',
+  'Question-be',
+  'Response-be',
+  'Color Background',
+  'Color Text',
+  'Keywords',
+])
+  .concat([FILES])
+  .concat(
+    nestedQueries({
+      'Input Type': ENUM,
+      'Suggested Articles': [DOC_SECRET_NAME],
+      'XY Game Outcomes': {
+        'q/select': FIBERY_DEFAULT.concat(mapAppName(['Input'])).concat(
+          nestedQueries({
+            'Text-be': [DOC_SECRET_NAME],
+          })
+        ),
+        'q/limit': 'q/no-limit',
+      },
+    })
+  );
+
 export const STATE_CONSTRUCTOR_FIELDS = mapAppName(['Constructor ID']).concat(
   nestedQueries({
     State: [DOC_SECRET_NAME],
