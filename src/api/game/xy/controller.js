@@ -48,7 +48,7 @@ export const fiberyImport = async ({ body: { fiberyPublicId } }, res, next) => {
       });
     }
 
-    // Note: If new localizations are added, explicit check on the uniqueness of the slug between locales should be added.
+    // Note: If new localizations are added, explicit check on the uniqueness of the slug between locales will be needed.
 
     const allGameSlugs = await XYGame.where('fiberyPublicId')
       .ne(fiberyPublicId)
