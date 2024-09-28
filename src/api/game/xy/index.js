@@ -8,7 +8,7 @@ import * as controller from './controller';
 const router = Router();
 
 router.get('/:slug', controller.getOne);
-router.get('/getOutcome/:slug', controller.getOutcome);
+router.post('/getOutcome/:slug', requireFields('input'), controller.getOutcome);
 router.post(
   '/fibery/import',
   requireAuth,

@@ -348,10 +348,10 @@ const getXYGame = async ({ fiberyPublicId }) => {
     mapping: {
       // Fields with localization suffixes are handled automatically.
       'Input Type': 'inputType',
-      'Color Background Outer': 'colors.backgroundOuter',
-      'Color Background Inner': 'colors.backgroundInner',
+      'Color Background': 'colors.background',
       'Color Text': 'colors.text',
       'XY Game Outcomes': 'outcomes',
+      Keywords: 'keywords',
       'Suggested Articles': 'suggestedArticles',
     },
     formatters: {
@@ -388,7 +388,7 @@ const getXYGame = async ({ fiberyPublicId }) => {
     xyGame.suggestedArticles = null;
   }
 
-  const IMAGES_REGEX = /(left|right|bottom).*\.(jpg|jpeg|png)$/;
+  const IMAGES_REGEX = /(left|right|bottom|background|preview).*\.(jpg|jpeg|png)$/;
   xyGame.images = xyGame.files.reduce((acc, { secret, name }) => {
     const [_, type] = IMAGES_REGEX.exec(name) || [];
     if (type) {

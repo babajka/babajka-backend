@@ -161,9 +161,9 @@ export const XY_GAME_FIELDS = mapAppName([
   'Slug-be',
   'Question-be',
   'Response-be',
-  'Color Background Outer',
-  'Color Background Inner',
+  'Color Background',
   'Color Text',
+  'Keywords',
 ])
   .concat([FILES])
   .concat(

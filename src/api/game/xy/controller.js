@@ -1,12 +1,15 @@
 import sample from 'lodash/sample';
 
 import { populateWithSuggestedState } from 'api/article/article.model';
+import { Counter } from 'api/metrics/counter';
 import fibery from 'services/fibery';
 import { sendJson } from 'utils/api';
 import { checkIsFound } from 'utils/validation';
 import { ValidationError } from 'utils/joi';
 
 import XYGame, { formatXYGameOutcome, formatXYGame } from './model';
+
+const generateStatsKey = ({ slug, input }) => `game-xy-${slug}--${input}`;
 
 export const getOne = ({ params: { slug }, user }, res, next) =>
   XYGame.findOne({ 'slug.be': slug })
@@ -17,13 +20,17 @@ export const getOne = ({ params: { slug }, user }, res, next) =>
     .then(sendJson(res))
     .catch(next);
 
-export const getOutcome = ({ params: { slug }, query: { input } }, res, next) =>
+export const getOutcome = ({ params: { slug }, body: { input } }, res, next) =>
   XYGame.findOne({ 'slug.be': slug })
     .then(checkIsFound)
     .then(xyGame =>
       sample(xyGame.outcomes.filter(({ input: outcomeInput }) => `${outcomeInput}` === `${input}`))
     )
     .then(checkIsFound)
+    .then(async outcome => {
+      await Counter.inc(generateStatsKey({ slug, input }));
+      return outcome;
+    })
     .then(formatXYGameOutcome)
     .then(sendJson(res))
     .catch(next);
@@ -60,6 +67,14 @@ export const fiberyImport = async ({ body: { fiberyPublicId } }, res, next) => {
       setDefaultsOnInsert: true,
       runValidators: true,
     }).exec();
+
+    await Promise.all(
+      xyGame.outcomes.reduce(
+        (acc, { input }) =>
+          acc.concat(Counter.ensureExists(generateStatsKey({ slug: xyGame.slug.be, input }))),
+        []
+      )
+    );
 
     sendJson(res)({ status: 'ok' });
   } catch (err) {
